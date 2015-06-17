@@ -49,6 +49,18 @@ typedef uint8_t bit;
 #define YesBit(Val,NBit)        (Val & (NBit))
 
 //----- Прототипы функций
+int16_t getcSmTSens2(char error);
+int16_t getcSmRHSens(char error);
+int16_t getcSmInLightSens(char error);
+int16_t getcSmRoofSens(char error);
+int16_t getcSmGlassSens(char error);
+int16_t getcSmCOSens(char error);
+int16_t getcSmWinNSens(char error);
+int16_t getcSmWinSSens(char error);
+int16_t getcSmScreenSens(char error);
+int16_t getcSmWaterSens(char error);
+
+
 void CopyEEP(void);
 void CalcEEPSum(void);
 void GetRTC(void);

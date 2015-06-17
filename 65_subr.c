@@ -1,8 +1,13 @@
+#include "keyboard.h"
+
 #define NameSens(ns)       w_txt(NameASens[ns].Name)
 #define EdSens(ns)         TxtEd(ns)
 
 
-#define CURRENT_TEMP_VALUE (pGD_Hot_Tepl->InTeplSens[cSmTSens].Value)  //(pGD_TControl_Tepl->LastLastInTeplSensing[cSmTSens])
+#define CURRENT_TEMP1_VALUE (pGD_Hot_Tepl->InTeplSens[cSmTSens1].Value)
+#define CURRENT_TEMP2_VALUE (pGD_Hot_Tepl->InTeplSens[cSmTSens2].Value)
+#define CURRENT_TEMP3_VALUE (pGD_Hot_Tepl->InTeplSens[cSmTSens3].Value)
+#define CURRENT_TEMP4_VALUE (pGD_Hot_Tepl->InTeplSens[cSmTSens4].Value)
 
 /*-------------------------------------------
 		Вывод единиц измерения
@@ -652,7 +657,7 @@ void SetResRam(void)
 void InitGD(char fTipReset) {
 		eCalSensor xdata *eCS;
         ClrDog;
-        SIM=100;
+        keyboardSetSIM(100);
 		NDat=0;
 		if (fTipReset>2) MemClr(&GD.Hot,(sizeof(eHot)));
         MemClr(&GD.Control,sizeof(eControl)
@@ -687,12 +692,12 @@ ClrDog;
 		for (IntX=0;IntX<(sizeof(NameConst)/3);IntX++)
 			GD.TuneClimate.s_TStart[IntX]=NameConst[IntX].StartZn;
 
-
+#warning !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IP
 		GD.Control.NFCtr=NumCtr;
 		GD.Control.IPAddr[0]=192;
 		GD.Control.IPAddr[1]=168;
 		GD.Control.IPAddr[2]=1;
-		GD.Control.IPAddr[3]=66;//100+NumCtr;
+		GD.Control.IPAddr[3]=100+NumCtr;
 
 		GD.Control.Read1W=9;
 		GD.Control.Write1W=4;
@@ -780,54 +785,6 @@ int CorrectionRule(int fStartCorr,int fEndCorr, int fCorrectOnEnd, int fbSet)
 		IntZ=(int)((((long)(IntY-fStartCorr))*fCorrectOnEnd)/(fEndCorr-fStartCorr));
 	return fbSet;
 }
-
-uint16_t AbsHum(uint16_t fTemp, uint16_t fRH)
-{
-	float tT,tRH, tRez;
-	tT=fTemp/100;
-	tRH=fRH/100;
-	tRez=((0.000002*tT*tT*tT*tT)+(0.0002*tT*tT*tT)+(0.0095*tT*tT)+( 0.337*tT)+4.9034)*tRH;
-	return tRez*100;
-}
-
-
-int8_t	SetPID(uint16_t fDelta,uint8_t fNMech,int8_t fMax, int8_t fMin)
-{
-	int16_t	*IntVal;
-	ClrDog;
-
-//	if (YesBit(pGD_Hot_Hand[fNMech].RCS,(/*cbNoMech+*/cbManMech))) continue;
-	IntVal=&(pGD_TControl_Tepl->IntVal[fNMech]);
-
-	IntX=fDelta;
-		//(*IntVal)=(*IntVal)+IntX;
-	LngY=pGD_ConstMechanic->ConstMixVal[fNMech].v_PFactor;
-	LngY=LngY*IntX;//(*IntVal);
-	IntY=(int16_t)(LngY/10000);
-		//if (!IntY) continue;
-	IntZ=(*IntVal)/100;
-		//IntZ=(*(pGD_Hot_Hand_Kontur+cHSmMixVal)).Position;
-	IntZ+=IntY;
-	if (IntZ>fMax)
-	{
-		(*IntVal)=(fMax-IntY)*100;
-		IntZ=fMax;
-	}
-	else
-		if (IntZ<fMin)
-		{
-			(*IntVal)=(fMin-IntY)*100;
-			IntZ=fMin;
-		}
-		else
-			(*IntVal)+=(int16_t)((((long)IntX)*pGD_ConstMechanic->ConstMixVal[fNMech].v_IFactor)/100);
-
-	if (!pGD_ConstMechanic->ConstMixVal[fNMech].v_IFactor)
-		*IntVal=0;
-
-	return IntZ;
-}
-
 
 void WindDirect(void)
 {

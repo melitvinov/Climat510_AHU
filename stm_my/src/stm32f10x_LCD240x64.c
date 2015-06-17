@@ -127,8 +127,6 @@ void Delay(vu32 nCount)
     for(; nCount != 0; nCount--);
 }
 
-
-
 uint8_t  ReadStatus (char Need){
 uint8_t res, TimeOut;
 res=0;

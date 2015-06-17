@@ -1,6 +1,183 @@
+/*!
+\brief Температура воздуха для вентиляци в зависимости от выбранного значение в Параметрах управления
+@return int16_t Температура
+*/
+int16_t screenGetTempVent()
+{
+	int16_t	tempVent;
+	int16_t temp = 0;
+	int16_t i;
+		switch (pGD_Control_Tepl->sensT_vent)
+		{
+			case 0: // sensor temp 1
+				if (pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS == 0)
+					tempVent = CURRENT_TEMP1_VALUE;
+			break;
+			case 1: // sensor temp 2
+				if (pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS == 0)
+					tempVent = CURRENT_TEMP2_VALUE;
+			break;
+			case 2: // sensor temp 3
+				if (pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS == 0)
+					tempVent = CURRENT_TEMP3_VALUE;
+			break;
+			case 3: // sensor temp 4
+				if (pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS == 0)
+					tempVent = CURRENT_TEMP4_VALUE;
+			break;
+			case 4: // min
+			{
+				for (i=0;i<4;i++)
+				{
+					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
+					{
+						temp = pGD_Hot_Tepl->InTeplSens[i].Value;
+						return;
+					}
+				}
+				for (i=0;i<4;i++)
+				{
+					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
+					{
+						if (temp > pGD_Hot_Tepl->InTeplSens[i].Value)
+							temp = pGD_Hot_Tepl->InTeplSens[i].Value;
+					}
+				}
+				tempVent = temp;
+			}
+			break;
+			case 5: // max
+			{
+				for (i=0;i<4;i++)
+				{
+					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
+					{
+						temp = pGD_Hot_Tepl->InTeplSens[i].Value;
+						return;
+					}
+				}
+				for (i=0;i<4;i++)
+				{
+					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
+					{
+						if (temp < pGD_Hot_Tepl->InTeplSens[i].Value)
+							temp = pGD_Hot_Tepl->InTeplSens[i].Value;
+					}
+				}
+				tempVent = temp;
+			}
+			break;
+			case 6: // average
+			{
+				int16_t count = 0;
+				for (i=0;i<4;i++)
+				{
+					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
+					{
+						temp = temp + pGD_Hot_Tepl->InTeplSens[i].Value;
+						count++;
+					}
+				}
+				temp = temp / count;
+				tempVent = temp;
+			}
+			break;
+		}
+		return tempVent;
+}
+
+/*!
+\brief Температура воздуха для обогрева в зависимости от выбранного значение в Параметрах управления
+@return int16_t Температура
+*/
+int16_t screenGetTempHeat()
+{
+	int16_t	tempHeat;
+	int16_t temp = 0;
+	int16_t i=0;
+		switch (pGD_Control_Tepl->sensT_heat)
+		{
+			case 0: // sensor temp 1
+				if (pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS == 0)
+					tempHeat = CURRENT_TEMP1_VALUE;
+			break;
+			case 1: // sensor temp 2
+				if (pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS == 0)
+					tempHeat = CURRENT_TEMP2_VALUE;
+			break;
+			case 2: // sensor temp 3
+				if (pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS == 0)
+					tempHeat = CURRENT_TEMP3_VALUE;
+			break;
+			case 3: // sensor temp 4
+				if (pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS == 0)
+					tempHeat = CURRENT_TEMP4_VALUE;
+			break;
+			case 4: // min
+			{
+				for (i=0;i<4;i++)
+				{
+					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
+					{
+						temp = pGD_Hot_Tepl->InTeplSens[i].Value;
+						return;
+					}
+				}
+				for (i=0;i<4;i++)
+				{
+					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
+					{
+						if (temp > pGD_Hot_Tepl->InTeplSens[i].Value)
+							temp = pGD_Hot_Tepl->InTeplSens[i].Value;
+					}
+				}
+				tempHeat = temp;
+			}
+			break;
+			case 5: // max
+			{
+				for (i=0;i<4;i++)
+				{
+					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
+					{
+						temp = pGD_Hot_Tepl->InTeplSens[i].Value;
+						return;
+					}
+				}
+				for (i=0;i<4;i++)
+				{
+					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
+					{
+						if (temp < pGD_Hot_Tepl->InTeplSens[i].Value)
+							temp = pGD_Hot_Tepl->InTeplSens[i].Value;
+					}
+				}
+				tempHeat = temp;
+			}
+			break;
+			case 6: // average
+			{
+				int16_t count = 0;
+				for (i=0;i<4;i++)
+				{
+					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
+					{
+						temp = temp + pGD_Hot_Tepl->InTeplSens[i].Value;
+						count++;
+					}
+				}
+				temp = temp / count;
+				tempHeat = temp;
+			}
+			break;
+		}
+		return tempHeat;
+}
+
 void CheckModeScreen(char typScr,char chType)
 {
 //Оптимицация на typScr
+	char error = 0;
 	char tvs_DegSt,tvs_DegEnd;
 	char ttyp,bZad;
     eScreen *pScr;
@@ -16,27 +193,39 @@ void CheckModeScreen(char typScr,char chType)
 		pScr->Mode=pGD_Hot_Tepl->AllTask.Screen[ttyp];
 		bZad=1;
 	}
-	IntY=CURRENT_TEMP_VALUE-pGD_Hot_Tepl->AllTask.DoTHeat;
+
+#warning CHECK THIS
+	// NEW
+	IntY=screenGetTempHeat()-pGD_Hot_Tepl->AllTask.DoTHeat;
 	CorrectionRule(GD.TuneClimate.sc_dTStart,GD.TuneClimate.sc_dTEnd,GD.TuneClimate.sc_dTSunFactor,0);
 	SunZClose=GD.TuneClimate.sc_ZSRClose-IntZ;
-	IntZ=pGD_Hot_Tepl->AllTask.DoTHeat-GD.TControl.MeteoSensing[cSmOutTSens];
+	IntZ=GD.TControl.MeteoSensing[cSmOutTSens];
 	switch(chType) 
 	{
-	case 0:
+	case 0:	// термический горизонтальный экран
 		
 		if (!bZad)
 		{
-			if (IntZ>GD.TuneClimate.sc_TOutClose+200) pScr->Mode=1;
-			if ((IntZ<GD.TuneClimate.sc_TOutClose)||(!GD.TuneClimate.sc_TOutClose)) pScr->Mode=0;
+			if (IntZ<GD.TuneClimate.sc_TOutClose)
+				pScr->Mode=1;
+			if ((IntZ>GD.TuneClimate.sc_TOutClose+200)||(!GD.TuneClimate.sc_TOutClose))
+				pScr->Mode=0;
 			if (GD.TuneClimate.sc_TSROpen)
 			{
-				if (GD.Hot.MidlSR>GD.TuneClimate.sc_TSROpen) pScr->Mode=0;
+				if (GD.Hot.MidlSR>GD.TuneClimate.sc_TSROpen)
+					pScr->Mode=0;
 			}
 			else
 				if (!bNight) pScr->Mode=0;
-			if (YesBit(pGD_Hot_Tepl->InTeplSens[cSmTSens].RCS,cbDownAlarmSens))
+
+#warning CHECK THIS
+			if (YesBit(pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS,cbDownAlarmSens))
 				pScr->Mode=1;
-			if((GD.TuneClimate.sc_ZSRClose)&&(GD.Hot.MidlSR>SunZClose)) pScr->Mode=1;
+
+
+
+			if((GD.TuneClimate.sc_ZSRClose)&&(GD.Hot.MidlSR>SunZClose))
+				pScr->Mode=1;
 		}
 		if 	(pScr->Mode!=pScr->OldMode)
 		{
@@ -52,16 +241,26 @@ void CheckModeScreen(char typScr,char chType)
 		pGD_TControl_Tepl->ScrExtraHeat--;
 		if (pGD_TControl_Tepl->ScrExtraHeat>0) return;
 		pGD_TControl_Tepl->ScrExtraHeat=0;	 
-		IntY=pGD_Hot_Tepl->InTeplSens[cSmGlassSens].Value;
+#warning CHECK THIS
+		IntY=getcSmGlassSens(error);
+		//IntY=pGD_Hot_Tepl->InTeplSens[cSmGlassSens].Value;
 		CorrectionRule(GD.TuneClimate.sc_GlassStart,GD.TuneClimate.sc_GlassEnd,GD.TuneClimate.sc_GlassMax,0);
-		if ((YesBit(pGD_Hot_Tepl->InTeplSens[cSmGlassSens].RCS,cbMinMaxVSens))) IntZ=GD.TuneClimate.sc_GlassMax;
-		pScr->Value=pScr->Mode*(pGD_Control_Tepl->sc_TMaxOpen-(GD.TuneClimate.sc_GlassMax-IntZ));		
-/*Влияние разницы влажности на открытие экрана*/
+#warning CHECK THIS
+		IntZ=getcSmGlassSens(error);
+		//if ((YesBit(pGD_Hot_Tepl->InTeplSens[cSmGlassSens].RCS,cbMinMaxVSens)))
+		//	IntZ=GD.TuneClimate.sc_GlassMax;
+		{
+			pScr->Value=pScr->Mode*(pGD_Control_Tepl->sc_TMaxOpen-(GD.TuneClimate.sc_GlassMax-IntZ));	  // итоговое значение открытия экрана
+			//if (pScr->Mode==0) // если экран закрывается
+			//	pScr->Value = pScr->Value * GD.TuneClimate.ScreenCloseSpeed;
+		}
+
+/*Влияние разницы влажности на открытие экрана
 		IntY=pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value-pGD_Hot_Tepl->AllTask.DoRHAir;
 		CorrectionRule(GD.TuneClimate.sc_RHStart,GD.TuneClimate.sc_RHEnd,GD.TuneClimate.sc_RHMax,0);
 		if (!pGD_Hot_Tepl->AllTask.DoRHAir) IntZ=0;
 		pScr->Value-=IntZ;
-
+*/
 	break;
 	case 1:
 		if (!bZad)
@@ -70,7 +269,8 @@ void CheckModeScreen(char typScr,char chType)
 				pScr->Mode=1;
 			if ((!pGD_TControl_Tepl->Screen[0].Mode)||(IntZ>GD.TuneClimate.sc_ZOutClose+200)||(!GD.TuneClimate.sc_ZOutClose))
 				pScr->Mode=0;
-			if((GD.TuneClimate.sc_ZSRClose)&&(GD.Hot.MidlSR>SunZClose)) pScr->Mode=1;
+			if((GD.TuneClimate.sc_ZSRClose)&&(GD.Hot.MidlSR>SunZClose))
+				pScr->Mode=1;
 		}
 		if 	(pScr->Mode!=pScr->OldMode)
 			pScr->PauseMode=GD.TuneClimate.sc_PauseMode;
@@ -82,8 +282,10 @@ void CheckModeScreen(char typScr,char chType)
 		{
 			ByteX=0;
 			ByteZ=0;
-			if (IntZ<GD.TuneClimate.sc_TVOutClose) pScr->Mode=1;
-			if ((IntZ>GD.TuneClimate.sc_TVOutClose+200)||(!GD.TuneClimate.sc_TVOutClose)) pScr->Mode=0;
+			if (IntZ<GD.TuneClimate.sc_TVOutClose)
+				pScr->Mode=1;
+			if ((IntZ>GD.TuneClimate.sc_TVOutClose+200)||(!GD.TuneClimate.sc_TVOutClose))
+				pScr->Mode=0;
 			if ((GD.Hot.MidlSR>GD.TuneClimate.sc_TVSRMaxOpen)&&(GD.TuneClimate.sc_TVSRMaxOpen))
 				pScr->Mode=0;
 		}
@@ -105,11 +307,7 @@ void InitScreen(char typScr)
 		(pScr->PauseMode>GD.TuneClimate.sc_PauseMode))
 		pScr->PauseMode=0;
 	CheckModeScreen(typScr,typScr);
-
-
-
 }
-
 
 void SetPosScreen(char typScr)
 {
@@ -117,16 +315,15 @@ void SetPosScreen(char typScr)
     eScreen *pScr;
 	char step;
 
-	pScr=&pGD_TControl_Tepl->Screen[typScr];
-
+	pScr=&pGD_TControl_Tepl->Screen[typScr];  // итоговая позиция экрана
     pMech=&((*(pGD_Hot_Hand+cHSmScrTH+typScr)).Position);
-	
+
 	if (YesBit((*(pGD_Hot_Hand+cHSmScrTH+typScr)).RCS,/*(cbNoMech+*/cbManMech)) return;
 
 	if(pScr->Pause<0) pScr->Pause=0;
 	if(pScr->Pause) {pScr->Pause--;return;}
 	
-	ByteX=(*pMech);
+	ByteX=(*pMech);    //  текущее положение экрана
 	IntZ=pScr->Value;	
 
 	if (!typScr) // Только если термический, то произвести коррекцию
@@ -146,11 +343,15 @@ void SetPosScreen(char typScr)
 	{
 		step=GD.TuneClimate.sc_StepS2Zone;
 		pScr->Pause=GD.TuneClimate.sc_StepP2Zone;
+	    if ((pScr->Mode == 1) && (!typScr))
+	    	step = step * GD.TuneClimate.ScreenCloseSpeed;
 	}
 	if (ByteX>=GD.TuneClimate.sc_StartP1Zone)	 
 	{
 		step=GD.TuneClimate.sc_StepS1Zone;
 		pScr->Pause=GD.TuneClimate.sc_StepP1Zone;
+		if ((pScr->Mode == 1) && (!typScr))
+	    	step = step * GD.TuneClimate.ScreenCloseSpeed;
 	}
 	IntX=((int)(ByteX))-IntZ;
 	if (IntX>0)
@@ -178,7 +379,8 @@ void SetPosScreen(char typScr)
 
 void LaunchVent(void)
 {
-/*	if ((((*(pGD_Hot_Hand+cHSmWinN)).Position+(*(pGD_Hot_Hand+cHSmWinS)).Position)>0)&&((GD.TuneClimate.cool_PFactor)))
+	char error = 0;
+	if ((((*(pGD_Hot_Hand+cHSmWinN)).Position+(*(pGD_Hot_Hand+cHSmWinS)).Position)>0)&&((GD.TuneClimate.cool_PFactor)))
 		pGD_TControl_Tepl->OutFan=1;
 	else
 		pGD_TControl_Tepl->OutFan=0;	
@@ -189,11 +391,12 @@ void LaunchVent(void)
 		pGD_TControl_Tepl->Vent=0;
 		return;
 	}
+#warning CHECK THIS
+	// NEW
 	IntY=0;
-	if (pGD_Hot_Tepl->InTeplSens[cSmTCSens].Value)
+	if (getcSmTSens2(error))
 	{
-		IntY=CURRENT_TEMP_VALUE
-			-pGD_Hot_Tepl->InTeplSens[cSmTCSens].Value;
+		IntY= screenGetTempVent()-getcSmTSens2(error);
 		if (IntY<0)
 			IntY=-IntY;
 	}
@@ -209,26 +412,29 @@ void LaunchVent(void)
 		pGD_TControl_Tepl->Vent=0;
 		return;
 	}
-	if((IntY<pGD_Hot_Tepl->OtherCalc.TaskCritery)&&(pGD_Hot_Tepl->AllTask.Vent!=1)) return;*/
-	//pGD_TControl_Tepl->AHUVent=pGD_Hot_Tepl->AllTask.AHUVent;
-	//pGD_TControl_Tepl->PauseVent=GD.TuneClimate.vt_WorkTime;
+	if((IntY<pGD_Hot_Tepl->OtherCalc.TaskCritery)&&(pGD_Hot_Tepl->AllTask.Vent!=1)) return;
+	pGD_TControl_Tepl->Vent=1;
+	pGD_TControl_Tepl->PauseVent=GD.TuneClimate.vt_WorkTime;
 		
 }
 
 void LaunchCalorifer(void)
 {
-/*	if (!(pGD_MechConfig->RNum[cHSmHeat])) {pGD_TControl_Tepl->Calorifer=0;return;}
-	if(CURRENT_TEMP_VALUE<(pGD_Hot_Tepl->AllTask.DoTHeat
+	if (!(pGD_MechConfig->RNum[cHSmHeat])) {pGD_TControl_Tepl->Calorifer=0;return;}
+
+#warning CHECK THIS
+	// NEW
+	if(screenGetTempHeat()<(pGD_Hot_Tepl->AllTask.DoTHeat
 		-GD.TuneClimate.vt_StartCalorifer))
 		SetBit(pGD_TControl_Tepl->Calorifer,0x01);
-	if ((CURRENT_TEMP_VALUE>(pGD_Hot_Tepl->AllTask.DoTHeat
+	if ((screenGetTempHeat()>(pGD_Hot_Tepl->AllTask.DoTHeat
 		+GD.TuneClimate.vt_EndCalorifer))||(!GD.TuneClimate.vt_StartCalorifer)) 
 		ClrBit(pGD_TControl_Tepl->Calorifer,0x01);
 //		pGD_TControl_Tepl->Calorifer=0;
 	if ((GD.TControl.MeteoSensing[cSmOutTSens]>pGD_Hot_Tepl->AllTask.DoTVent+GD.TuneClimate.cool_PFactor)&&(GD.TuneClimate.cool_PFactor))
 		SetBit(pGD_TControl_Tepl->Calorifer,0x02);
 	if (((GD.TControl.MeteoSensing[cSmOutTSens]<pGD_Hot_Tepl->AllTask.DoTVent+GD.TuneClimate.cool_PFactor-100))||(!GD.TuneClimate.cool_PFactor))
-		ClrBit(pGD_TControl_Tepl->Calorifer,0x02);*/
+		ClrBit(pGD_TControl_Tepl->Calorifer,0x02);
 }
 
 void    SetReg(char fHSmReg,int DoValue,int MeasValue)
@@ -299,8 +505,6 @@ void    SetReg(char fHSmReg,int DoValue,int MeasValue)
 	}
 	else 
 		fReg->IntVal=fReg->IntVal+(int)((((long)DoValue-MeasValue)*pGD_ConstMechanic->ConstMixVal[fHSmReg].v_IFactor)/1000);
-	if (!pGD_ConstMechanic->ConstMixVal[fHSmReg].v_IFactor)
-		fReg->IntVal=0;
 	pGD_TControl_Tepl->COPosition=IntX+IntY;
 	if (pGD_TControl_Tepl->COPosition>100)
 		(*(pGD_Hot_Hand+fHSmReg)).Position=100;

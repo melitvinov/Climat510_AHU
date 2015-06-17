@@ -1,7 +1,7 @@
 
-//#define DEBUG
-#define AHU
-//#define AGAPOVSKIY_DOUBLE_VALVE
+#define DEBUG
+//#define AHU
+#define AGAPOVSKIY_DOUBLE_VALVE
 //#define SIO_PAUSE	1
 
 #include "stm32f10x_Define.h"
@@ -22,7 +22,7 @@
 #ifdef AHU
 #define cModification	16+4
 #else
-#define cModification	16
+#define cModification	16+1
 #endif
 
 /*Модификация ПО контроллера*/
