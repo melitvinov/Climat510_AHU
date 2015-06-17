@@ -110,7 +110,7 @@ void pmReset(void) {
 		}
 	if(EndInput && (BlockEEP[nBlEEP].Erase ==1)) {
 			EndInput=0;
-			TestMem(nBlEEP+10);
+			TestFRAM(nBlEEP+10);
 //			RamToEEP(nBlEEP);
 			}
 }
@@ -129,7 +129,7 @@ void pmInfoProg405(void){
 //	IntX=GD.Hot.MidlSR;
 //	if (IntX<0) IntX=-IntX;
 //	w_int(&IntX,SSSS);
-	w_int(&GD.FanBlock[0][0].FanData[0].ActualSpeed,SSSS);
+//	w_int(&GD.FanBlock[0][0].FanData[0].ActualSpeed,SSSS);
 
 	if (!ByteZ)
 	{
@@ -140,10 +140,7 @@ void pmInfoProg405(void){
 		w_int(&GD.Hot.Tepl[ByteY].AllTask.DoTVent,SSpS0);
 		Ad_Buf++;
 		w_txt(Mes42);
-		w_int(&GD.Hot.Tepl[ByteY].InTeplSens[cSmTSens1].Value,SSpS0);
-		w_int(&GD.Hot.Tepl[ByteY].InTeplSens[cSmTSens2].Value,SSpS0);
-		w_int(&GD.Hot.Tepl[ByteY].InTeplSens[cSmTSens3].Value,SSpS0);
-		w_int(&GD.Hot.Tepl[ByteY].InTeplSens[cSmTSens4].Value,SSpS0);
+		w_int(&GD.Hot.Tepl[ByteY].InTeplSens[cSmTSens].Value,SSpS0);
 		return;
 	}
 	if (ByteZ==1)
@@ -313,11 +310,9 @@ void pmParam() {
 							}
 						return;}
 				ByteZ-=SumTeplZones;
-                if(!ByteZ){  													// Уставки
-		                if(Y_menu2 > sizeof(NameConst))//SUM_NAME_TUNE)
-		                	Y_menu2=0;
-		                if(Y_menu2 >= sizeof(NameConst))//SUM_NAME_TUNE)
-		                	Y_menu2=sizeof(NameConst)-1;//SUM_NAME_TUNE-1;
+                if(!ByteZ){
+		                if(Y_menu2 > SUM_NAME_TUNE) Y_menu2=0;
+		                if(Y_menu2 >= SUM_NAME_TUNE) Y_menu2=SUM_NAME_TUNE-1;
 						w_txt(Mes91);
 						Ad_Buf=Str3;
 						if(Y_menu2 < StartY_menu2) StartY_menu2 = Y_menu2;
@@ -330,8 +325,7 @@ void pmParam() {
 							Ad_Buf=((Ad_Buf / DisplCols))*DisplCols+20;
 							buf[Ad_Buf++]='=';
 	                        w_int(&GD.TuneClimate.s_TStart[ByteY],NameConst[ByteX].Frm);
-							if(Y_menu2 == ByteY)
-								BlkW=1;
+							if(Y_menu2 == ByteY) BlkW=1;
 							Ad_Buf=((Ad_Buf / DisplCols)+1)*DisplCols;
 
 							}
@@ -713,10 +707,10 @@ void pmNow(void) {
 
 
 	w_txt(Mes38); //Condition
-	x_menu%=(SumTeplZones*3+2);
+	x_menu%=(SumTeplZones*2+2);
 
     if (!x_menu) return;
-    if (x_menu==SumTeplZones*3+1)
+    if (x_menu==SumTeplZones*2+1)
     {
     	Y_menu2%=OUT_MODUL_SUM;//cSMech;
     	Form=0;
@@ -744,21 +738,21 @@ void pmNow(void) {
     }
     if (x_menu>SumTeplZones)
     {
-    	ByteY=(x_menu-SumTeplZones-1)/2+1;
-    	ByteZ=(x_menu-SumTeplZones-1)%2+1;
-    	Y_menu2%=OUT_MODUL_SUM;//cSMech;
+    	ByteY=x_menu-SumTeplZones;
+    	Y_menu2%=2;//cSMech;
+    	ByteZ=Y_menu2+1;
     	Form=0;
     	Ad_Buf=Str2;
         w_txt("Fans zone ");
-        w_int(ByteY,oS);
+        w_int(&ByteY,oS);
 		buf[Ad_Buf++]='-';
-        w_int(ByteZ,oS);
+        w_int(&ByteZ,oS);
     	Ad_Buf=Str3;
     	for (ByteX=0;ByteX<MAX_FAN_COUNT;ByteX++)
     	{
     		if (ByteX==32)
     	        Ad_Buf=Str4;
-    		if (GD.FanBlock[x_menu-SumTeplZones-1][0].FanData[ByteX].Actual)
+    		if (GD.FanBlock[x_menu-SumTeplZones-1][Y_menu2].FanData[ByteX].Actual)
     		{
 
     			buf[Ad_Buf++]='0';
@@ -795,10 +789,7 @@ void pmNow(void) {
 	Ad_Buf=Str3;
 	w_txt(" T  | RH |CO2 |Tp1 |Tp2 |Tp3 |Tp4 |Tp5");
     Ad_Buf=Str4;
-	w_int(&GD.Hot.Tepl[ByteY].InTeplSens[cSmTSens1].Value,SSpS0);
-	w_int(&GD.Hot.Tepl[ByteY].InTeplSens[cSmTSens2].Value,SSpS0);
-	w_int(&GD.Hot.Tepl[ByteY].InTeplSens[cSmTSens3].Value,SSpS0);
-	w_int(&GD.Hot.Tepl[ByteY].InTeplSens[cSmTSens4].Value,SSpS0);
+	w_int(&GD.Hot.Tepl[ByteY].InTeplSens[cSmTSens].Value,SSpS0);
 	buf[Ad_Buf++]='|';
 	w_int(&GD.Hot.Tepl[ByteY].InTeplSens[cSmRHSens].Value,SSpS0);
 	buf[Ad_Buf++]='|';

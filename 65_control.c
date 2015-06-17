@@ -10,475 +10,6 @@
 /**************************************************/
 /*------------------------------------------------*/
 
-/*!
-\brief Получаем значения датчиков только если флаг аварии = 0
-*/
-int16_t getcSmTSens2(char error)
-{
-	if (pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS == 0)
-		pGD_Hot_Tepl->InTeplSens[cSmTSens2].Value;
-}
-
-/*!
-\brief Получаем значения датчиков только если флаг аварии = 0
-*/
-int16_t getcSmRHSens(char error)
-{
-	if (pGD_Hot_Tepl->InTeplSens[cSmRHSens].RCS == 0)
-		pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
-}
-
-/*!
-\brief Получаем значения датчиков только если флаг аварии = 0
-*/
-int16_t getcSmInLightSens(char error)
-{
-	if (pGD_Hot_Tepl->InTeplSens[cSmInLightSens].RCS == 0)
-		pGD_Hot_Tepl->InTeplSens[cSmInLightSens].Value;
-}
-
-/*!
-\brief Получаем значения датчиков только если флаг аварии = 0
-*/
-int16_t getcSmRoofSens(char error)
-{
-	if (pGD_Hot_Tepl->InTeplSens[cSmRoofSens].RCS == 0)
-		pGD_Hot_Tepl->InTeplSens[cSmRoofSens].Value;
-}
-
-/*!
-\brief Получаем значения датчиков только если флаг аварии = 0
-*/
-int16_t getcSmGlassSens(char error)
-{
-	if (pGD_Hot_Tepl->InTeplSens[cSmGlassSens].RCS == 0)
-		pGD_Hot_Tepl->InTeplSens[cSmGlassSens].Value;
-}
-
-/*!
-\brief Получаем значения датчиков только если флаг аварии = 0
-*/
-int16_t getcSmCOSens(char error)
-{
-	if (pGD_Hot_Tepl->InTeplSens[cSmCOSens].RCS == 0)
-		pGD_Hot_Tepl->InTeplSens[cSmCOSens].Value;
-}
-
-/*!
-\brief Получаем значения датчиков только если флаг аварии = 0
-*/
-int16_t getcSmWinNSens(char error)
-{
-	if (pGD_Hot_Tepl->InTeplSens[cSmWinNSens].RCS == 0)
-		pGD_Hot_Tepl->InTeplSens[cSmWinNSens].Value;
-}
-
-/*!
-\brief Получаем значения датчиков только если флаг аварии = 0
-*/
-int16_t getcSmWinSSens(char error)
-{
-	if (pGD_Hot_Tepl->InTeplSens[cSmWinSSens].RCS == 0)
-		pGD_Hot_Tepl->InTeplSens[cSmWinSSens].Value;
-}
-
-/*!
-\brief Получаем значения датчиков только если флаг аварии = 0
-*/
-int16_t getcSmScreenSens(char error)
-{
-	if (pGD_Hot_Tepl->InTeplSens[cSmScreenSens].RCS == 0)
-		pGD_Hot_Tepl->InTeplSens[cSmScreenSens].Value;
-}
-
-/*!
-\brief Получаем значения датчиков только если флаг аварии = 0
-*/
-int16_t getcSmWaterSens(char error)
-{
-	if (pGD_Hot_Tepl->InTeplSens[cSmWaterSens].RCS == 0)
-		pGD_Hot_Tepl->InTeplSens[cSmWaterSens].Value;
-}
-
-/*!
-\brief Авария датчика температуры воздуха вентиляции в зависимости от выбранного значение в Параметрах управления
-*/
-void controlGetTempVentAlarm(char fnTepl)
-{
-		switch (pGD_Control_Tepl->sensT_vent)
-		{
-			case 0: // sensor temp 1
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			break;
-			case 1: // sensor temp 2
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 2: // sensor temp 3
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 3: // sensor temp 4
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 4: // min
-			{
-				if ((pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0))
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			}
-			break;
-			case 5: // max
-			{
-				if ((pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0))
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			}
-			break;
-			case 6: // average
-			{
-				if ((pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0))
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			}
-			break;
-		}
-}
-
-/*!
-\brief Авария датчика температуры воздуха обогрева в зависимости от выбранного значение в Параметрах управления
-*/
-void controlGetTempHeatAlarm(char fnTepl)
-{
-		switch (pGD_Control_Tepl->sensT_heat)
-		{
-			case 0: // sensor temp 1
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			break;
-			case 1: // sensor temp 2
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 2: // sensor temp 3
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 3: // sensor temp 4
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 4: // min
-			{
-				if ((pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0))
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			}
-			break;
-			case 5: // max
-			{
-				if ((pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0))
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			}
-			break;
-			case 6: // average
-			{
-				if ((pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0))
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			}
-			break;
-		}
-}
-
-/*!
-\brief Температура воздуха для вентиляци в зависимости от выбранного значение в Параметрах управления
-@return int16_t Температура
-*/
-int16_t controlGetTempVent()
-{
-	int16_t	tempVent;
-	int16_t temp = 0;
-	int16_t i;
-		switch (pGD_Control_Tepl->sensT_vent)
-		{
-			case 0: // sensor temp 1
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS == 0)
-					tempVent = CURRENT_TEMP1_VALUE;
-			break;
-			case 1: // sensor temp 2
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS == 0)
-					tempVent = CURRENT_TEMP2_VALUE;
-			break;
-			case 2: // sensor temp 3
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS == 0)
-					tempVent = CURRENT_TEMP3_VALUE;
-			break;
-			case 3: // sensor temp 4
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS == 0)
-					tempVent = CURRENT_TEMP4_VALUE;
-			break;
-			case 4: // min
-			{
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-						return;
-					}
-				}
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						if (temp > pGD_Hot_Tepl->InTeplSens[i].Value)
-							temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-					}
-				}
-				tempVent = temp;
-			}
-			break;
-			case 5: // max
-			{
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-						return;
-					}
-				}
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						if (temp < pGD_Hot_Tepl->InTeplSens[i].Value)
-							temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-					}
-				}
-				tempVent = temp;
-			}
-			break;
-			case 6: // average
-			{
-				int16_t count = 0;
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = temp + pGD_Hot_Tepl->InTeplSens[i].Value;
-						count++;
-					}
-				}
-				temp = temp / count;
-				tempVent = temp;
-			}
-			break;
-		}
-		return tempVent;
-}
-
-/*!
-\brief Температура воздуха для обогрева в зависимости от выбранного значение в Параметрах управления
-@return int16_t Температура
-*/
-int16_t controlGetTempHeat()
-{
-	int16_t	tempHeat;
-	int16_t temp = 0;
-	int16_t i=0;
-		switch (pGD_Control_Tepl->sensT_heat)
-		{
-			case 0: // sensor temp 1
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS == 0)
-					tempHeat = CURRENT_TEMP1_VALUE;
-			break;
-			case 1: // sensor temp 2
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS == 0)
-					tempHeat = CURRENT_TEMP2_VALUE;
-			break;
-			case 2: // sensor temp 3
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS == 0)
-					tempHeat = CURRENT_TEMP3_VALUE;
-			break;
-			case 3: // sensor temp 4
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS == 0)
-					tempHeat = CURRENT_TEMP4_VALUE;
-			break;
-			case 4: // min
-			{
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-						return;
-					}
-				}
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						if (temp > pGD_Hot_Tepl->InTeplSens[i].Value)
-							temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-					}
-				}
-				tempHeat = temp;
-			}
-			break;
-			case 5: // max
-			{
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-						return;
-					}
-				}
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						if (temp < pGD_Hot_Tepl->InTeplSens[i].Value)
-							temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-					}
-				}
-				tempHeat = temp;
-			}
-			break;
-			case 6: // average
-			{
-				int16_t count = 0;
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = temp + pGD_Hot_Tepl->InTeplSens[i].Value;
-						count++;
-					}
-				}
-				temp = temp / count;
-				tempHeat = temp;
-			}
-			break;
-		}
-		return tempHeat;
-}
-
-/*!
-\brief Таблица типов старта
-*/
-typedef enum
-{
-    TYPE_START_OFF              = 0,
-    TYPE_START_BEFORE_SUNSET    = 1,
-    TYPE_START_AFTER_SUNSET     = 2,
-    TYPE_START_BEFORE_SUNRISE   = 3,
-    TYPE_START_AFTER_SUNRISE    = 4,
-} TYPE_START;
-
-/*!
-\brief Коррекция времени старта по типу старта
-@param typeStart тип старта, timeStart - время старта, sunRise - время восхода, sunSet - время захода. Параметры из задания
-@return int16_t скорректированное время. 0 - тип старта = 0, -1 - ошибка
-*/
-int16_t controlTypeStartCorrection(TYPE_START typeStart, int16_t timeStart, int16_t sunRise, int16_t sunSet)
-{
-    switch (typeStart)
-    {
-    case TYPE_START_BEFORE_SUNSET:
-        if (sunSet >= timeStart)
-            return sunSet - timeStart;
-        //else return -1;
-        break;
-    case TYPE_START_AFTER_SUNSET:
-        if ((sunSet + timeStart) > 1440)
-            return(sunSet + timeStart) % 1440;
-        else return sunSet + timeStart;
-        //return sunSet + timeStart;
-        break;
-    case TYPE_START_BEFORE_SUNRISE:
-        if (sunRise >= timeStart)
-            return sunRise - timeStart;
-        //else return -1;
-        break;
-    case TYPE_START_AFTER_SUNRISE:
-        if ((sunRise + timeStart) > 1440)
-            return(sunRise + timeStart) % 1440;
-        else return sunRise + timeStart;
-    	//return sunRise + timeStart;
-        break;
-    case TYPE_START_OFF:
-        return timeStart;
-        break;
-    }
-}
-
 /*------------------------------------------
 Вычисление значения задаваемой величины
 --------------------------------------------*/
@@ -495,13 +26,10 @@ int	JumpNext(int Now,int Next,char Check, char Mull)
 	IntZ=Next-Now;
     var=IntZ;
 	var*=IntX;
-	if (!IntY)
-		return Now*Mull;
+	if (!IntY) return Now*Mull;
 	var/=IntY;
 	return(Now+var)*Mull;
 	}
-
-//int16_t TempOld, TempNew = 0;
 
 void TaskTimer(char fsmTime, char fnTeplTimer, char fnTeplLoad)
 {
@@ -509,9 +37,7 @@ int8_t nTimer,sTimerNext,sTimerPrev,sTimerMin,sTimerMax;
 int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	eTimer xdata *pGD_CurrTimer;
 	eTimer xdata *pGD_NextTimer;
-	int16_t typeStartCorrection;
-	int16_t nextTimer = 0;
-	int16_t prevTimer = 0;
+
 	pGD_Hot_Tepl=&GD.Hot.Tepl[fnTeplLoad];
 	(*pGD_Hot_Tepl).AllTask.TAir=0;
 	IntZ=CtrTime+fsmTime;
@@ -524,105 +50,46 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	sTimerPrev=-1;
 	for (nTimer=0;nTimer<cSTimer;nTimer++) //20
 	{
-		pGD_Timer = &GD.Timer[nTimer];
-		typeStartCorrection = controlTypeStartCorrection((*pGD_Timer).TypeStart, (*pGD_Timer).TimeStart, settingsVosx, settingsZax);
-		ClrDog;
-        //if (typeStartCorrection == -1)
-        //    typeStartCorrection = GD.Timer[nTimer].TimeStart;
+		if (!GD.Timer[nTimer].TimeStart) continue;
+		if (GD.Timer[nTimer].Zone[0]!=fnTeplTimer+1) continue;
 
-        if (!typeStartCorrection)
-            continue;
-        if (GD.Timer[nTimer].Zone[0]!=fnTeplTimer+1)
-            continue;
-
-        if (typeStartCorrection<MinTimeStart)
-        {
-            MinTimeStart=typeStartCorrection;
-            sTimerMin=nTimer;
-        }
-        if (typeStartCorrection>MaxTimeStart)
-        {
-            MaxTimeStart=typeStartCorrection;
-            sTimerMax=nTimer;
-        }
-        ClrDog;
-        if ((typeStartCorrection>=IntZ)&&(NextTimeStart>typeStartCorrection))
-        {
-            NextTimeStart=typeStartCorrection;
-            sTimerNext=nTimer;
-        }
-        if ((typeStartCorrection<IntZ)&&(PrevTimeStart<typeStartCorrection))
-        {
-            PrevTimeStart=typeStartCorrection;
-            sTimerPrev=nTimer;
-        }
-    }
-    if (MinTimeStart==1440) return;
-
-    if (sTimerNext<0)
-        sTimerNext=sTimerMin;
-
-    if (sTimerPrev<0)
-        sTimerPrev=sTimerMax;
-
-    pGD_CurrTimer=&GD.Timer[sTimerPrev];
-    pGD_NextTimer=&GD.Timer[sTimerNext];
-    ClrDog;
-    pGD_Timer = &GD.Timer[sTimerPrev];
-    prevTimer = controlTypeStartCorrection((*pGD_Timer).TypeStart, (*pGD_Timer).TimeStart, settingsVosx, settingsZax);
-    pGD_Timer = &GD.Timer[sTimerNext];
-    nextTimer = controlTypeStartCorrection((*pGD_Timer).TypeStart, (*pGD_Timer).TimeStart, settingsVosx, settingsZax);
-    IntX= CtrTime - prevTimer;
-    IntY= nextTimer - prevTimer;
-    ClrDog;
-//        if (!GD.Timer[nTimer].TimeStart)
-//            continue;
-//        if (GD.Timer[nTimer].Zone[0]!=fnTeplTimer+1)
-//            continue;
-//
-//        if (GD.Timer[nTimer].TimeStart<MinTimeStart)
-//        {
-//            MinTimeStart=GD.Timer[nTimer].TimeStart;
-//            sTimerMin=nTimer;
-//        }
-//        if (GD.Timer[nTimer].TimeStart>MaxTimeStart)
-//        {
-//            MaxTimeStart=GD.Timer[nTimer].TimeStart;
-//            sTimerMax=nTimer;
-//        }
-//        if ((GD.Timer[nTimer].TimeStart>=IntZ)&&(NextTimeStart>GD.Timer[nTimer].TimeStart))
-//        {
-//            NextTimeStart=GD.Timer[nTimer].TimeStart;
-//            sTimerNext=nTimer;
-//        }
-//        if ((GD.Timer[nTimer].TimeStart<IntZ)&&(PrevTimeStart<GD.Timer[nTimer].TimeStart))
-//        {
-//            PrevTimeStart=GD.Timer[nTimer].TimeStart;
-//            sTimerPrev=nTimer;
-//        }
-//    }
-//    if (MinTimeStart==1440) return;
-//
-//    if (sTimerNext<0)
-//        sTimerNext=sTimerMin;
-//
-//    if (sTimerPrev<0)
-//        sTimerPrev=sTimerMax;
-//
-//    pGD_CurrTimer=&GD.Timer[sTimerPrev];
-//    pGD_NextTimer=&GD.Timer[sTimerNext];
-//
-//    IntX=CtrTime-GD.Timer[sTimerPrev].TimeStart;
-//    IntY=GD.Timer[sTimerNext].TimeStart-GD.Timer[sTimerPrev].TimeStart;
-	if (IntY<0)
-	{
-		IntY+=1440;
+		if (GD.Timer[nTimer].TimeStart<MinTimeStart)
+		{
+			MinTimeStart=GD.Timer[nTimer].TimeStart;
+			sTimerMin=nTimer;
+		}
+		if (GD.Timer[nTimer].TimeStart>MaxTimeStart)
+		{
+			MaxTimeStart=GD.Timer[nTimer].TimeStart;
+			sTimerMax=nTimer;
+		}
+    	if ((GD.Timer[nTimer].TimeStart>=IntZ)&&(NextTimeStart>GD.Timer[nTimer].TimeStart))
+		{
+			NextTimeStart=GD.Timer[nTimer].TimeStart;
+			sTimerNext=nTimer;
+		}
+    	if ((GD.Timer[nTimer].TimeStart<IntZ)&&(PrevTimeStart<GD.Timer[nTimer].TimeStart))
+		{
+			PrevTimeStart=GD.Timer[nTimer].TimeStart;
+			sTimerPrev=nTimer;
+		}
 	}
+	if (MinTimeStart==1440) return;
+
+	if (sTimerNext<0) sTimerNext=sTimerMin;
+
+	if (sTimerPrev<0) sTimerPrev=sTimerMax;
+
+	pGD_CurrTimer=&GD.Timer[sTimerPrev];
+	pGD_NextTimer=&GD.Timer[sTimerNext];
+
+	IntX=CtrTime-GD.Timer[sTimerPrev].TimeStart;
+	IntY=GD.Timer[sTimerNext].TimeStart-GD.Timer[sTimerPrev].TimeStart;
+	if (IntY<0)
+	{	IntY+=1440;}
 
 	if (IntX<0)
-	{
-		IntX+=1440;
-	}
+	{	IntX+=1440;}
 
 	if (fsmTime) 
 	{
@@ -637,23 +104,14 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 //		(*pGD_Hot_Tepl).AllTask.NextRHAir=JumpNext(pGD_CurrTimer->RHAir,pGD_NextTimer->RHAir,1);	
 		return;
 	}
-#warning temp !!!!!!!!!!!!!!!!!!!!!!!!!!
-	ClrDog;
 
-	// T отопления, в зависимости что стоит в параметрах упраления, то и ставим в температуру
+
 	(*pGD_Hot_Tepl).AllTask.TAir=JumpNext(pGD_CurrTimer->TAir,pGD_NextTimer->TAir,1,1);
-
-
-	//if ((*pGD_Hot_Tepl).AllTask.TAir - TempOld > 50)
-	//	NOP;
-	//TempOld = (*pGD_Hot_Tepl).AllTask.TAir;
-
 	//Блокировка нулевой темепратуры вентиляции
 	tVal=pGD_CurrTimer->TVentAir;
 	if (!tVal) tVal=pGD_CurrTimer->TAir+100;
-
-	// T вентиляции
 	(*pGD_Hot_Tepl).AllTask.DoTVent=JumpNext(tVal,pGD_NextTimer->TVentAir,1,1);
+	(*pGD_Hot_Tepl).AllTask.DoTCool=JumpNext(pGD_CurrTimer->TCool,pGD_NextTimer->TCool,1,1);
 
 	(*pGD_Hot_Tepl).AllTask.SIO=pGD_CurrTimer->SIO;
 	(*pGD_Hot_Tepl).AllTask.RHAir=JumpNext(pGD_CurrTimer->RHAir_c,pGD_NextTimer->RHAir_c,1,100);
@@ -674,7 +132,8 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	(*pGD_Hot_Tepl).AllTask.Screen[0]=pGD_CurrTimer->Screen[0];
 	(*pGD_Hot_Tepl).AllTask.Screen[1]=pGD_CurrTimer->Screen[1];
 	(*pGD_Hot_Tepl).AllTask.Screen[2]=pGD_CurrTimer->Screen[2];
-	(*pGD_Hot_Tepl).AllTask.Vent=pGD_CurrTimer->Vent;
+	(*pGD_Hot_Tepl).AllTask.AHUVent=pGD_CurrTimer->AHUVent;
+	(*pGD_Hot_Tepl).Kontur[cSmAHUSpd].MinCalc=(*pGD_Hot_Tepl).AllTask.AHUVent;
 //	(*pGD_Hot_Tepl).AllTask.Poise=pGD_CurrTimer->Poise;
 	(*pGD_Hot_Tepl).Kontur[cSmKontur3].Do=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur4].Do=JumpNext(pGD_CurrTimer->TPipe4,pGD_NextTimer->TPipe4,1,10);
@@ -722,7 +181,6 @@ void AllTaskAndCorrection(void)
 //		(*pGD_Hot_Tepl).AllTask.NextRHAir-=IntZ;		
 		}
 	/*---------------------------------------------------*/
-
 	/*Установка и коррекция по солнцу заданной концентрации СО2*/
 	if ((*pGD_Hot_Tepl).AllTask.CO2)
 		{
@@ -735,32 +193,14 @@ void AllTaskAndCorrection(void)
 		}
 	/*---------------------------------------------------*/
 	/*Установка и коррекция по солнцу минимальной температуры в контурах 1 и 2*/
-
 	if ((*pGD_Hot_Tepl).Kontur[cSmKontur1].MinTask)
 	{	
 		IntX=CorrectionRule(GD.TuneClimate.s_TStart[0],GD.TuneClimate.s_TEnd,
 			GD.TuneClimate.s_MinTPipeConst,0/*cbCorrMinTaskOnSun*/);	
 //		SetBit((*pGD_Hot_Tepl).Kontur[cSmKontur1].RCS,IntX);
 		(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinTask-IntZ;
-		IntY=DefRH();//MeteoSens[cSmFARSens].Value;
-
-		IntX=CorrectionRule(GD.TuneClimate.c_RHStart,GD.TuneClimate.c_RHEnd,
-			GD.TuneClimate.c_RHOnMin1,0/*cbCorrMinTaskOnSun*/);
-//		SetBit((*pGD_Hot_Tepl).Kontur[cSmKontur1].RCS,IntX);
-		(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinCalc+=IntZ;
-
 	}
 	(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinTask;
-	if ((*pGD_Hot_Tepl).Kontur[cSmKontur2].MinTask)
-	{
-		IntY=DefRH();//MeteoSens[cSmFARSens].Value;
-
-		IntX=CorrectionRule(GD.TuneClimate.c_RHStart,GD.TuneClimate.c_RHEnd,
-		GD.TuneClimate.c_RHOnMin2,0/*cbCorrMinTaskOnSun*/);
-//		SetBit((*pGD_Hot_Tepl).Kontur[cSmKontur1].RCS,IntX);
-		(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinCalc+=IntZ;
-	}
-	IntY=GD.Hot.MidlSR;//MeteoSens[cSmFARSens].Value;
 	if ((*pGD_Hot_Tepl).Kontur[cSmKontur3].MinTask)
 	{	
 		IntX=CorrectionRule(GD.TuneClimate.s_TStart[0],GD.TuneClimate.s_TEnd,
@@ -776,7 +216,7 @@ void AllTaskAndCorrection(void)
 		(*pGD_Hot_Tepl).Kontur[cSmKontur5].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur5].MinTask+IntZ;
 	}
 
-	(*pGD_Hot_Tepl).AllTask.DoPressure=(*pGD_Control_Tepl).c_DoPres;
+//	(*pGD_Hot_Tepl).AllTask.DoPressure=(*pGD_Control_Tepl).c_DoPres;
 	/*-------------------------------------------------------------*/
 
 	/*Установка и коррекция по солнцу минимального положения подветренных фрамуг*/
@@ -842,7 +282,6 @@ void SetIfReset(void)
 /**********************************************************************/
 /*-*-*-*-*--Нахождение прогнозируемого изменения температуры--*-*-*-*-*/
 /**********************************************************************/
-#warning Прогнозы температуры по внешним факторам !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 void __cNextTCalc(char fnTepl)
 {
 	int	xdata CalcAllKontur;
@@ -855,89 +294,32 @@ void __cNextTCalc(char fnTepl)
 		SetIfReset();
 	}
 /*Расчитываем Тизмерения-Тзадания*/
-//	pGD_Level_Tepl[cSmTSens][cSmUpAlarmLev]=0;
-//	pGD_Level_Tepl[cSmTSens][cSmDownAlarmLev]=0;
-
-//	if (GD.TuneClimate.c_MaxDifTUp)
-//		pGD_Level_Tepl[cSmTSens][cSmUpAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat+GD.TuneClimate.c_MaxDifTUp;
-//	if (GD.TuneClimate.c_MaxDifTDown)
-//		pGD_Level_Tepl[cSmTSens][cSmDownAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat-GD.TuneClimate.c_MaxDifTDown;
-
-//	(*pGD_Hot_Tepl).NextTCalc.DifTAirTDo=(*pGD_Hot_Tepl).AllTask.NextTAir-CURRENT_TEMP_VALUE;
+	pGD_Level_Tepl[cSmTSens][cSmUpAlarmLev]=0;
+	pGD_Level_Tepl[cSmTSens][cSmDownAlarmLev]=0;
+	if (GD.TuneClimate.c_MaxDifTUp)
+		pGD_Level_Tepl[cSmTSens][cSmUpAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat+GD.TuneClimate.c_MaxDifTUp;
+	if (GD.TuneClimate.c_MaxDifTDown)
+		pGD_Level_Tepl[cSmTSens][cSmDownAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat-GD.TuneClimate.c_MaxDifTDown;
+	(*pGD_Hot_Tepl).NextTCalc.DifTAirTDo=(*pGD_Hot_Tepl).AllTask.NextTAir-CURRENT_TEMP_VALUE;
 /**********************************************/
 /*СУПЕР АЛГОРИТМ ДЛЯ РАСЧЕТА*/
-//	pGD_Hot_Tepl->AllTask.Rez[0]=CURRENT_TEMP_VALUE;
-//	IntX=((*pGD_Hot_Tepl).AllTask.DoTHeat-CURRENT_TEMP_VALUE);
-
-#warning NEW CHECK THIS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// смотря по какому датчику работаем того и считаем
-// ---------------------
-// NEW
-	int cSmTSens=0;
-	for (cSmTSens=0; cSmTSens<4; cSmTSens++)  // 4 датчика температуры
-	{
-		pGD_Level_Tepl[cSmTSens][cSmUpAlarmLev]=0;
-		pGD_Level_Tepl[cSmTSens][cSmDownAlarmLev]=0;
-		if (GD.TuneClimate.c_MaxDifTUp)
-			pGD_Level_Tepl[cSmTSens][cSmUpAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat+GD.TuneClimate.c_MaxDifTUp;
-		if (GD.TuneClimate.c_MaxDifTDown)
-			pGD_Level_Tepl[cSmTSens][cSmDownAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat-GD.TuneClimate.c_MaxDifTDown;
-	}
-
-	(*pGD_Hot_Tepl).NextTCalc.DifTAirTDo=(*pGD_Hot_Tepl).AllTask.NextTAir-controlGetTempVent();
-	/**********************************************/
-	/*СУПЕР АЛГОРИТМ ДЛЯ РАСЧЕТА*/
-	pGD_Hot_Tepl->AllTask.Rez[0]=controlGetTempHeat();
-	IntX=((*pGD_Hot_Tepl).AllTask.DoTHeat-controlGetTempHeat());
+	pGD_Hot_Tepl->AllTask.Rez[0]=CURRENT_TEMP_VALUE;
+	IntX=((*pGD_Hot_Tepl).AllTask.DoTHeat-CURRENT_TEMP_VALUE);
 
 /**********************************************/	
 /*Вычиляем увеличение от солнечной радиации*/
 	IntY=GD.Hot.MidlSR;
-	char error =0;
-#warning CHECK THIS
-		IntY=getcSmInLightSens(error);
-
-//	if ((!YesBit(pGD_Hot_Tepl->InTeplSens[cSmInLightSens].RCS,cbNoWorkSens)))
-//		IntY=pGD_Hot_Tepl->InTeplSens[cSmInLightSens].Value;
+	if ((!YesBit(pGD_Hot_Tepl->InTeplSens[cSmInLightSens].RCS,cbNoWorkSens)))
+		IntY=pGD_Hot_Tepl->InTeplSens[cSmInLightSens].Value;
 
 	CorrectionRule(GD.TuneClimate.c_SRStart,GD.TuneClimate.c_SREnd,
 		GD.TuneClimate.c_SRFactor,0);	
 	(*pGD_Hot_Tepl).NextTCalc.UpSR=IntZ;
-/*Вычиляем увеличение от разницы температуры задания и стекла*/
-#warning CHECK THIS
-	//IntY=(*pGD_Hot_Tepl).AllTask.NextTAir-(*pGD_Hot_Tepl).InTeplSens[cSmGlassSens].Value;
-	IntY=(*pGD_Hot_Tepl).AllTask.NextTAir-getcSmGlassSens(error);
-
+/*Вычиляем увеличение от разницы температуры задания и стекла*/	
+	IntY=(*pGD_Hot_Tepl).AllTask.NextTAir-(*pGD_Hot_Tepl).InTeplSens[cSmGlassSens].Value;
 	CorrectionRule(GD.TuneClimate.c_GlassStart,GD.TuneClimate.c_GlassEnd,
 		GD.TuneClimate.c_GlassFactor,0);	
 	(*pGD_Hot_Tepl).NextTCalc.LowGlass=IntZ;
-
-	if ((*pGD_TControl_Tepl).Screen[0].Mode < 2)
-	//if ((*pGD_TControl_Tepl).Screen[0].Mode < 2)
-		(*pGD_Hot_Tepl).NextTCalc.CorrectionScreen = GD.TuneClimate.CorrectionScreen * (*pGD_TControl_Tepl).Screen[0].Mode;
-
-	//vdv
-	//if ((*pGD_TControl_Tepl).Screen[0].Mode)
-
-	//IntY = (*pGD_TControl_Tepl).Screen[0].Value;
-	//if ((*pGD_Hot_Tepl).AllTask.Screen[0] == 2)
-	//{
-	//	if ((*(pGD_Hot_Hand+cHSmScrTH+0)).Position)
-	//	{
-	//		CorrectionRule(100, 0, GD.TuneClimate.CorrectionScreen,0);
-	//		(*pGD_Hot_Tepl).NextTCalc.CorrectionScreen=IntZ;
-	//	}
-	//}
-//		screenOldPosiyion = screenTermoGetPossition();
-//
-//		if ((screenTermoGetPossition() != 0) && (screenTermoGetCurrentPossition() > 0))
-//		{
-//			CorrectionRule(100, 0, GD.TuneClimate.CorrectionScreen,0);
-//			(*pGD_Hot_Tepl).NextTCalc.CorrectionScreen=IntZ;
-	    // расчет. Экран понижает t отопление на
-		//GD.TuneClimate.CorrectionScreen
-//	}
-//		}
 
 	ClrDog;
 /*Вычисляем корректировки ветра фрамуг и разницы между температурой задания
@@ -965,8 +347,7 @@ void __cNextTCalc(char fnTepl)
 		+(*pGD_Hot_Tepl).NextTCalc.UpSR
 		-(*pGD_Hot_Tepl).NextTCalc.LowGlass
 		-(*pGD_Hot_Tepl).NextTCalc.LowOutWinWind
-		+(*pGD_Hot_Tepl).NextTCalc.UpLight
-		-(*pGD_Hot_Tepl).NextTCalc.CorrectionScreen;
+		+(*pGD_Hot_Tepl).NextTCalc.UpLight;
 
 //		-(*pGD_Hot_Tepl).NextTCalc.LowRain;
 	if (GD.TControl.bSnow)
@@ -979,10 +360,8 @@ void __cNextTCalc(char fnTepl)
 	IntY=GD.Hot.MidlSR;
 /*if work on internal light sensor, then change IntY*/
 
-#warning CHECK THIS
-	IntY=getcSmInLightSens(error);
-//	if ((!YesBit(pGD_Hot_Tepl->InTeplSens[cSmInLightSens].RCS,cbNoWorkSens)))
-//		IntY=pGD_Hot_Tepl->InTeplSens[cSmInLightSens].Value;
+	if ((!YesBit(pGD_Hot_Tepl->InTeplSens[cSmInLightSens].RCS,cbNoWorkSens)))
+		IntY=pGD_Hot_Tepl->InTeplSens[cSmInLightSens].Value;
 
 	CorrectionRule(GD.TuneClimate.c_SRStart,GD.TuneClimate.c_SREnd,
 		GD.TuneClimate.f_SRFactor,0);	
@@ -1017,7 +396,9 @@ void __cNextTCalc(char fnTepl)
 		(*pGD_TControl_Tepl).Integral=-2000000;
 	if (!pGD_Control_Tepl->c_IFactor)
 		(*pGD_TControl_Tepl).Integral=0;
+
 	(*pGD_Hot_Tepl).NextTCalc.ICorrection=(int)(pGD_TControl_Tepl->Integral/100);			
+
 	(*pGD_TControl_Tepl).Critery=(*pGD_Hot_Tepl).NextTCalc.PCorrection+(*pGD_Hot_Tepl).NextTCalc.ICorrection-(*pGD_Hot_Tepl).NextTCalc.dSumCalc;
 	CalcAllKontur=__sCalcTempKonturs();
 	(*pGD_TControl_Tepl).Critery-=CalcAllKontur;
@@ -1070,16 +451,15 @@ void __cNextTCalc(char fnTepl)
 /******************************************************************
 		Далее расчет критерия для фрамуг
 *******************************************************************/
-	IntY=controlGetTempVent()-(*pGD_Hot_Tepl).AllTask.DoTVent;
+	IntY=CURRENT_TEMP_VALUE-(*pGD_Hot_Tepl).AllTask.DoTVent;
 
 	(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent=((int)((((long)(IntY))*((long)pGD_Control_Tepl->f_PFactor))/100));
 	if (pGD_TControl_Tepl->StopVentI<2)
  		(*pGD_TControl_Tepl).IntegralVent+=((((long)(IntY))*((long)pGD_Control_Tepl->f_IFactor))/10);
-	if ((*pGD_TControl_Tepl).IntegralVent<0) (*pGD_TControl_Tepl).IntegralVent=0;
-	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=(int)(pGD_TControl_Tepl->IntegralVent/100);
 	if (!pGD_Control_Tepl->f_IFactor)
 		(*pGD_TControl_Tepl).IntegralVent=0;
 
+	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=(int)(pGD_TControl_Tepl->IntegralVent/100);
 	IntX=(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent+(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent+(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
 //Блокировка фрамуг при отоплении
 	if ((pGD_TControl_Tepl->TVentCritery<IntX)&&(!pGD_TControl_Tepl->StopI)&&(IntX>0)&&((pGD_Control_Tepl->f_PFactor%100)>89))
@@ -1119,7 +499,11 @@ void __cNextTCalc(char fnTepl)
 	} 
 	(*pGD_Hot_Tepl).NextTCalc.TVentCritery=(*pGD_TControl_Tepl).TVentCritery;
 
+
+
 }
+
+
 
 /*------------------------------------------------------*/
 void    SetMixValvePosition(void)
@@ -1130,7 +514,6 @@ void    SetMixValvePosition(void)
 	{
 		SetPointersOnKontur(ByteX);
 		if (YesBit((*(pGD_Hot_Hand_Kontur+cHSmMixVal)).RCS,(/*cbNoMech+*/cbManMech))) continue;
-		IntVal=&(pGD_TControl_Tepl->IntVal[ByteX]);
 		if (!pGD_TControl_Tepl_Kontur->PumpStatus)
 		{
 			(*(pGD_Hot_Hand_Kontur+cHSmMixVal)).Position=0;
@@ -1147,32 +530,14 @@ void    SetMixValvePosition(void)
 		
 		IntX=pGD_Hot_Tepl_Kontur->Do-pGD_TControl_Tepl_Kontur->SensValue;
 		//(*IntVal)=(*IntVal)+IntX;
-		LngY=pGD_ConstMechanic->ConstMixVal[ByteX].v_PFactor;
-		LngY=LngY*IntX;//(*IntVal);
-		IntY=(int16_t)(LngY/10000);
-		//if (!IntY) continue;
-		IntZ=(*IntVal)/100;
-		//IntZ=(*(pGD_Hot_Hand_Kontur+cHSmMixVal)).Position;
-		IntZ+=IntY;
-		if (IntZ>100)
-		{
-			(*IntVal)=(100-IntY)*100;
-			IntZ=100;
-		}
-		else
-			if (IntZ<0)
-			{
-				(*IntVal)=(-IntY)*100;
-				IntZ=0;
-			}
-			else
-				(*IntVal)+=(int16_t)((((long)IntX)*pGD_ConstMechanic->ConstMixVal[ByteX].v_IFactor)/100);
 
-		//ogrMax(&IntZ,100);//if (IntZ>100) IntZ=100;
-		//ogrMin(&IntZ,0);//if (IntZ<0)	IntZ=0;
-		(*(pGD_Hot_Hand_Kontur+cHSmMixVal)).Position=(char)(IntZ);
+		(*(pGD_Hot_Hand_Kontur+cHSmMixVal)).Position=SetPID(IntX,cHSmMixVal+ByteX,100,0);
+
 	}
 }
+
+
+
 void	DoPumps(void)
 {
 	for(ByteX=0;ByteX<cSWaterKontur;ByteX++)
@@ -1185,16 +550,9 @@ void	DoPumps(void)
 
 void	DoVentCalorifer(void)
 {
-	if (!(YesBit((*(pGD_Hot_Hand+cHSmVent)).RCS,(/*cbNoMech+*/cbManMech))))
-	{
-		(*(pGD_Hot_Hand+cHSmVent)).Position=pGD_TControl_Tepl->Vent;
-		(*(pGD_Hot_Hand+cHSmVent)).Position+=pGD_TControl_Tepl->OutFan<<1;
-	}
-	if (!(YesBit((*(pGD_Hot_Hand+cHSmHeat)).RCS,(/*cbNoMech+*/cbManMech))))
-		(*(pGD_Hot_Hand+cHSmHeat)).Position=pGD_TControl_Tepl->Calorifer;
+
 }
 
-#warning вкл подсветки !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 void	DoLights(void)
 {
 	if (YesBit((*(pGD_Hot_Hand+cHSmLight)).RCS,(/*cbNoMech+*/cbManMech))) return;
@@ -1263,30 +621,13 @@ void SetAlarm(void)
 	{
 		SetPointersOnTepl(fnTepl);	
 		pGD_TControl_Tepl->bAlarm=0;
-		//if ((YesBit(pGD_Hot_Tepl->RCS,(cbNoTaskForTepl+cbNoSensingTemp+cbNoSensingOutT)))
-		//	||(YesBit(pGD_Hot_Tepl->InTeplSens[cSmTSens].RCS,(cbUpAlarmSens+cbDownAlarmSens+cbMinMaxVSens)))
-		//	||(YesBit(pGD_Hot_Tepl->InTeplSens[cSmWaterSens].RCS,(cbUpAlarmSens+cbDownAlarmSens+cbMinMaxVSens))))
-		//{
-		//	__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-		//	pGD_TControl_Tepl->bAlarm=100;
-		//}
-
-#warning CHECK THIS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// теперь мы не знаем какой датчик работает какой нет, мы проверяем что бы работали все.
-		// NEW
-		/*
-		if ((YesBit(pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS,(cbUpAlarmSens+cbDownAlarmSens+cbMinMaxVSens)))
-			&&(YesBit(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS,(cbUpAlarmSens+cbDownAlarmSens+cbMinMaxVSens)))
-			&&(YesBit(pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS,(cbUpAlarmSens+cbDownAlarmSens+cbMinMaxVSens)))
-			&&(YesBit(pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS,(cbUpAlarmSens+cbDownAlarmSens+cbMinMaxVSens))))
+		if ((YesBit(pGD_Hot_Tepl->RCS,(cbNoTaskForTepl+cbNoSensingTemp+cbNoSensingOutT)))
+			||(YesBit(pGD_Hot_Tepl->InTeplSens[cSmTSens].RCS,(cbUpAlarmSens+cbDownAlarmSens+cbMinMaxVSens)))
+			||(YesBit(pGD_Hot_Tepl->InTeplSens[cSmWaterSens].RCS,(cbUpAlarmSens+cbDownAlarmSens+cbMinMaxVSens))))
 		{
 			__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
 			pGD_TControl_Tepl->bAlarm=100;
 		}
-		*/
-		controlGetTempHeatAlarm(fnTepl);
-		controlGetTempVentAlarm(fnTepl);
-
 		for(ByteX=0;ByteX<cConfSSens;ByteX++)
 		{
 			if (YesBit(pGD_Hot_Tepl->InTeplSens[ByteX].RCS,(cbUpAlarmSens+cbDownAlarmSens+cbMinMaxVSens)))
@@ -1309,11 +650,29 @@ void SetDiskr(char fnTepl)
 {
 	int	nLight;
 	char tMaxLight;
-
+/*
 	if (!(YesBit((*(pGD_Hot_Hand+cHSmAHUSpeed1)).RCS,cbManMech)))
 		(*(pGD_Hot_Hand+cHSmAHUSpeed1)).Position=(*pGD_Hot_Tepl).Kontur[cSmKontur4].Do/10;
 	if (!(YesBit((*(pGD_Hot_Hand+cHSmAHUSpeed2)).RCS,cbManMech)))
 		(*(pGD_Hot_Hand+cHSmAHUSpeed2)).Position=(*pGD_Hot_Tepl).Kontur[cSmKontur4].Do/10;
+*/
+	ByteY=0;
+	for (ByteX=0;ByteX<5;ByteX++)
+	{
+		if (YesBit(((*(pGD_Hot_Hand+cHSmAHUPad)).Position),(0x02<<ByteX)))
+		{
+			ByteY++;
+			__SetBitOutReg(fnTepl,cHSmAHUPad,0,ByteX);
+		}
+	}
+	if (!(YesBit((*(pGD_Hot_Hand+cHSmAHUPump)).RCS,cbManMech)))
+	{
+		if (ByteY)
+			(*(pGD_Hot_Hand+cHSmAHUPump)).Position=1;
+		else
+			(*(pGD_Hot_Hand+cHSmAHUPump)).Position=0;
+
+	}
 
 	for(ByteX=cHSmPump;ByteX<cHSmRegs;ByteX++)
 	{
@@ -1324,11 +683,16 @@ void SetDiskr(char fnTepl)
 		if (((ByteX==cHSmHeat)||(ByteX==cHSmVent))&&(YesBit((*(pGD_Hot_Hand+ByteX)).Position,0x02)))
 			__SetBitOutReg(fnTepl,ByteX,0,1);
 	}
+
+
+
+
 	nLight=0;
 	if (((uchar)((*(pGD_Hot_Hand+cHSmLight)).Position))>100) (*(pGD_Hot_Hand+cHSmLight)).Position=100;
 	if ((pGD_Hot_Tepl->AllTask.DoTHeat)||(YesBit((*(pGD_Hot_Hand+cHSmLight)).RCS,cbManMech)))
 	{
-		nLight=((*(pGD_Hot_Hand+cHSmLight)).Position-50)/10+2;
+		nLight=(*(pGD_Hot_Hand+cHSmLight)).Position;
+		nLight=(nLight-50)/10+2;
 		if (nLight<1) nLight=1;
 	}
 	fLightOn=0;
@@ -1407,7 +771,7 @@ ClrDog;
 	}
 #ifdef AGAPOVSKIY_DOUBLE_VALVE
 	if (YesBit((*(pGD_Hot_Hand+cHSmSIOVals)).Position,0x02))
-		__SetBitOutReg(fnTepl,cHSmAHUVals,0,0);
+		__SetBitOutReg(fnTepl,cHSmAHUPump,0,0);
 #endif AGAPOVSKIY_DOUBLE_VALVE
 	for (ByteX=0;ByteX<5;ByteX++)
 	{
@@ -1451,6 +815,8 @@ void DoMechanics(char fnTepl)
 
 
 		if ((ByteX==cHSmCO2)&&(pGD_Control_Tepl->co_model==1)) continue;
+
+		if (ByteX==cHSmAHUPad) continue;
 
 		__SetBitOutReg(fnTepl,ByteX,1,0);
 		__SetBitOutReg(fnTepl,ByteX,1,1);
@@ -1629,8 +995,6 @@ void SetMeteo(void)
 		GD.TControl.Tepl[0].TimeSumSens=0;
 	}
 }
-
-#warning light !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 void SetLighting(void)
 {
 	char bZad;
@@ -1638,38 +1002,31 @@ void SetLighting(void)
 
 	IntZ=0;
 
-//	if(SameSign(IntY,IntZ)) pGD_TControl_Tepl->LightExtraPause=0;
-
+//Pause for light switch on/off
 	pGD_TControl_Tepl->LightPauseMode--;
 	if ((pGD_TControl_Tepl->LightPauseMode<0)||(pGD_TControl_Tepl->LightPauseMode>GD.TuneClimate.l_PauseMode))
 		pGD_TControl_Tepl->LightPauseMode=0;
+
 	ClrDog;
 	bZad=0;
 	if (pGD_TControl_Tepl->LightPauseMode) bZad=1;
 
-// old
-//	if ((pGD_Hot_Tepl->AllTask.ModeLight<2))//&&(!bZad))	// если режим досветки не авто
-//	{
-//		pGD_TControl_Tepl->LightMode=pGD_Hot_Tepl->AllTask.ModeLight*pGD_Hot_Tepl->AllTask.Light;
-//		bZad=1;
-//	}
-
-    pGD_TControl_Tepl->LightMode=pGD_Hot_Tepl->AllTask.ModeLight*pGD_Hot_Tepl->AllTask.Light;
-	bZad=1;
+	if ((pGD_Hot_Tepl->AllTask.ModeLight<2))//&&(!bZad))
+	{ 		
+		pGD_TControl_Tepl->LightMode=pGD_Hot_Tepl->AllTask.ModeLight*pGD_Hot_Tepl->AllTask.Light;
+		bZad=1;
+	}		
 
 	if (!bZad)
 	{
 		if (GD.Hot.Zax-60>GD.Hot.Time) pGD_TControl_Tepl->LightMode=0;
 		if (GD.TControl.Tepl[0].SensHalfHourAgo<GD.TuneClimate.l_SunOn50)
 		{
-//			pGD_TControl_Tepl->LightMode=50;
 			IntY=GD.Hot.MidlSR;
 			CorrectionRule(GD.TuneClimate.l_SunOn100,GD.TuneClimate.l_SunOn50,50,0);
 			pGD_TControl_Tepl->LightMode=100-IntZ;
 		}
 
-//		if (GD.TControl.Tepl[0].SensHalfHourAgo<GD.TuneClimate.l_SunOn100)
-//			pGD_TControl_Tepl->LightMode=100;
 	}
 	if (pGD_TControl_Tepl->LightMode!=pGD_TControl_Tepl->OldLightMode)	
 	{
@@ -1689,20 +1046,7 @@ void SetLighting(void)
 //	pGD_TControl_Tepl->LightExtraPause--;
 //	if (pGD_TControl_Tepl->LightExtraPause>0) return; 
 //	pGD_TControl_Tepl->LightExtraPause=0;	 
-
-	// new
-	if (pGD_Hot_Tepl->AllTask.ModeLight == 2)    		// авто досветка
-	{
-		if (pGD_Hot_Tepl->AllTask.Light > pGD_TControl_Tepl->LightMode)
-			pGD_TControl_Tepl->LightValue = pGD_Hot_Tepl->AllTask.Light;
-	}
-	else
-		pGD_TControl_Tepl->LightValue=pGD_TControl_Tepl->LightMode;
-	// new
-
-
-	//old
-	//pGD_TControl_Tepl->LightValue=pGD_TControl_Tepl->LightMode;		// значение досветки
+	pGD_TControl_Tepl->LightValue=pGD_TControl_Tepl->LightMode;		
 
 }
 
@@ -1713,22 +1057,10 @@ void SetTepl(char fnTepl)
 ************************************************************************/
 
 /***********************************************************************/
-	char error = 0;
 	if(!(*pGD_Hot_Tepl).AllTask.NextTAir)
 		SetBit((*pGD_Hot_Tepl).RCS,cbNoTaskForTepl);
-
-//	if(!(*pGD_Hot_Tepl).InTeplSens[cSmTSens].Value)
-//		SetBit((*pGD_Hot_Tepl).RCS,cbNoSensingTemp);
-// NEW
-	if(!(*pGD_Hot_Tepl).InTeplSens[cSmTSens1].Value)
+	if(!(*pGD_Hot_Tepl).InTeplSens[cSmTSens].Value)
 		SetBit((*pGD_Hot_Tepl).RCS,cbNoSensingTemp);
-	if(!(*pGD_Hot_Tepl).InTeplSens[cSmTSens2].Value)
-		SetBit((*pGD_Hot_Tepl).RCS,cbNoSensingTemp);
-	if(!(*pGD_Hot_Tepl).InTeplSens[cSmTSens3].Value)
-		SetBit((*pGD_Hot_Tepl).RCS,cbNoSensingTemp);
-	if(!(*pGD_Hot_Tepl).InTeplSens[cSmTSens4].Value)
-		SetBit((*pGD_Hot_Tepl).RCS,cbNoSensingTemp);
-
 //	if(!(*pGD_Hot_Tepl).RCS)
 	{	
 		AllTaskAndCorrection();
@@ -1741,19 +1073,18 @@ void SetTepl(char fnTepl)
 		InitScreen(cTermHorzScr);
 		InitScreen(cSunHorzScr);
 		InitScreen(cTermVertScr1);
-		InitScreen(cTermVertScr2);
-		InitScreen(cTermVertScr3);
-		InitScreen(cTermVertScr4);
 		SetReg(cHSmCO2,
-			pGD_Hot_Tepl->AllTask.DoCO2,getcSmCOSens(error));
+			pGD_Hot_Tepl->AllTask.DoCO2,pGD_Hot_Tepl->InTeplSens[cSmCOSens].Value);
 
 		pGD_Hot_Tepl->OtherCalc.MeasDifPress=GD.TControl.MeteoSensing[cSmPresureSens]-GD.TControl.MeteoSensing[cSmPresureSens+1];
 		if (!pGD_Hot_Tepl->OtherCalc.MeasDifPress) pGD_Hot_Tepl->OtherCalc.MeasDifPress=1;
 		if ((!GD.TControl.MeteoSensing[cSmPresureSens])||(!GD.TControl.MeteoSensing[cSmPresureSens+1]))
 			pGD_Hot_Tepl->OtherCalc.MeasDifPress=0;
-		SetReg(cHSmPressReg,
-			pGD_Hot_Tepl->AllTask.DoPressure,pGD_Hot_Tepl->OtherCalc.MeasDifPress);
+//		SetReg(cHSmPressReg,
+//			pGD_Hot_Tepl->AllTask.DoPressure,pGD_Hot_Tepl->OtherCalc.MeasDifPress);
+
 		LaunchVent();
+
 		SetLighting();
 	}
 }
@@ -1839,7 +1170,6 @@ void Control(void)
 char tCTepl,ttTepl;
 	Configuration();
 	SetDiskrSens();
-
 	if (DemoMode!=9)
 		DemoMode=0;
 	if (!DemoMode)
@@ -1870,22 +1200,30 @@ char tCTepl,ttTepl;
 			DoLights();
 //			DoPoisen();
 			RegWorkDiskr(cHSmCO2);
-			RegWorkDiskr(cHSmPressReg);
+//			RegWorkDiskr(cHSmPressReg);
 #ifdef Vitebsk
 			TransferWaterToBoil();
 #endif
 		}
 		ResumeOutIPCDigit();
-
+		
 	}
+//	if (Second==12)
+//	{
+		//CLREA;
+//		while(1);
+//	}
+//		GD.Cal.InTeplSens[0][0].U0=0;
 	if ((!Menu)&&(ProgReset))
 	{
 		ProgReset=0;
 		TestMem(2);
 	}
+
 	#ifdef SumRelay48
 		//Reg48ToI2C();
 		//OutRelay88();
+
 	#else
 		#ifdef SumRelay40
 			OutRelay40();
@@ -1904,6 +1242,7 @@ char tCTepl,ttTepl;
 		if (Second==20)
 		{
 	        InitLCD();
+//	        GD.Control.ConfSTepl=10;
     	    ClrDog;
 			SetMeteo();
 		}
@@ -1937,6 +1276,7 @@ char tCTepl,ttTepl;
 					SetPointersOnTepl(tCTepl);
 					SetTepl(tCTepl);
 				}
+//------------------------------------------------
 				__sCalcKonturs();
 				__sMechWindows();
 				__sMechScreen();
@@ -1945,12 +1285,17 @@ char tCTepl,ttTepl;
 					if (GD.Hot.MaxReqWater<GD.Hot.Tepl[tCTepl].MaxReqWater)
 						GD.Hot.MaxReqWater=GD.Hot.Tepl[tCTepl].MaxReqWater;
 					bWaterReset[tCTepl]=0;
+//					GD.TControl.Tepl[tCTepl].Sensor[0].SumD=0;
+//					GD.TControl.Tepl[tCTepl].Sensor[0].SumD=0;
 				}
 			}
 		}
     vNFCtr=GD.Control.NFCtr;
     PORTNUM=DEF_PORTNUM;
+//	ToHiTime=GD.Control.Read1W;
+//	ToLowTime=GD.Control.Write1W;
   	MaskRas=bRasxod;
+
   	if (TecPerRas > 2305) {
         TecPerRas=2305;
         GD.TControl.NowRasx=0;
@@ -1968,10 +1313,19 @@ char tCTepl,ttTepl;
 	}	
 	Volume=0;
 	if( Second < 60) return;
+
 	WriteToFRAM();
 	MidlWindAndSr();
 	WindDirect();
-
+//	ReadFromFRAM();
+	//while(1);
+/*    if(GD.TControl.tCodTime) GD.TControl.tCodTime--; else {
+		GD.TControl.NowCod=0;
+#ifdef SumExtCG
+		SendFirstScreen(GD.Control.Screener);
+#endif
+	}
+*/
 #ifndef NOTESTMEM
 	if ((!Menu)&&(GD.SostRS==OUT_UNIT))
 		TestMem(1);
@@ -1979,6 +1333,9 @@ char tCTepl,ttTepl;
 	
 	ClrDog;
 	Second=0;
+//	w1_test();
+//	ds18b20_ConvertTemp();
+
 	if(TimeReset)
 		TimeReset--;
 	if(TimeReset<0)
@@ -1986,16 +1343,21 @@ char tCTepl,ttTepl;
 	GD.Hot.Time++;
 	GetRTC();
 	not=220;ton=10;
-
-	if (GD.Hot.Vosx != 0)
-		settingsVosx = GD.Hot.Vosx;
-	if (GD.Hot.Zax != 0)
-		settingsZax = GD.Hot.Zax;
-
-	bNight=1;
+/*	if ((bNight)&&(GD.Hot.Time>=GD.Hot.Vosx)&&(GD.Hot.Time<GD.Hot.Zax))
+	{
+		MemClr(&GD.TControl.Tepl[cSmTeplA].MidlSensDN,12);
+	}
+*/	bNight=1;
 	if ((GD.Hot.Time>=GD.Hot.Vosx)&&(GD.Hot.Time<GD.Hot.Zax))
 		bNight=0;
+/*	if((GD.Arx[0].Date!=GD.Hot.Data)&&(GD.Hot.Time>GD.Hot.Vosx)) 
+		{
+		
+//		SdvArx();
+//		GD.Arx[0].Date=GD.Hot.Data;
 
+		}
+*/
 	if(GD.Hot.Time>=24*60)      /*новые сутки*/
 		{
 		GD.Hot.Time=0;
