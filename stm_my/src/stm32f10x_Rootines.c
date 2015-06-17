@@ -50,7 +50,7 @@ void Init_STM32(void) {
 		ClrDog;
 
 
-		USART_PC_Configuration(&GD.Control.NFCtr,AdrGD,&GD.SostRS,&NumBlock,9600);
+//		USART_PC_Configuration(&GD.Control.NFCtr,AdrGD,&GD.SostRS,&NumBlock,9600);
 
 
 		InitMainTimer();
@@ -70,6 +70,7 @@ void Init_STM32(void) {
 		Check_IWDG();
 		USART_OUT_Configuration(9600);
 
+		USART_OUT2_Configuration(9600);
 		//I2C_DMAMem_Transfer(I2C1_Buffer_Tx,8,DMA_DIR_PeripheralDST);
 		//Музыка
 			GPIO_InitTypeDef GPIO_InitStructure;
@@ -92,7 +93,7 @@ void Init_STM32(void) {
 /***************************************************************************//**
  * @brief  Setting DATA pins to input mode
  ******************************************************************************/
-void Keyboard_Init(void)
+/*void Keyboard_Init(void)
 {
 	KEYB_STARTUP;
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -104,9 +105,9 @@ void Keyboard_Init(void)
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
     GPIO_Init(PORT_KEYB_IN, &GPIO_InitStructure);
 
-}
+}*/
 
-
+/*
 char CheckKeyboardSTM()
 {
 	int i;
@@ -137,6 +138,7 @@ char CheckKeyboardSTM()
 	}
 	return 0;
 }
+*/
 
 void InitIPCTimer(void)
 {
@@ -212,7 +214,12 @@ void TIM2_IRQHandler(void)
 	IntCount=0;
 	SETEA;
 	ReadyIZ=1;*/
-	CheckKeyboardSTM();
+
+#warning !!!!!!!!!!!!!!!!!!!!!!!!!!!! ON
+	//CheckKeyboardSTM();
+	KeyboardProcess();
+
+
 	//Reg48ToI2C();
 	//SendCharPC(22);
 	/*if (Second%2)
@@ -521,7 +528,7 @@ void WriteToFRAM()
 	SendBlockFRAM((uint32_t)(&GD.TControl)-(uint32_t)(BlockEEP[0].AdrCopyRAM),(uchar*)(&GD.Hot),sizeof(GD.Hot));
 
 	ClrDog;
-	SendBlockFRAM((uint32_t)(&GD.TControl)-(uint32_t)(BlockEEP[0].AdrCopyRAM)+sizeof(GD.Hot),(uchar*)(&GD.TControl),sizeof(eTControl));
+	SendBlockFRAM((uint32_t)(&GD.TControl)-(uint32_t)(BlockEEP[0].AdrCopyRAM)+sizeof(GD.Hot),(uchar*)(&GD.TControl),sizeof(eTControl)+sizeof(eLevel));
 //	SendBlockFRAM(0,(uchar*)(&GD),sizeof(GD));
 	ClrDog;
 //	SendBlockFRAM(sizeof(GD),&BlockEEP,sizeof(BlockEEP));
@@ -535,7 +542,7 @@ void ReadFromFRAM()
     InitBlockEEP();  /*подпрограмма в GD */
 	RecvBlockFRAM((uint32_t)(&GD.TControl)-(uint32_t)(BlockEEP[0].AdrCopyRAM),(uchar*)(&GD.Hot),sizeof(GD.Hot));
 //	ClrDog;
-	RecvBlockFRAM((uint32_t)(&GD.TControl)-(uint32_t)(BlockEEP[0].AdrCopyRAM)+sizeof(GD.Hot),(uchar*)(&GD.TControl),sizeof(GD.TControl));
+	RecvBlockFRAM((uint32_t)(&GD.TControl)-(uint32_t)(BlockEEP[0].AdrCopyRAM)+sizeof(GD.Hot),(uchar*)(&GD.TControl),sizeof(GD.TControl)+sizeof(eLevel));
 	//RecvBlockFRAM(0,(uchar*)(&GD),sizeof(GD));
 //	RecvBlockFRAM(0,(uchar*)(&GD),sizeof(GD));
 
@@ -711,7 +718,7 @@ void CheckDigitMidl(eSensing *ftemp,int16_t* Mes, int16_t* ValueS, uint8_t* tPau
 	}*/
 }
 
-
+#warning PROBLEM
 void CheckSensLevsNew(char fnTepl,uint8_t fnSens,char full,char met,int16_t Mes)
 {
 	int16_t 		*uS;
@@ -741,6 +748,8 @@ void CheckSensLevsNew(char fnTepl,uint8_t fnSens,char full,char met,int16_t Mes)
 	}
 	if (full)
 	{
+//#warning CHECK THIS
+		//if(((*uS)<nameS->vCal[0])||((*uS)>nameS->vCal[1]))
 		if(((*uS)<nameS->uMin)||((*uS)>nameS->uMax))
 			SetBit(valueS->RCS,cbMinMaxUSens);
 	}
@@ -804,7 +813,10 @@ void CheckSensLevsNew(char fnTepl,uint8_t fnSens,char full,char met,int16_t Mes)
 
 	}
 	valueS->Value=Mes;
-	ClrBit(valueS->RCS,(cbDownAlarmSens+cbUpAlarmSens));
+#warning TEST STRING
+	//ClrBit(valueS->RCS,(cbDownAlarmSens+cbUpAlarmSens));
+
+	valueS->RCS = 0;
 	if ((levelS[cSmDownCtrlLev])&&(Mes <= levelS[cSmDownCtrlLev]))
 		SetBit(valueS->RCS,cbDownCtrlSens);
     if ((levelS[cSmUpCtrlLev])&&(Mes >= levelS[cSmUpCtrlLev]))

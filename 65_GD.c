@@ -61,15 +61,15 @@ typedef struct  eeTimer
 		uint16_t	SIO;
 
 		uchar		Screen[3];
-		uchar		AHUVent;
+		uchar		Vent;
 
 		uchar		Light;
 		uchar		ModeLight;
 
 		uchar		MinTPipe3;
 		uchar		RHAir_c;
-		uint16_t	TCool;
-		uint16_t	Rez[9];
+
+		uint16_t	Rez[10];
         }
         eTimer;
 
@@ -130,9 +130,9 @@ typedef struct eeClimTask {
 				int8_t		Win;
 				int16_t		SIO;
 				
-				int16_t		DoTCool;
+				int16_t		DoPressure;
 
-				int8_t		AHUVent;
+				int8_t		Vent;
 
 				int8_t		Screen[3];
 				
@@ -164,7 +164,9 @@ typedef struct eeNextTCalc {
 				
 				int16_t		PCorrectionVent;//Остаток от предыдущих расчетов	26
 
-				int16_t		Rez[10];
+				int16_t		CorrectionScreen; // экран понижает на
+
+				int16_t		Rez[9];
 
 				} eNextTCalc;
 typedef struct eeMechanic {  //20
@@ -402,19 +404,22 @@ typedef struct eeTuneClimate
 		int16_t		f_StartCorrPow;  /*Фрамуги - Солнце начинает влиять при*/
 		int16_t		f_EndCorrPow;  /*Фрамуги - Солнце влияет до*/
         int16_t     f_PowFactor;        /*Фрамуги - Солнце увеличивает на*/
-
-        int16_t		f_SunStart;/*СО2 - коэф Пропорциональный*/
-        int16_t		f_SunEnd;/*СО2 - коэф Пропорциональный*/
-		int16_t		f_SunIncOutT;/*Экран затеняющий - Солнце закрывает при*/
-
-		int16_t		sc_TSROpen;/*Экран термический - Солнце открывает при*/
+/*-----------------------------------
+                Параметры-CO2
+-----------------------------------*/
+		int16_t		reg_PFactor[2];/*СО2 - коэф Пропорциональный*/
+/*-----------------------------------
+                Параметры-Экран
+------------------------------------*/
+		int16_t		sc_ZSRClose; /*Экран затеняющий - Солнце закрывает при*/
+		int16_t		sc_TSROpen;  /*Экран термический - Солнце открывает при*/
 		int16_t		sc_TOutClose;/*Экран термический - Твнеш днем закрывает при*/
 		int16_t		sc_TVOutClose;/*Экран термический - Твнеш ночью закрывает при*/
 
 		int16_t		sc_ZOutClose;/*Экран термический - ветер начинает влиять при*/
 		int16_t		sc_TWindStart;/*Экран термический - ветер влияет до*/
         int16_t     sc_TVSRMaxOpen; /*Экран термический - ветер увеличивает Т внеш на*/
-        int16_t     sc_ZSRClose;   /*Экран термический - Солнце открывает вертикальный тоже при*/
+        int16_t     sc_TVSROpen;   /*Экран термический - Солнце открывает вертикальный тоже при*/
 
 		int16_t		f_WindFactor;/*Экран - (Тзад-Тизм) влияет до*/
 		int16_t		sc_TFactor;/*Экран - (Тзад-Тизм) приоткрывает на*/
@@ -463,9 +468,9 @@ typedef struct eeTuneClimate
 /*-----------------------------------------
 				Параметры - ОБЩИЕ
 ------------------------------------------*/
-        int16_t     sc_dTStart;   /*Коэффициент усреднения солнечой радиации*/
-        int16_t     sc_dTEnd;/*Коэффициент усреднения ветра*/
-        int16_t     sc_dTSunFactor;/*Коэффициент упреждения*/
+        int16_t     sc_dTStart;     /*Коэффициент усреднения солнечой радиации*/
+        int16_t     sc_dTEnd;	    /*Коэффициент усреднения ветра*/
+        int16_t     sc_dTSunFactor;	/*Коэффициент упреждения*/
 /*-----------------------------------------
 				Параметры - коррекция по влажности темпеатуры задания
 ------------------------------------------*/
@@ -486,31 +491,25 @@ typedef struct eeTuneClimate
 
 		int16_t 	l_SoftPauseMode;
 		int16_t		o_TeplPosition;
-		uchar		fAHU_S1Level;
-		uchar		fAHU_S2Level;
-		uchar		fAHU_S3Level;
-		uchar		fAHU_Offset1;
-		uchar		fAHU_Offset2;
-		uchar		fAHU_Offset3;
-		uchar		fAHU_Offset4;
 
-		uchar		fAHU_Sens1;
-		uchar		fAHU_Sens2;
-		uchar		fAHU_Sens3;
-		uchar		fAHU_Sens4;
+		int16_t		c_RHStart;
+		int16_t		c_RHEnd;
+		int16_t		c_RHOnMin1;
+		int16_t		c_RHOnMin2;
 
-		uchar		fAHU_MaxOffset;
-
+		int16_t		CorrectionScreen; // экран понижает на
+		int16_t		ScreenCloseSpeed; // скорость закрытия экрана
 
 	    int16_t     Rez[14];
-//280		
+//282
        }
         eTuneClimate;
+
 typedef struct eeTeplControl
 	   	{
        	int16_t     c_MaxTPipe[cSWaterKontur];   /*Максимально допустимая температура Контур1-5*/
         int16_t     f_MaxOpenUn;   /*Фрамуги_Максимально допустимое открытие*/
-        int16_t     f_MaxAHUSpd;   /*Фрамуги_Максимум при подкормке СО2*/
+        int16_t     f_MaxOpenOn;   /*Фрамуги_Максимум при подкормке СО2*/
 		int16_t 	c_MinTPipe[2];
 		int16_t		c_DoPres;
 		int16_t 	c_OptimalTPipe[2];
@@ -520,12 +519,16 @@ typedef struct eeTeplControl
         int16_t     f_PFactor; /*Контур 1 - Динамика(Тзад-Тизм)понижает на*/
 		int8_t		vs_DegSt; //Градусы для вычисления позиции экрана
 		int8_t		vs_DegEnd; //Градусы для вычисления позиции экрана
-		int16_t		sc_TMaxOpen;
-		int16_t		sc_ZMaxOpen;
+		int16_t		sc_TMaxOpen; // экран термический
+		int16_t		sc_ZMaxOpen; // экран затеняющий
 		uint16_t	co_model;/*СО2 - исполнитель(0-регулятор,1-клапан)*/
 		uint16_t	sio_SVal;
 		uint16_t	sLight;
-		int16_t		Rez[20];
+		int8_t		sensT_heat;
+		int8_t		sensT_vent;
+
+
+		int16_t		Rez[19];
 //+42 байта
 		} eTeplControl;
 
@@ -554,16 +557,15 @@ typedef struct eeControl
 #ifdef AHU1
 	typedef struct eeStrategy
 		{
-			int8_t 	 TUpRHUp;// Startegy when TAir>Tset and RHAir>RHSet+deadband
-			int8_t 	 TUpRHDown;// Strategy when TAir>Tset and RHAir<RHSet-deadband
-			int8_t 	 TDownRHUp;// Strategy when TAir<Tset and RHAir>RHSet+deadband
-			int8_t 	 TDownRHDown;// Strategy when TAir<Tset and RHAir<RHSet-deadband
-			int8_t 	 Optimal;// Strategy when TAir>Tset and |RHAir-RHSet| in deadband, so most optimal strategy
-			uint16_t Power1;//Power in Point 1 position
-			int8_t	 Point1;//Value of the point in System scale
-			int16_t  Power2;//Power in Point 2 possition
-			int8_t 	 Point2;//Value of point 2 in System scale
-			int8_t	 TypeControl; //Type of attachment (To THeat or TVent)
+			int8_t 	 TUpRHUp;
+			int8_t 	 TUpRHDown;
+			int8_t 	 TDownRHUp;
+			int8_t 	 TDownRHDown;
+			int8_t 	 Optimal;
+			uint16_t Power1;
+			int8_t	 Point1;
+			int16_t  Power2;
+			int8_t 	 Point2;
 		} eStrategy;
 #else
 
@@ -579,19 +581,6 @@ typedef struct eeStrategy
 	} eStrategy;
 #endif
 
-typedef struct eeSystems
-	{
-		int16_t		Max;
-		int16_t		Min;
-		int16_t		Opt;
-		int16_t		Prior;
-		int16_t		Power;
-		int16_t		Keep;
-		int16_t		Value;
-		uint16_t	RCS;
-		uint16_t	Time;
-		uint16_t	tTime;
-	} eSystems;
 
 typedef struct eeRegsSettings
 	{
@@ -667,7 +656,6 @@ typedef struct eeTControlTepl
 		int16_t 		LastLastInTeplSensing[cConfSSens];
 		int16_t 		LastInTeplSensing[cConfSSens];
 		uint8_t 		TimeInTepl[cConfSSens];
-		eSystems		Systems[cSUCSystems];
 		int32_t 		SaveIntegralVent;
 		int32_t 		Integral;
 		int16_t			TVentCritery;//Critery;
@@ -680,7 +668,7 @@ typedef struct eeTControlTepl
 		int16_t				AbsMaxVent;
 		int16_t				LastTVentCritery;
 		int16_t				LastCritery;
-		int16_t				IntVal[cSRegCtrl];
+		int16_t				IntVal[cSWaterKontur];
 //36
 //		int16_t				PrevSig[cSWaterKontur];
 //46
@@ -696,7 +684,7 @@ typedef struct eeTControlTepl
 		int16_t				PowMaxKonturs;
 		int16_t				PowOwnMaxKonturs;
 		int16_t				TimeSIO;
-		int8_t			SaveMaxMist;
+		int8_t			Vent;
 		int8_t			PrevNLight;//CorrScreen;
 //137
 		int8_t			OldPozOn;
@@ -718,7 +706,7 @@ typedef struct eeTControlTepl
 
 		eRegsSettings	SetupRegs[2];
 //161
-		int16_t			PauseVent;
+		int16_t				PauseVent;
 		int8_t			Calorifer;
 //164
 		int8_t			StopI;
@@ -748,24 +736,24 @@ typedef struct eeTControlTepl
 
 //		int32_t			Functional;
 		int32_t			RealPower;//MidlSens[2];
-		int16_t			MaxDifT;//MidlTimeSens[2];
+		int16_t				MaxDifT;//MidlTimeSens[2];
 	
-		int16_t			TPauseSIO;
+		int16_t				TPauseSIO;
 //		eSensorD		SensorD;
 		int8_t			FramUpdate[2];
 		int8_t			PauseChangeLight;
 		int8_t			NewLight;
-		int16_t			COPause;
+		int16_t				COPause;
 //		int16_t				Rez1[7];
 		
 		int8_t			NOwnKonturs;
 		int8_t			CurrPower;
 		int8_t			SnowTime;
-		int16_t			s_Power;
-		int16_t			ii_PFactor;
+		int16_t				s_Power;
+		int16_t				ii_PFactor;
 		int8_t			VentBlock;
-		int16_t			f_Power;
-		int16_t			f_NMinDelta;
+		int16_t				f_Power;
+		int16_t				f_NMinDelta;
 		int8_t			bAlarm;
 		int8_t			NAndKontur;
 		int8_t			Alarms[MAX_ALARMS];
@@ -834,6 +822,7 @@ struct  eGData{
         int16_t         uMeteoSens[cConfSMetSens];
         } GD;
 
+eTimer xdata *pGD_Timer;
 eKontur xdata *pGD_Hot_Tepl_Kontur; 
 eTControlKontur xdata *pGD_TControl_Tepl_Kontur; 
 eMechanic xdata *pGD_Hot_Hand_Kontur; 

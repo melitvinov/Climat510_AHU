@@ -3,6 +3,7 @@
 #include "stm32f10x_rcc.h"
 #include "stm32f10x_gpio.h"
 #include "stm32f10x_usart.h"
+#include "stm32f10x_Define.h"
 #include "stm32f10x_RS485Master.h"
 #include "misc.h"
 
@@ -12,6 +13,15 @@
 
 #define USART_MASTER_STOPSEND			GPIO_WriteBit(USART_OUT_DIR_PORT,USART_OUT_DIR_PIN,Bit_RESET);
 #define USART_MASTER_STARTSEND			for(i=0;i<500;i++); GPIO_WriteBit(USART_OUT_DIR_PORT,USART_OUT_DIR_PIN,Bit_SET);
+
+
+#define USART_OUT2_RX     			fTimeout=10000; while((USART_GetFlagStatus(USART_OUT2,USART_FLAG_RXNE)==RESET)&&(fTimeout)) fTimeout--;
+#define USART_OUT2_TX     			fTimeout=10000; while(!(USART_GetFlagStatus(USART_OUT2,USART_FLAG_TC))&&(fTimeout)) fTimeout--;
+#define USART_OUT2_TXE     			fTimeout=10000; while(!(USART_GetFlagStatus(USART_OUT2,USART_FLAG_TXE))&&(fTimeout)) fTimeout--;
+
+#define USART_OUT2_STOPSEND			GPIO_WriteBit(USART_OUT2_DIR_PORT,USART_OUT2_DIR_PIN,Bit_RESET);
+#define USART_OUT2_STARTSEND		for(i=0;i<500;i++); GPIO_WriteBit(USART_OUT2_DIR_PORT,USART_OUT2_DIR_PIN,Bit_SET);
+
 
 #define HEAD_SIZE				5
 #define IDENT_SIZE				7
@@ -129,6 +139,67 @@ uint16_t NoSameBuf(uint8_t *pp1,uint8_t *pp2, uint16_t size)
 	return 0;
 
 }
+
+void USART_OUT2_Configuration(uint16_t fbrate)
+{
+  USART_InitTypeDef USART_InitStructure;
+  GPIO_InitTypeDef GPIO_InitStructure;
+  NVIC_InitTypeDef NVIC_InitStructure;
+
+  USART_OUT2_STARTUP;
+
+
+
+   /* Configure USART1 Tx (PA.09) as alternate function push-pull */
+  GPIO_InitStructure.GPIO_Pin = USART_OUT2_TX_PIN;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(USART_OUT2_TX_PORT, &GPIO_InitStructure);
+
+  GPIO_InitStructure.GPIO_Pin = USART_OUT2_DIR_PIN;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+  GPIO_Init(USART_OUT2_DIR_PORT, &GPIO_InitStructure);
+
+
+   /* Configure USART1 Rx (PA.10) as input floating */
+   GPIO_InitStructure.GPIO_Pin = USART_OUT2_RX_PIN;
+   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+   GPIO_Init(USART_OUT2_RX_PORT, &GPIO_InitStructure);
+
+
+/* USART1 configuration ------------------------------------------------------*/
+  /* USART1 configured as follow:
+        - BaudRate = 115200 baud
+        - Word Length = 8 Bits
+        - One Stop Bit
+        - No parity
+        - Hardware flow control disabled (RTS and CTS signals)
+        - Receive and transmit enabled
+        - USART Clock disabled
+        - USART CPOL: Clock is active low
+        - USART CPHA: Data is captured on the middle
+        - USART LastBit: The clock pulse of the last data bit is not output to
+                         the SCLK pin
+  */
+
+  USART_InitStructure.USART_BaudRate = fbrate;
+  USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits = USART_StopBits_1;
+  USART_InitStructure.USART_Parity = USART_Parity_No;
+  USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+  USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+
+  USART_Init(USART_OUT2, &USART_InitStructure);
+
+  /* Enable USART1 */
+  USART_Cmd(USART_OUT2, ENABLE);
+
+
+  USART_OUT2_STOPSEND;
+
+
+}
+
 
 
 void USART_OUT_Configuration(uint16_t fbrate)
@@ -402,53 +473,42 @@ uint8_t RS485_Master_ReadDataIRQ(uint8_t fNCtr, uint16_t fAdrSend, uint16_t fNBy
 
 
 
-int16_t RS485_Master_InitTransmit(uint16_t fNCtr, uint16_t fAdrSend, uint16_t fNBytes, uint8_t fDirBl,int nTry)
+int16_t RS485_Out2_Transmit(uint16_t fNCtr, uint32_t fSend)
 {
 	int32_t	fTimeout,i;
 	uint8_t chSumUARTOUT;
 	uint16_t retByte;
+	uint8_t	Head2[10];
 //	USART_MASTER_RX;
-	retByte=fNCtr|0x100;
-	USART_MASTER_STARTSEND;
+	retByte='!';
+	USART_OUT2_STARTSEND;
 	//USART_MASTER_TX;
 
-	USART_SendData(USART_OUT,retByte);
-	USART_MASTER_TX;
-	USART_MASTER_STOPSEND;
-	USART_MASTER_RX;
-	if (!fTimeout) return ERR_MASTER_NOANSWER;
-	retByte=USART_ReceiveData(USART_OUT);
-	//if (retByte!=(fNCtr|0x100)) return ERR_MASTER_WRONGANSWER;
-	if ((retByte&0xFF)!=fNCtr) return ERR_MASTER_WRONGANSWER;
-	HeadOUT[2]=fNBytes%256;
-	HeadOUT[3]=fNBytes/256;
-	HeadOUT[0]=fAdrSend%256;
-	HeadOUT[1]=fAdrSend/256;
-	HeadOUT[4]=fDirBl;
-	i=0;
+	USART_SendData(USART_OUT2,retByte);
+	USART_OUT2_TX;
+	Head2[0]=fNCtr;
+	Head2[1]=fSend%256;
+	Head2[2]=(fSend>>8)%256;
+	Head2[3]=(fSend>>16);
+	Head2[4]=0x55;
 	chSumUARTOUT=0;
-	for (i=0;i<500;i++);
-	USART_MASTER_STARTSEND;
-//	USART_MASTER_TX;
+	i=0;
 	while(i<HEAD_SIZE)
 	{
-		chSumUARTOUT+=HeadOUT[i];
-		USART_SendData(USART_OUT,HeadOUT[i]);
-		USART_MASTER_TXE;
-		if (!fTimeout) {USART_MASTER_STOPSEND;return ERR_MASTER_TXHEAD;}
+//		chSumUARTOUT+=Head2[i];
+		USART_OUT2_TXE;
+		if (!fTimeout) {USART_OUT2_STOPSEND;return ERR_MASTER_TXHEAD;}
+		ClrDog;
+		USART_SendData(USART_OUT2,Head2[i]);
+//		for (i=0;i<200;i++);
 		i++;
 	}
-	USART_MASTER_TX;
-	USART_MASTER_STOPSEND;
-	USART_MASTER_RX;
-	if (!fTimeout) return ERR_MASTER_HEADNOSUM;
-	retByte=USART_ReceiveData(USART_OUT);
-	retByte-=chSumUARTOUT;
-	if (retByte) return ERR_MASTER_HEADWRSUM;
+	USART_OUT2_TX;
+	USART_OUT2_STOPSEND;
 	return -1;
 }
 
-
+/*
 int16_t RS485_Master_WriteData(uint8_t fNCtr, uint16_t fAdrSend, uint16_t fNBytes, void* fData, uint8_t fNBlock)
 {
 	int	fTimeout,i,j,Result;
@@ -529,7 +589,7 @@ int16_t RS485_Master_ReadType(uint8_t fNCtr, uint8_t*  fIdent)
 {
 	return RS485_Master_ReadData(fNCtr,0,IDENT_SIZE,fIdent,1);
 }
-
+*/
 
 uint16_t GetIPCComMod(uint16_t nAddress) {
 	return nAddress/100;
@@ -597,10 +657,7 @@ uint32_t vCpM,bOut,i;
 			*nErr=ModulData[i].Err;
 			ModulData[i].OutReg[bOut].Value=How;
 			ModulData[i].OutReg[bOut].Type= fType;
-//Изменение от 18.10.2014 по поводу отключения обратной связи
-//			ModulData[i].DataPtr=Ptr;
-			ModulData[i].DataPtr=0;
-//-------------------конец---------------------------------
+			ModulData[i].DataPtr=Ptr;
 			return;
 			}
 		}
@@ -864,6 +921,13 @@ void SendIPC(uint8_t *fErrModule)
 		cModule++;
 		return;
 	}*/
+	if (ModulData[cModule].CpM/100)
+	{
+		ModulData[cModule].Cond=0;
+		RS485_Out2_Transmit(120+ModulData[cModule].CpM%100,ModulData[cModule].OutValues);
+		cOperInModule=7;
+		return;
+	}
 	if (!IMOD_Exchange(&ModulData[cModule]))
 
 		cOperInModule++;
