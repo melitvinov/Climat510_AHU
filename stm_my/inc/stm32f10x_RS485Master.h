@@ -65,22 +65,8 @@
 #define USART_OUT_STARTUP    	RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4,ENABLE)
 
 
-#define USART_OUT2				USART1
-//Ножка передатчика USART
-#define USART_OUT2_TX_PIN			GPIO_Pin_9
-//Ножка приемника USART
-#define USART_OUT2_RX_PIN			GPIO_Pin_10
-//Ножка направления данных USART
-#define USART_OUT2_DIR_PIN			GPIO_Pin_8
-//Имя порта, на котором находится USART
-#define USART_OUT2_TX_PORT			GPIOA
-#define USART_OUT2_RX_PORT			GPIOA
-#define USART_OUT2_DIR_PORT			GPIOA
 
-#define USART_OUT2_STARTUP    	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1,ENABLE)
-
-
-#define OUT_MODUL_SUM 	30
+#define OUT_MODUL_SUM 	16
 
 #define MAX_FAN_COUNT	64
 
@@ -120,7 +106,6 @@ typedef struct eeFanData
 typedef void(*CallBackRS)(void);
 
 void USART_OUT_Configuration(uint16_t fbrate);
-void USART_OUT2_Configuration(uint16_t fbrate);
 /*
  * fNCtr - указатель на номер контроллера &GD.Control.NFCtr
  * fADRGD - указатель на структуру адресов блоков памяти ArdGD
@@ -130,10 +115,9 @@ void USART_OUT2_Configuration(uint16_t fbrate);
 
  */
 
-//int16_t RS485_Master_WriteData(uint8_t fNCtr, uint16_t fAdrSend, uint16_t fNBytes, void* fData, uint8_t fNBlock);
-//int16_t RS485_Master_ReadType(uint8_t fNCtr, uint8_t*  fIdent);
-//int16_t RS485_Master_ReadData(uint8_t fNCtr, uint16_t fAdrSend, uint16_t fNBytes, void* fData, uint8_t fNBlock);
-int16_t RS485_Out2_Transmit(uint16_t fNCtr, uint32_t fSend);
+int16_t RS485_Master_WriteData(uint8_t fNCtr, uint16_t fAdrSend, uint16_t fNBytes, void* fData, uint8_t fNBlock);
+int16_t RS485_Master_ReadType(uint8_t fNCtr, uint8_t*  fIdent);
+int16_t RS485_Master_ReadData(uint8_t fNCtr, uint16_t fAdrSend, uint16_t fNBytes, void* fData, uint8_t fNBlock);
 uint16_t GetIPCComMod(uint16_t nAddress);
 uint16_t GetIPCNum(uint16_t nAddress);
 char GetOutIPCDigit(uint16_t nAddress, char* nErr);

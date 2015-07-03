@@ -16,26 +16,20 @@
 
 uchar   vNFCtr;
 uint16_t	PORTNUM;
-//uchar   Y_menu,Y_menu2,x_menu;
-uint16_t Y_menu,Y_menu2,x_menu;
+uchar   Y_menu,Y_menu2,x_menu;
 uchar   Ad_Buf=0;
 uchar   AdinB=0;
 uchar   xdata Form=0;
 uchar   SizeForm=0;
 uchar   Mark=0;
-
-#warning !!!!!!!!!!!!!!!!!!!!!!!!!! ON
-//uchar   SIM;
-
-
-
+uchar   SIM;
 //uchar   buf[90];
 void    *AdrVal;
 uchar   TecChan;
 bit     ReadyIZ;
 bit     FalseIZ;
 bit     bSec;
-//bit     BITKL;
+bit     BITKL;
 bit     Menu;
 bit     B_video;
 bit     B_input;
@@ -44,8 +38,6 @@ bit     BlkW;
 unsigned char   Second;
 
 
-//int16_t screenMaxPosition;
-//int16_t screenCurPosition;
 
 
 //int16_t    	Mes;
@@ -53,8 +45,6 @@ int16_t    	MesINT0;
 long 		LngX,LngY;
 uchar   	NDat;
 uchar   	NumIzm;
-int16_t		settingsVosx;
-int16_t		settingsZax;
 int16_t    	IntX,IntY,IntZ;
 int16_t    	SaveInt;
 int16_t		SaveInt2;
@@ -62,13 +52,10 @@ int8_t    	SaveChar;
 int8_t		nPortSave;
 int8_t		TimeReset;
 int8_t		bWaterReset[16];
-//uchar   	ByteW,ByteY,ByteX,ByteZ;
-int16_t   	ByteW,ByteY,ByteX,ByteZ;
+uchar   	ByteW,ByteY,ByteX,ByteZ;
 uchar   	nReset;
 uchar   	NumBlock;
-
 uchar   	not=230,ton=3,ton_t=15;
-
 uchar   	bNight;
 uchar   	ProgReset;
 //uint    OutR;

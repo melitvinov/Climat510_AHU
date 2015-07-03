@@ -10,67 +10,52 @@
 #define tpLEVEL		2
 #define tpSUM		3
 
-
 /*Смещения датчиков в общем массиве*/
 #define cSmOutTSens		0
 #define cSmFARSens		1
 #define cSmVWindSens	2
 #define cSmDWindSens	3
 #define cSmRainSens		4
+#define cSmOutRHSens	5
 #define cSmMainTSens	6
 #define cSmPresureSens	8
 
-//#define cSmTSens		0
-// NEW
 #define cSmTSens1		0
 #define cSmTSens2		1
 #define cSmTSens3		2
 #define cSmTSens4		3
+#define cSmTSens5		4
+#define cSmTSens6		5
 
-#define cSmRHSens		4
-#define cSmInLightSens	6
-#define cSmRoofSens		12
-#define cSmGlassSens	14
-#define cSmCOSens		7
-#warning CHECK THIS   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#define cSmRHSens		6
+#define cSmInLightSens	10
+#define cSmOverPSens	15
+#define cSmRoofSens		16
+#define cSmGlassSens	18
+#define cSmCOSens		11
 //#define cSmTCSens		1
-#define cSmWinNSens		17
-#define cSmWinSSens		18
-#define cSmScreenSens	19
-#define cSmWaterSens	20
-
-
+#define cSmTAHUOutSens	20
+#define cSmWinNSens		21
+#define cSmWinSSens		22
+#define cSmScreenSens	23
+#define cSmWaterSens	24
+#define cSmAHUPipeSens	26
 
 #define cConfSSystem		10
-
 #define cConfSOutput		46
-
 #define cConfSInputs		7
-
-#define cConfSSens			26
-
+#define cConfSSens			30
 #define cConfSMetSens		11
-
 #define cSHandCtrl			cConfSOutput
-
 #define cSRegCtrl			24
-
 #define cSDiskrCtrl			22
 
-
-
 #define SUM_NAME_INPUTS			(cConfSOutput)
-
 #define SUM_NAME_INSENS			(SUM_NAME_INPUTS+cConfSInputs)
-
 #define SUM_NAME_OUTSENS		(SUM_NAME_INSENS+cConfSSens)
-
 #define SUM_NAME_CONF			(SUM_NAME_OUTSENS+cConfSMetSens)
 
-
 #define MAX_SUM_RELAY	80
-
-
 
 eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 		/*
@@ -85,32 +70,37 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 		  НМин - минимальное напряжение
 		  НМкс - максимальное напряжение
 		  У - тип усреднения датчика*/
-/*Название датчика												    Формат	Ед изм	Тип датч	Т	Вых	Мин	  Макс      НЭ1	    НЭ2	    ЗЭ1     ЗЭ2    НМин	   НМкс     Усреднение 	Цифровой фильтр*/
+/*Название датчика												Формат	Ед изм	Тип датч	Т	Вых		Мин	  Макс НЭ1	НЭ2	 ЗЭ1  ЗЭ2  НМин	НМкс Усреднение 	Цифровой фильтр*/
 //0
-{"Tem\310 air1#Te\274\276 \263o\267\343\311xa 1",					SSpS0,  cuT,	cTypeAnal,	3,	0,	0,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,		c3MidlSens,	50}, /* Температура воздуха 1*/ // было НМин	 0   НМкс 0
-{"Tem\310 air2#Te\274\276 \263o\267\343\311xa 2",					SSpS0,	cuT,	cTypeAnal,	3,	0,	0,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,		c3MidlSens,	50}, /* Температура контроль 2*/
-{"Tem\310 air3#Te\274\276 \263o\267\343\311xa 3",					SSpS0,	cuT,	cTypeAnal,	3,	0,	0,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,		c3MidlSens,	50}, /* Температура контроль 3*/
-{"Tem\310 air4#Te\274\276 \263o\267\343\311xa 4",					SSpS0,	cuT,	cTypeAnal,	3,	0,	0,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,		c3MidlSens,	50}, /* Температура контроль 4*/
+{"Tem\310 air1#Te\274\276 \263o\267\343\311xa 1",					SSpS0,  cuT,	cTypeAnal,	3,	0,	0,	  9900,		2930,	3230,	2000,	5000,	2000,		5000,		c3MidlSens,	50}, /* Температура воздуха 1*/
+{"Tem\310 air2#Te\274\276 \263o\267\343\311xa 2",					SSpS0,	cuT,	cTypeAnal,	3,	0,	0,	  9900,		2930,	3230,	2000,	5000,	2000,		5000,		c3MidlSens,	50}, /* Температура контроль 2*/
+{"Tem\310 air3#Te\274\276 \263o\267\343\311xa 3",					SSpS0,	cuT,	cTypeAnal,	3,	0,	0,	  9900,		2930,	3230,	2000,	5000,	2000,		5000,		c3MidlSens,	50}, /* Температура контроль 3*/
+{"Tem\310 air4#Te\274\276 \263o\267\343\311xa 4",					SSpS0,	cuT,	cTypeAnal,	3,	0,	0,	  9900,		2930,	3230,	2000,	5000,	2000,		5000,		c3MidlSens,	50}, /* Температура контроль 4*/
+{"Tem\310 air5#Te\274\276 \263o\267\343\311xa 5",					SSpS0,	cuT,	cTypeAnal,	3,	0,	0,	  9900,		2930,	3230,	2000,	5000,	2000,		5000,		c3MidlSens,	50}, /* Температура контроль 3*/
+{"Tem\310 air6#Te\274\276 \263o\267\343\311xa 6",					SSpS0,	cuT,	cTypeAnal,	3,	0,	0,	  9900,		2930,	3230,	2000,	5000,	2000,		5000,		c3MidlSens,	50}, /* Температура контроль 4*/
+//6
 {"Humidit\311 1#B\273a\266\275oc\277\304 1",						SSpS0,  cuPr,	cTypeRH,	0,	0,	200,  9800,		878,	3097,	0,		7530,	800, 	5000,	cExpMidlSens,	1000}, /* Влажность воздуха 1*/
 {"Humidit\311 2#B\273a\266\275oc\277\304 2",						SSpS0,  cuPr,	cTypeRH,	0,	0,	200,  9800,		878, 	3097,	0,		7530,	800, 	5000,	cExpMidlSens,	1000}, /* Влажность воздуха 2*/
+{"Humidit\311 3#B\273a\266\275oc\277\304 3",						SSpS0,  cuPr,	cTypeRH,	0,	0,	200,  9800,		878,	3097,	0,		7530,	800, 	5000,	cExpMidlSens,	1000}, /* Влажность воздуха 1*/
+{"Humidit\311 4#B\273a\266\275oc\277\304 4",						SSpS0,  cuPr,	cTypeRH,	0,	0,	200,  9800,		878, 	3097,	0,		7530,	800, 	5000,	cExpMidlSens,	1000}, /* Влажность воздуха 2*/
 {"Inside light#B\275\311\277 c\263e\277",							SSSS, 	cuBt,	cTypeAnal,	11,	0,	0,	  1500,		15,  	2250,	0,   	1000, 	0,   	5000,	c3MidlSens,	100}, /* Внутренний свет*/
 {"CO2#CO2 \311\310o\263e\275\304",									SSSS,   cuPpm,	cTypeRH,	0,	0,	100,  2000,		0,  	5000,	0,   	2000,	50,  	5000,	c3MidlSens,	80}, /*Концентрация СО2*/
-//8
+//12
 {"Tem\310 evap 1#Te\274\276 \270c\276a\310e\275 1",					SSpS0,  cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	0,		0,		c3MidlSens,	80}, /* Температура вход воздуха 1*/
 {"Tem\310 evap 2#Te\274\276 \270c\276a\310e\275 2",					SSpS0,  cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	0,		0,		c3MidlSens,	80}, /* Температура вход воздуха 2*/
-//10
+//14
 {"Tem\310 cool #Te\274\276 ox\273a\266\343e\275",					SSpS0,  cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	0,		0,		c3MidlSens,	80}, /* Температура охлаждающей воды*/
 {"Over\310ressure#\245\267\262\303\277 \343a\263\273e\275",			SSpS0,  cuPa,	cTypeAnal,	0,	0,	1,	  9900,		0,		3000,	0,		3000,	0,		0,		c3MidlSens,	80}, /* Избыточное давление*/
-//12
+//16
 {"Tem\310 roof#Te\274\276 \272\310o\263\273\270",					SSpS0,  cuT,	cTypeAnal,	3,	0,	0,	  9900,		2930,	3230,	2000,	5000,	0,		0,		c3MidlSens,	80}, /* Температура кровли*/
 {"Tem\310 soil#Te\274\276 \276o\300\263\303",						SSpS0,  cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	0,		0,		c3MidlSens,	80}, /* Температура почвы*/
 {"Tem\310 glass#Te\274\276 c\277e\272\273a",						SSpS0,  cuT,	cTypeAnal,	3,	0,	-2000,9900,		2930,	3230,	2000,	5000,	0,		0,		c3MidlSens,	80}, /*Температура стекла*/
 {"Tem\310 in AHU#Te\274\276 \263xo\343a AHU",						SSpS0,	cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	0,		0,		c3MidlSens,	80}, /*Т входа в AHU*/
 {"Tem\310 out AHU#Te\274\276 \263\303xo\343a AHU",					SSpS0,	cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	0,		0,		c3MidlSens,	80}, /*Т выхода из AHU*/
-//17
-{"N vent \310os#\250o\273o\266 \344\310a\274\311\264\270 C",		SSSpS,	cuPr,	cTypeFram,	1,	0,	0,	  1000, 		0,	5000,	0,	  	1000, 	0,		5000,	c3MidlSens,	400}, /*Сокодвижение*/
-{"S vent \310os#\250o\273o\266 \344\310a\274\311\264\270 \260",		SSSpS,	cuPr,	cTypeFram,	1,	0,	0,	  1000, 		0,	5000,	0,	  	1000, 	0,		5000,	c3MidlSens,	400}, /*Размер плода*/
-{"Screen \310os#\250o\273o\266 \305\272\310a\275",					SSSpS,	cuPr,	cTypeScreen,1,	0,	0,	  1000, 		0,	5000,	0,	  	1000, 	0,		5000,	c3MidlSens,	400}, /*Сокодвижение*/
+//21
+{"N vent \310os#\250o\273o\266 \344\310a\274\311\264\270 C",		SSSpS,	cuPr,	cTypeFram,	1,	0,	0,	  1000, 		0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,	400}, /*Сокодвижение*/
+{"S vent \310os#\250o\273o\266 \344\310a\274\311\264\270 \260",		SSSpS,	cuPr,	cTypeFram,	1,	0,	0,	  1000, 		0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,	400}, /*Размер плода*/
+{"Screen \310os#\250o\273o\266 \305\272\310a\275",					SSSpS,	cuPr,	cTypeScreen,1,	0,	0,	  1000, 		0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,	400}, /*Сокодвижение*/
 //20
 {"Tem\310 \310i\310e1#Te\274\276 \272o\275\277\311\310a 1",			SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	0,		0,		c3MidlSens,	100}, /*Т прям контура1*/
 {"Tem\310 \310i\310e2#Te\274\276 \272o\275\277\311\310a 2",			SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	0,		0,		c3MidlSens,	100}, /*Т прям контура2*/
@@ -144,9 +134,9 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 #define cSmKontur5		4
 #define cSmKonturAHU	5
 #define cSmWindowUnW	6
-#define cSmWindowOnW	7
+#define cSmAHUSpd		7
 #define cSmUCValve		8
-#define cSmAHUSpeed		9
+#define cSmAHURez		9
 #define cSmScreen		10
 
 /*----------------------------------*/
@@ -155,18 +145,18 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 #define cHSmMixVal		0
 #define cHSmWinN		6
 #define cHSmWinS		7
-#define cHSmUCValve		8
-#define cHSmAHUSpeed1	9
-#define cHSmScrTH		10
-#define cHSmScrSH		11
-#define cHSmScrV_S1		12
-#define cHSmScrV_S2		13
-#define cHSmScrV_S3		14
-#define cHSmScrV_S4		15
-#define cHSmCO2			16
-#define cHSmPressReg	17
-#define cHSmLight		18
-#define cHSmAHUSpeed2	19
+#define cHSmWinN2		8
+#define cHSmWinN3		9
+#define cHSmWinN4		10
+#define cHSmUCValve		11
+#define cHSmAHUSpeed1	12
+#define cHSmAHUSpeed2	13
+#define cHSmScrTH		14
+#define cHSmScrSH		15
+#define cHSmScrV_S1		16
+#define cHSmCO2			17
+#define cHSmAHUPad		18
+#define cHSmLight		19
 #define cHSmRez1		20
 #define cHSmRez2		21
 #define cHSmRez3		22
@@ -178,11 +168,9 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 #define cHSmCool		32
 #define cHSmSIOPump		33
 #define cHSmSIOVals		34
-#define cHSmAHUVals		35
+#define cHSmAHUPump		35
 #define cHSmAlarm		36
 #define cHSmRegs		37
-
-
 
 typedef struct  eeNameConfig
         {
@@ -199,20 +187,20 @@ eNameConfig NameOutputConfig[cConfSOutput]={
 /*3 Клапан 4*/ 			{"Mixing valve 4#C\274ec \272\273a\276a\275 4",tpRELAY,0,MAX_SUM_RELAY},
 /*4 Клапан 5*/			{"Mixing valve 5#C\274ec \272\273a\276a\275 5",tpRELAY,0,MAX_SUM_RELAY},
 /*5 Клапан AHU*/		{"Mix valve AHU#C\274 \272\273a\276a\275 AHU",tpRELAY,0,MAX_SUM_RELAY},
-/*6 Фрамуга СЕВЕР*/		{"Window NORTH#\252\310a\274\311\264a CEBEP",tpRELAY,0,MAX_SUM_RELAY},
+/*6 Фрамуга СЕВЕР*/		{"Window NORTH 1#\252\310a\274\311\264a CEB 1",tpRELAY,0,MAX_SUM_RELAY},
 /*7 Фрамуга ЮГ*/		{"Window SOUTH#\252\310a\274\311\264a \260\241",tpRELAY,0,MAX_SUM_RELAY},
-/*8 Клапан UC*/			{"UC valve#UC \272\273a\276a\275",tpRELAY,0,MAX_SUM_RELAY},
-/*9 Скорость AHU*/		{"AHU speed 1#C\272o\310oc\277\304 AHU 1",tpRELAY,0,MAX_SUM_RELAY},
-/*10 Экран*/			{"Screen thermal#\257\272\310a\275 \277e\310\274\270\300",tpRELAY,0,MAX_SUM_RELAY},
-/*11  Экран затеняющ*/	{"Screen shade#\257\272\310a\275 \267e\277e\275",tpRELAY,0,MAX_SUM_RELAY},
-/*12  Верт. экран 1*/	{"Screen vert 1#\257\272\310a\275 \263e\310\277 1",tpRELAY,0,MAX_SUM_RELAY},
-/*13 Верт. экран 2 */	{"Screen vert 2#\257\272\310a\275 \263e\310\277 2",tpRELAY,0,MAX_SUM_RELAY},
-/*14 Верт. экран 3 */	{"Screen vert 3#\257\272\310a\275 \263e\310\277 3",tpRELAY,0,MAX_SUM_RELAY},
-/*15 Верт. экран 4*/	{"Screen vert 4#\257\272\310a\275 \263e\310\277 4",tpRELAY,0,MAX_SUM_RELAY},
-/*16 СО2 дозатор*/		{"CO2 valve#CO2 \272\273a\276a\275",tpRELAY,0,MAX_SUM_RELAY},
-/*17 Регулятор давл*/	{"Pressure reg#Pe\264\311\273\307\277o\310 \343a\263\273",tpRELAY,0,MAX_SUM_RELAY},
-/*18 Досветка */		{"Lighting#\340oc\263e\277\272a",tpRELAY,0,MAX_SUM_RELAY},
-/*19 Скорость AHU*/		{"AHU speed 2#C\272o\310oc\277\304 AHU 2",tpRELAY,0,MAX_SUM_RELAY},
+/*8 Фрамуга СЕВЕР*/		{"Window NORTH 2#\252\310a\274\311\264a CEB 2",tpRELAY,0,MAX_SUM_RELAY},
+/*9 Фрамуга СЕВЕР*/		{"Window NORTH 3#\252\310a\274\311\264a CEB 3",tpRELAY,0,MAX_SUM_RELAY},
+/*10 Фрамуга СЕВЕР*/	{"Window NORTH 4#\252\310a\274\311\264a CEB 4",tpRELAY,0,MAX_SUM_RELAY},
+/*11 Клапан UC*/		{"UC valve#UC \272\273a\276a\275",tpRELAY,0,MAX_SUM_RELAY},
+/*12 Скорость AHU*/		{"AHU speed 1#C\272o\310oc\277\304 AHU 1",tpRELAY,0,MAX_SUM_RELAY},
+/*13 Скорость AHU*/		{"AHU speed 2#C\272o\310oc\277\304 AHU 2",tpRELAY,0,MAX_SUM_RELAY},
+/*14 Экран*/			{"Screen thermal#\257\272\310a\275 \277e\310\274\270\300",tpRELAY,0,MAX_SUM_RELAY},
+/*15  Экран затеняющ*/	{"Screen shade#\257\272\310a\275 \267e\277e\275",tpRELAY,0,MAX_SUM_RELAY},
+/*16  Верт. экран 1*/	{"Screen vert#\257\272\310a\275 \263e\310\277",tpRELAY,0,MAX_SUM_RELAY},
+/*17 СО2 дозатор*/		{"CO2 valve#CO2 \272\273a\276a\275",tpRELAY,0,MAX_SUM_RELAY},
+/*18 Клапан панели*/	{"AHU Pad valve#K\273a\276a\275\303 \276a\275e\273\270",tpRELAY,0,MAX_SUM_RELAY},
+/*19 Досветка */		{"Lighting#\340oc\263e\277\272a",tpRELAY,0,MAX_SUM_RELAY},
 /*20 Резерв*/			{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
 /*21 Резерв*/			{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
 /*22 Резерв*/			{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
@@ -229,7 +217,7 @@ eNameConfig NameOutputConfig[cConfSOutput]={
 /*32 Охладитель*/		{"Cooler#Ox\273a\343\270\277e\273\304",tpRELAY,0,MAX_SUM_RELAY},
 /*33 Насос СИО*/		{"Misting \310um\310#Hacoc C\245O",tpRELAY,0,MAX_SUM_RELAY},
 /*34 Клапан СИО*/		{"Mist valve start#K\273a\276a\275\303 C\245O",tpRELAY,0,MAX_SUM_RELAY},
-/*35 Клапан AHU*/		{"Mist AHU valves#K\273a\276a\275\303 AHU",tpRELAY,0,MAX_SUM_RELAY},
+/*35 Клапан AHU*/		{"Mist AHU pump#Hacoc y\263\273 AHU",tpRELAY,0,MAX_SUM_RELAY},
 
 /*36 Авария*/			{"Alarm#A\263a\310\270\307",tpRELAY,0,MAX_SUM_RELAY},
 

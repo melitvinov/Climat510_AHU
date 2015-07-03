@@ -41,7 +41,35 @@
 
 
 /*Количество контуров 1-5 - вода,6 - подветренная сторона, 7 - наветренная сторона*/
+
+
+#define cSUCSystems		8
+#ifdef AHU
+#define cSStrategy		cSUCSystems
+#define cSPipeSystems	4
+
+
+#define cSysAHUPipe			0
+#define cSysRailPipe		1
+#define cSysHeadPipe		2
+#define cSysSidePipe		3
+#define cSysUCValve			4
+#define cSysScreen			5
+#define cSysAHUSpeed		6
+#define cSysMist			7
+
+#define SYS_GO_UP			1
+#define SYS_GO_DOWN			0
+
+#define cSysRHand			0x01
+#define cSysRUp				0x02
+#define cSysRDown			0x04
+
+
+
+#else
 #define cSStrategy		8
+#endif
 /*Количество контуров 1-5 - фрамуги,экран,СИО*/
 //#define cSMechanic		10
 /*1-5 - смесительные клапаны, 6 - Сев Фрамуга, 7 - Южн Фрамуга, 8 - СО2,
@@ -88,7 +116,7 @@
 #define cErrKontur			10	//1 градус
 #define cMin5Kontur			250 //45 градусов
 #define cMinPumpOff			350
-#define cMinAllKontur		(pGD_Hot_Tepl->AllTask.DoTHeat/10+20)	//минимум всех контуров выше задания на 5 градусов
+#define cMinAllKontur		(pGD_Hot_Tepl->AllTask.DoTHeat/10-50)	//минимум всех контуров выше задания на 5 градусов
 #define cMinPowerKontur		10
 #define cIFactorEnd			10
 #define cPFactorEnd			300

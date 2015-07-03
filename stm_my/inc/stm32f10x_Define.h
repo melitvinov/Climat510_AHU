@@ -48,19 +48,13 @@ typedef uint8_t bit;
 #define ClrBit(Val,NBit)        (Val &=~(NBit))
 #define YesBit(Val,NBit)        (Val & (NBit))
 
+
+void controlGetTempVentAlarm(char fnTepl);
+void controlGetTempHeatAlarm(char fnTepl);
+//int16_t controlGetTempVent();
+//int16_t controlGetTempHeat();
+
 //----- Прототипы функций
-int16_t getcSmTSens2(char error);
-int16_t getcSmRHSens(char error);
-int16_t getcSmInLightSens(char error);
-int16_t getcSmRoofSens(char error);
-int16_t getcSmGlassSens(char error);
-int16_t getcSmCOSens(char error);
-int16_t getcSmWinNSens(char error);
-int16_t getcSmWinSSens(char error);
-int16_t getcSmScreenSens(char error);
-int16_t getcSmWaterSens(char error);
-
-
 void CopyEEP(void);
 void CalcEEPSum(void);
 void GetRTC(void);

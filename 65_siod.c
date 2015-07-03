@@ -3,93 +3,6 @@
 #define cSIOFazaPause	3
 #define cSIOFazaEnd		4
 
-/*!
-\brief Температура воздуха для обогрева в зависимости от выбранного значение в Параметрах управления
-@return int16_t Температура
-*/
-int16_t soidGetTempHeat()
-{
-	int16_t	tempHeat;
-	int16_t temp = 0;
-	int16_t i=0;
-		switch (pGD_Control_Tepl->sensT_heat)
-		{
-			case 0: // sensor temp 1
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS == 0)
-					tempHeat = CURRENT_TEMP1_VALUE;
-			break;
-			case 1: // sensor temp 2
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS == 0)
-					tempHeat = CURRENT_TEMP2_VALUE;
-			break;
-			case 2: // sensor temp 3
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS == 0)
-					tempHeat = CURRENT_TEMP3_VALUE;
-			break;
-			case 3: // sensor temp 4
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS == 0)
-					tempHeat = CURRENT_TEMP4_VALUE;
-			break;
-			case 4: // min
-			{
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-						return;
-					}
-				}
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						if (temp > pGD_Hot_Tepl->InTeplSens[i].Value)
-							temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-					}
-				}
-				tempHeat = temp;
-			}
-			break;
-			case 5: // max
-			{
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-						return;
-					}
-				}
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						if (temp < pGD_Hot_Tepl->InTeplSens[i].Value)
-							temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-					}
-				}
-				tempHeat = temp;
-			}
-			break;
-			case 6: // average
-			{
-				int16_t count = 0;
-				for (i=0;i<4;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = temp + pGD_Hot_Tepl->InTeplSens[i].Value;
-						count++;
-					}
-				}
-				temp = temp / count;
-				tempHeat = temp;
-			}
-			break;
-		}
-		return tempHeat;
-}
 
 void SetUpSiod(char fnTepl)
 {
@@ -106,37 +19,22 @@ void SetUpSiod(char fnTepl)
 		pGD_TControl_Tepl->PauseSIO++;	
  
 	IntX=0;
-	char error =0;
-#warning CHECK THIS
-	if ((((getcSmRHSens(error)-pGD_Hot_Tepl->AllTask.DoRHAir)>GD.TuneClimate.sio_RHStop)
-		||(getcSmRHSens(error)>9600))
+	if ((((pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value-pGD_Hot_Tepl->AllTask.DoRHAir)>GD.TuneClimate.sio_RHStop)
+		||(pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value>9600))
 		&&(pGD_Hot_Tepl->AllTask.DoRHAir)) return;
+	if ((pGD_Hot_Tepl->AllTask.DoTHeat-getTempHeat(fnTepl))>GD.TuneClimate.sio_TStop) return;
+	if (((getTempHeat(fnTepl)-pGD_Hot_Tepl->AllTask.DoTHeat)<GD.TuneClimate.sio_TStart)
+		&&(((pGD_Hot_Tepl->AllTask.DoRHAir-pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value)<GD.TuneClimate.sio_RHStart)
+		||(!pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value))) return;	
 
-//	if ((((pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value-pGD_Hot_Tepl->AllTask.DoRHAir)>GD.TuneClimate.sio_RHStop)
-//		||(pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value>9600))
-//		&&(pGD_Hot_Tepl->AllTask.DoRHAir)) return;
-
-
-#warning CHECK THIS
-// NEW
-	if ((pGD_Hot_Tepl->AllTask.DoTHeat-soidGetTempHeat())>GD.TuneClimate.sio_TStop) return;
-	if (((soidGetTempHeat()-pGD_Hot_Tepl->AllTask.DoTHeat)<GD.TuneClimate.sio_TStart)
-		&&(((pGD_Hot_Tepl->AllTask.DoRHAir-getcSmRHSens(error))<GD.TuneClimate.sio_RHStart)
-#warning CHECK THIS
-//		&&(((pGD_Hot_Tepl->AllTask.DoRHAir-pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value)<GD.TuneClimate.sio_RHStart)
-		||(!getcSmRHSens(error)))) return;
-
-	IntY=soidGetTempHeat()-pGD_Hot_Tepl->AllTask.DoTHeat;
+	IntY=getTempHeat(fnTepl)-pGD_Hot_Tepl->AllTask.DoTHeat;
 	CorrectionRule(GD.TuneClimate.sio_TStart,GD.TuneClimate.sio_TEnd,GD.TuneClimate.sio_TStartFactor-GD.TuneClimate.sio_TEndFactor,0);
 	IntX=(int)(GD.TuneClimate.sio_TStartFactor-IntZ);
-#warning CHECK THIS
-//	IntY=pGD_Hot_Tepl->AllTask.DoRHAir-pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
-	IntY=pGD_Hot_Tepl->AllTask.DoRHAir-getcSmRHSens(error);
+
+	IntY=pGD_Hot_Tepl->AllTask.DoRHAir-pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
 	CorrectionRule(GD.TuneClimate.sio_RHStart,GD.TuneClimate.sio_RHEnd,GD.TuneClimate.sio_RHStartFactor-GD.TuneClimate.sio_RHEndFactor,0);
 	IntZ=GD.TuneClimate.sio_RHStartFactor-IntZ;
-
-//	if ((pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value)&&(pGD_Hot_Tepl->AllTask.DoRHAir))
-	if ((getcSmRHSens(error))&&(pGD_Hot_Tepl->AllTask.DoRHAir))
+	if ((pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value)&&(pGD_Hot_Tepl->AllTask.DoRHAir))
 		if (IntX>IntZ) 
 			IntX=IntZ;
 	if (pGD_TControl_Tepl->PauseSIO<IntX) return;
