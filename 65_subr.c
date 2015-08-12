@@ -46,12 +46,19 @@
 #define	DS18B20_FILL_EEPROM	0x48
 #define	DS18B20_SKIP_ROM	0xCC
 
-int16_t getTempSensor(char sensor)
+int16_t teplTmes[8][6];
+
+int16_t getTempSensor(char fnTepl, char sensor)
 {
 	if (pGD_Hot_Tepl->InTeplSens[sensor].RCS == 0)
+	{
+		teplTmes[fnTepl][sensor] = pGD_Hot_Tepl->InTeplSens[sensor].Value;
 		return pGD_Hot_Tepl->InTeplSens[sensor].Value;
-	else
-		return 0;
+	}
+	if (pGD_Hot_Tepl->InTeplSens[sensor].RCS != 0)
+	{
+			return teplTmes[fnTepl][sensor];
+	}
 }
 
 /*!
@@ -77,9 +84,9 @@ int16_t getTempVent(char fnTepl)
 	error = 0;
 	for (i=0;i<6;i++)
 	{
-		if ( (mask >> i & 1) && (getTempSensor(i)) )
+		if ( (mask >> i & 1) && (getTempSensor(fnTepl, i)) )
 		{
-			temp = getTempSensor(i);
+			temp = getTempSensor(fnTepl, i);
 			if (min > temp)
 				min = temp;
 			if (max < temp)
@@ -94,12 +101,13 @@ int16_t getTempVent(char fnTepl)
 	average = average / averageCount;
 	if (error)
 	{
-		GD.Hot.Tepl[fnTepl].tempParamVent=maskN+(calcType<<6); //GD.Control.Tepl[fnTepl].sensT_vent;
+		GD.Hot.Tepl[fnTepl].tempParamVent=maskN+(calcType<<6);
 		GD.Hot.Tepl[fnTepl].tempVent = average;
 		if (calcType & 1)
 			GD.Hot.Tepl[fnTepl].tempVent = min;
 		if (calcType >> 1 & 1)
 			GD.Hot.Tepl[fnTepl].tempVent = max;
+		return GD.Hot.Tepl[fnTepl].tempVent;
 	}
 }
 
@@ -126,9 +134,9 @@ int16_t getTempHeat(char fnTepl)
 	error = 0;
 	for (i=0;i<6;i++)
 	{
-		if ( (mask >> i & 1) && (getTempSensor(i)) )
+		if ( (mask >> i & 1) && (getTempSensor(fnTepl, i)) )
 		{
-			temp = getTempSensor(i);
+			temp = getTempSensor(fnTepl, i);
 			if (min > temp)
 				min = temp;
 			if (max < temp)
@@ -149,23 +157,7 @@ int16_t getTempHeat(char fnTepl)
 			GD.Hot.Tepl[fnTepl].tempHeat = min;
 		if (calcType >> 1 & 1)
 			GD.Hot.Tepl[fnTepl].tempHeat = max;
-
-
-		/*switch (calcType)
-		{
-		case 0:  // average
-			GD.Hot.Tepl[fnTepl].tempHeat = average;
-		break;
-		case 1:	 // min
-			GD.Hot.Tepl[fnTepl].tempHeat = min;
-		break;
-		case 2:  // max
-			GD.Hot.Tepl[fnTepl].tempHeat = max;
-		break;
-		case 3:  // single sens
-			GD.Hot.Tepl[fnTepl].tempHeat = singleSensor;
-		break;
-		}*/
+		return GD.Hot.Tepl[fnTepl].tempHeat;
 	}
 }
 
@@ -191,9 +183,9 @@ int8_t getTempVentAlarm(char fnTepl)
 	error = 0;
 	for (i=0;i<6;i++)
 	{
-		if ( (mask >> i & 1) && (getTempSensor(i)) )
+		if ( (mask >> i & 1) && (getTempSensor(fnTepl, i)) )
 		{
-			temp = getTempSensor(i);
+			temp = getTempSensor(fnTepl, i);
 			if (min > temp)
 				min = temp;
 			if (max < temp)
@@ -230,9 +222,9 @@ int8_t getTempHeatAlarm(char fnTepl)
 	error = 0;
 	for (i=0;i<6;i++)
 	{
-		if ( (mask >> i & 1) && (getTempSensor(i)) )
+		if ( (mask >> i & 1) && (getTempSensor(fnTepl, i)) )
 		{
-			temp = getTempSensor(i);
+			temp = getTempSensor(fnTepl, i);
 			if (min > temp)
 				min = temp;
 			if (max < temp)
