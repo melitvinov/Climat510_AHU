@@ -507,8 +507,13 @@ typedef struct eeTuneClimate
 
 		uchar		fAHU_MaxOffset;
 
+		int16_t		c_RHStart;		// Контур 1,2,3 RHизм - RHзад начинает влиять на минимум при
+		int16_t		c_RHEnd;		// Контур 1,2,3 RHизм - RHзад влияет на минимум до
+		int16_t		c_RHOnMin1;     // Контур 1
+		int16_t		c_RHOnMin2;     // Контур 2
+		int16_t		c_RHOnMin3;     // Контур 3
 
-	    int16_t     Rez[14];
+	    int16_t     Rez[9];  // было 14
 //280		
        }
         eTuneClimate;

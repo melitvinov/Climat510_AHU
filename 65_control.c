@@ -582,12 +582,50 @@ void AllTaskAndCorrection(void)
 		(*pGD_Hot_Tepl).AllTask.DoCO2+=IntZ;
 		}
 	/*---------------------------------------------------*/
-	/*Установка и коррекция по солнцу минимальной температуры в контурах 1 и 2*/
-	if ((*pGD_Hot_Tepl).Kontur[cSmKontur1].MinTask)
+	/*Установка и коррекция по солнцу минимальной температуры в контурах 1,2 и 3*/
+
+
+	if ((*pGD_Hot_Tepl).Kontur[cSmKontur1].MinTask)         // NEW
+		{
+			IntX=CorrectionRule(GD.TuneClimate.s_TStart[0],GD.TuneClimate.s_TEnd,
+				GD.TuneClimate.s_MinTPipeConst,0/*cbCorrMinTaskOnSun*/);
+	//		SetBit((*pGD_Hot_Tepl).Kontur[cSmKontur1].RCS,IntX);
+			(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinTask-IntZ;
+			IntY=DefRH();//MeteoSens[cSmFARSens].Value;
+
+			IntX=CorrectionRule(GD.TuneClimate.c_RHStart,GD.TuneClimate.c_RHEnd,
+				GD.TuneClimate.c_RHOnMin1,0/*cbCorrMinTaskOnSun*/);
+	//		SetBit((*pGD_Hot_Tepl).Kontur[cSmKontur1].RCS,IntX);
+			(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinCalc+=IntZ;
+
+		}
+		(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinTask;
+		if ((*pGD_Hot_Tepl).Kontur[cSmKontur2].MinTask)
+		{
+			IntY=DefRH();//MeteoSens[cSmFARSens].Value;
+
+			IntX=CorrectionRule(GD.TuneClimate.c_RHStart,GD.TuneClimate.c_RHEnd,
+			GD.TuneClimate.c_RHOnMin2,0/*cbCorrMinTaskOnSun*/);
+	//		SetBit((*pGD_Hot_Tepl).Kontur[cSmKontur1].RCS,IntX);
+			(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinCalc+=IntZ;
+		}
+		(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinTask;
+		if ((*pGD_Hot_Tepl).Kontur[cSmKontur3].MinTask)
+		{
+			IntY=DefRH();//MeteoSens[cSmFARSens].Value;
+
+			IntX=CorrectionRule(GD.TuneClimate.c_RHStart,GD.TuneClimate.c_RHEnd,
+			GD.TuneClimate.c_RHOnMin3,0/*cbCorrMinTaskOnSun*/);
+	//		SetBit((*pGD_Hot_Tepl).Kontur[cSmKontur1].RCS,IntX);
+			(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinCalc+=IntZ;
+		}
+
+
+
+/*	if ((*pGD_Hot_Tepl).Kontur[cSmKontur1].MinTask)					// OLD
 	{	
 		IntX=CorrectionRule(GD.TuneClimate.s_TStart[0],GD.TuneClimate.s_TEnd,
-			GD.TuneClimate.s_MinTPipeConst,0/*cbCorrMinTaskOnSun*/);	
-//		SetBit((*pGD_Hot_Tepl).Kontur[cSmKontur1].RCS,IntX);
+			GD.TuneClimate.s_MinTPipeConst,0);
 		(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinTask-IntZ;
 	}
 	(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinTask;
@@ -597,14 +635,13 @@ void AllTaskAndCorrection(void)
 			GD.TuneClimate.s_MinTPipe3,0);	
 		(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinTask-IntZ;
 	}
-
-//	(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinTask;
 	if ((*pGD_Hot_Tepl).Kontur[cSmKontur5].MinTask)
 	{	
 		IntX=CorrectionRule(GD.TuneClimate.s_TStart[0],GD.TuneClimate.s_TEnd,
-			GD.TuneClimate.s_MinTPipe5,0/*cbCorrMinTaskOnSun*/);	
+			GD.TuneClimate.s_MinTPipe5,0);
 		(*pGD_Hot_Tepl).Kontur[cSmKontur5].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur5].MinTask+IntZ;
 	}
+*/
 
 //	(*pGD_Hot_Tepl).AllTask.DoPressure=(*pGD_Control_Tepl).c_DoPres;
 	/*-------------------------------------------------------------*/
