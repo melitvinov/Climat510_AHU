@@ -985,7 +985,7 @@ uint16_t AbsHum(uint16_t fTemp, uint16_t fRH)
 	tT=fTemp/100;
 	tRH=fRH/100;
 	tRez=((0.000002*tT*tT*tT*tT)+(0.0002*tT*tT*tT)+(0.0095*tT*tT)+( 0.337*tT)+4.9034)*tRH;
-	return tRez*100;
+	return tRez;
 }
 
 

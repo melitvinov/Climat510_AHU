@@ -492,6 +492,7 @@ typedef struct eeTuneClimate
 
 		int16_t 	l_SoftPauseMode;
 		int16_t		o_TeplPosition;
+
 		uchar		fAHU_S1Level;
 		uchar		fAHU_S2Level;
 		uchar		fAHU_S3Level;
@@ -513,7 +514,16 @@ typedef struct eeTuneClimate
 		int16_t		c_RHOnMin2;     // Контур 2
 		int16_t		c_RHOnMin3;     // Контур 3
 
-	    int16_t     Rez[9];  // было 14
+		uchar		fUC_Offset1;
+		uchar		fUC_S1Level;
+		uchar		fUC_Offset2;
+		uchar		fUC_S2Level;
+		uchar		fUC_Offset3;
+		uchar		fUC_S3Level;
+		uchar		fUC_Offset4;
+
+		int8_t     Rez[11];
+//		int16_t     Rez[9];  // было 14
 //280		
        }
         eTuneClimate;
@@ -583,13 +593,49 @@ typedef struct eeControl
 
 typedef struct eeStrategy
 	{
-		int8_t TempPower;
-		int8_t RHPower;
-		int8_t OptimalPower;
-		int8_t Economic;
-		int8_t Powers;
-		int8_t Separate;
-		int8_t KonturHelp;
+	int8_t StratAHUvalve1;  	// T>Tset, RH>RHset. Клапан AHU
+	int8_t StratAHUvalve2;		// T>Tset, RH<RHset. Клапан AHU
+	int8_t StratAHUvalve3;		// T<Tset, RH>RHset. Клапан AHU
+	int8_t StratAHUvalve4;		// T<Tset, RH<RHset. Клапан AHU
+
+	int8_t StratKontur1_1; 		// T>Tset, RH>RHset. Контур 1
+	int8_t StratKontur1_2;		// T>Tset, RH<RHset. Контур 1
+	int8_t StratKontur1_3;		// T<Tset, RH>RHset. Контур 1
+	int8_t StratKontur1_4;		// T<Tset, RH<RHset. Контур 1
+
+	int8_t StratKontur2_1;		// T>Tset, RH>RHset. Контур 2
+	int8_t StratKontur2_2;		// T>Tset, RH<RHset. Контур 2
+	int8_t StratKontur2_3;		// T<Tset, RH>RHset. Контур 2
+	int8_t StratKontur2_4;		// T<Tset, RH<RHset. Контур 2
+
+	int8_t StratKontur3_1;		// T>Tset, RH>RHset. Контур 3
+	int8_t StratKontur3_2;		// T>Tset, RH<RHset. Контур 3
+	int8_t StratKontur3_3;		// T<Tset, RH>RHset. Контур 3
+	int8_t StratKontur3_4;		// T<Tset, RH<RHset. Контур 3
+
+	int8_t StratTermoScreen1;	// T>Tset, RH>RHset. Экран термический
+	int8_t StratTermoScreen2;	// T>Tset, RH<RHset. Экран термический
+	int8_t StratTermoScreen3;	// T<Tset, RH>RHset. Экран термический
+	int8_t StratTermoScreen4;	// T<Tset, RH<RHset. Экран термический
+
+	int8_t StratAHUspeed1;		// T>Tset, RH>RHset. Скорость AHU
+	int8_t StratAHUspeed2;		// T>Tset, RH<RHset. Скорость AHU
+	int8_t StratAHUspeed3;		// T<Tset, RH>RHset. Скорость AHU
+	int8_t StratAHUspeed4;		// T<Tset, RH<RHset. Скорость AHU
+
+	int8_t StratPressReg1;		// T>Tset, RH>RHset. Регулятор давления
+	int8_t StratPressReg2;		// T>Tset, RH<RHset. Регулятор давления
+	int8_t StratPressReg3;		// T<Tset, RH>RHset. Регулятор давления
+	int8_t StratPressReg4;		// T<Tset, RH<RHset. Регулятор давления
+
+	int8_t TempPower;
+	int8_t RHPower;
+	int8_t OptimalPower;
+	int8_t Economic;
+	int8_t Powers;
+	int8_t Separate;
+	int8_t KonturHelp;
+
 	} eStrategy;
 #endif
 

@@ -858,6 +858,24 @@ void	pmProgClimate(void)
 	
 }
 
+void pmVersion(void)
+{
+	if ((Y_menu2%4)==2) BlkW=1;
+	w_txt(Mes223);
+	if (x_menu > cSTimer) x_menu=0;
+	if (!x_menu) {
+		return;
+		}
+    Ad_Buf=Str2;
+    ByteZ=x_menu-1;
+	if(Y_menu2 > SUM_NAME_TIMER) Y_menu2=0;
+	if(Y_menu2 >=SUM_NAME_TIMER) Y_menu2=SUM_NAME_TIMER-1;
+
+	w_txt(FWVersion);
+    Ad_Buf=Str3;
+	return;
+}
+
 void YMenu(char vPozY) {
 char pozY;
     ClrDog;
@@ -869,6 +887,8 @@ char pozY;
 	if(!(--pozY))	{ pmCalibr(); 	return; }
 	if(!(--pozY))	{ pmNow();	 	return; }
 	if(!(--pozY))	{ pmParMechanic();	return; }
+	// NEW
+	if(!(--pozY))	{ pmVersion();	return; }
 	SumYMenu=vPozY-pozY;
 	if(Y_menu > SumYMenu) Y_menu=SumYMenu;
 }

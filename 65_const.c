@@ -3,6 +3,9 @@
 	Константы климата C324
 ********************************
 ------------------------------*/
+
+#define FWVersion		"ver.09/15.2.00.03"
+
 #define NameProg        "\310\252\245TO-K\247\245MAT\311"
 #define Proect          "FC325-K-II-"
 
@@ -24,7 +27,7 @@
 
 #define Rasxod          (RegRasxod & bRasxod)
 
-#define cVersion		69
+#define cVersion		71
 /*Версия ПО для ПК*/
 
 #define SUM_BLOCK_EEP		8

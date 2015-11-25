@@ -620,6 +620,15 @@ void AllTaskAndCorrection(void)
 			(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinCalc+=IntZ;
 		}
 
+//******************
+		if ((*pGD_Hot_Tepl).Kontur[cSmKontur5].MinTask)
+		{
+			IntX=CorrectionRule(GD.TuneClimate.s_TStart[0],GD.TuneClimate.s_TEnd,
+				GD.TuneClimate.s_MinTPipe5,0/*cbCorrMinTaskOnSun*/);
+			(*pGD_Hot_Tepl).Kontur[cSmKontur5].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur5].MinTask+IntZ;
+		}
+//*******************
+
 
 
 /*	if ((*pGD_Hot_Tepl).Kontur[cSmKontur1].MinTask)					// OLD
@@ -720,7 +729,9 @@ void __cNextTCalc(char fnTepl)
 	{	
 		SetIfReset();
 	}
+#warning task 61
 /*Ðàñ÷èòûâàåì Òèçìåðåíèÿ-Òçàäàíèÿ*/
+	/*
 	pGD_Level_Tepl[cSmTSens1][cSmUpAlarmLev]=0;
 	pGD_Level_Tepl[cSmTSens2][cSmUpAlarmLev]=0;
 	pGD_Level_Tepl[cSmTSens3][cSmUpAlarmLev]=0;
@@ -751,7 +762,8 @@ void __cNextTCalc(char fnTepl)
 		pGD_Level_Tepl[cSmTSens5][cSmDownAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat-GD.TuneClimate.c_MaxDifTDown;
 		pGD_Level_Tepl[cSmTSens6][cSmDownAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat-GD.TuneClimate.c_MaxDifTDown;
 	}
-	(*pGD_Hot_Tepl).NextTCalc.DifTAirTDo=(*pGD_Hot_Tepl).AllTask.NextTAir-getTempVent(fnTepl);
+	*/
+	(*pGD_Hot_Tepl).NextTCalc.DifTAirTDo=(*pGD_Hot_Tepl).AllTask.NextTAir-getTempHeat(fnTepl);
 /**********************************************/
 /*ÑÓÏÅÐ ÀËÃÎÐÈÒÌ ÄËß ÐÀÑ×ÅÒÀ*/
 	pGD_Hot_Tepl->AllTask.Rez[0]=getTempHeat(fnTepl);

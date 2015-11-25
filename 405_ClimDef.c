@@ -37,9 +37,6 @@ bit     EndInput;
 bit     BlkW;
 unsigned char   Second;
 
-
-
-
 //int16_t    	Mes;
 int16_t    	MesINT0;
 long 		LngX,LngY;
