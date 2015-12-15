@@ -1255,10 +1255,19 @@ ClrDog;
 	}
 }
 
+//long count = 0;
+
 void DoMechanics(char fnTepl) 
 {
 	char fErr;
 	ClrDog;
+//	if (count <= 50000 * 3)
+//	{
+//		count++;
+//		GD.TControl.Tepl[fnTepl].Systems[cSysUCValve].Keep = 0;
+//	}
+
+
 	for(ByteX=cHSmMixVal;ByteX<cHSmPump;ByteX++)
 	{
 		SetPointersOnKontur(ByteX);

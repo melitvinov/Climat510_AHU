@@ -141,8 +141,8 @@ void CheckUCValveSystem(void)
 		if (pGD_TControl_Tepl->Systems[cSysUCValve].Keep>pGD_TControl_Tepl->Systems[cSysUCValve].Min)
 			 SetBit(pGD_TControl_Tepl->Systems[cSysUCValve].RCS,cSysRDown);
 	}
-
-	pGD_TControl_Tepl->Systems[cSysUCValve].Power=1000/((long)pGD_TControl_Tepl->f_Power);
+	pGD_TControl_Tepl->Systems[cSysUCValve].Power=1000/((long)pGD_TControl_Tepl->f_Power); // last
+    //pGD_TControl_Tepl->Systems[cSysUCValve].Power=((int32_t)pGD_ConstMechanic->ConstMixVal[cHSmUCValve].v_PFactor)*1000/((long)pGD_TControl_Tepl->f_Power);
 }
 
 
@@ -194,7 +194,8 @@ void CheckMistSystem(void)
 		if (pGD_TControl_Tepl->Systems[cSysMist].Keep>pGD_TControl_Tepl->Systems[cSysMist].Min)
 			 SetBit(pGD_TControl_Tepl->Systems[cSysMist].RCS,cSysRDown);
 	}
-	pGD_TControl_Tepl->Systems[cSysMist].Power=1000;//pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_PFactor;
+	pGD_TControl_Tepl->Systems[cSysMist].Power=1000;//pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_PFactor; // last
+    //pGD_TControl_Tepl->Systems[cSysMist].Power=pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_PFactor;
 }
 
 int SysInTemp(int8_t fnSys)
@@ -220,6 +221,18 @@ void FinalCheckSys(int8_t fnSys)
 		pGD_TControl_Tepl->Systems[fnSys].Keep=pGD_TControl_Tepl->Systems[fnSys].Min;
 }
 
+char oldPosition = 0;
+
+void valveSetOldPos(void)
+{
+	oldPosition = pGD_TControl_Tepl->Systems[cSysUCValve].Keep;
+}
+
+char valveGetOldPos(void)
+{
+	return oldPosition;
+}
+
 int KeepUCValve(char prevPosition)
 {
 	int16_t tempKeep;
@@ -229,31 +242,31 @@ int KeepUCValve(char prevPosition)
 	if (tempKeep > prevPosition )  // клапан открывается
 	{
 		delta = tempKeep - prevPosition;
-	if (tempKeep <= GD.TuneClimate.fUC_S1Level)  // если Процент открытия менее первого уровня
+	if (prevPosition <= GD.TuneClimate.fUC_S1Level)  // если Процент открытия менее первого уровня
 	{
 		if (delta > GD.TuneClimate.fUC_Offset1)
 			return prevPosition + GD.TuneClimate.fUC_Offset1;
 		else
 			return tempKeep;
 	}
-	if ((tempKeep >= GD.TuneClimate.fUC_S1Level) && (tempKeep <= GD.TuneClimate.fUC_S2Level))  // если Процент открытия менее второго уровня
+	if ((prevPosition >= GD.TuneClimate.fUC_S1Level) && (prevPosition <= GD.TuneClimate.fUC_S2Level))  // если Процент открытия менее второго уровня
 	{
 		if (delta > GD.TuneClimate.fUC_Offset2)
-			return prevPosition + GD.TuneClimate.fUC_Offset1;
+			return prevPosition + GD.TuneClimate.fUC_Offset2;
 		else
 			return tempKeep;
 	}
-	if ((tempKeep >= GD.TuneClimate.fUC_S2Level) && (tempKeep <= GD.TuneClimate.fUC_S3Level))  // если Процент открытия менее второго уровня
+	if ((prevPosition >= GD.TuneClimate.fUC_S2Level) && (prevPosition <= GD.TuneClimate.fUC_S3Level))  // если Процент открытия менее второго уровня
 	{
-		if (delta > GD.TuneClimate.fUC_Offset2)
-			return prevPosition + GD.TuneClimate.fUC_Offset1;
+		if (delta > GD.TuneClimate.fUC_Offset3)
+			return prevPosition + GD.TuneClimate.fUC_Offset3;
 		else
 			return tempKeep;
 	}
-	if (tempKeep >= GD.TuneClimate.fUC_S3Level)  // если Процент открытия более последнего третьего уровня
+	if (prevPosition >= GD.TuneClimate.fUC_S3Level)  // если Процент открытия более последнего третьего уровня
 	{
 		if (delta > GD.TuneClimate.fUC_Offset4)
-			return prevPosition + GD.TuneClimate.fUC_Offset1;
+			return prevPosition + GD.TuneClimate.fUC_Offset4;
 		else
 			return tempKeep;
 	}
@@ -261,31 +274,31 @@ int KeepUCValve(char prevPosition)
 	else		// клапан закрывается
 	{
 		delta = prevPosition - tempKeep;
-		if (tempKeep <= GD.TuneClimate.fUC_S1Level)  // если Процент открытия менее первого уровня
+		if (prevPosition <= GD.TuneClimate.fUC_S1Level)  // если Процент открытия менее первого уровня
 		{
 			if (delta > GD.TuneClimate.fUC_Offset1)
 				return prevPosition - GD.TuneClimate.fUC_Offset1;
 			else
 				return tempKeep;
 		}
-		if ((tempKeep >= GD.TuneClimate.fUC_S1Level) && (tempKeep <= GD.TuneClimate.fUC_S2Level))  // если Процент открытия менее второго уровня
+		if ((prevPosition >= GD.TuneClimate.fUC_S1Level) && (prevPosition <= GD.TuneClimate.fUC_S2Level))  // если Процент открытия менее второго уровня
 		{
 			if (delta > GD.TuneClimate.fUC_Offset2)
-				return prevPosition - GD.TuneClimate.fUC_Offset1;
+				return prevPosition - GD.TuneClimate.fUC_Offset2;
 			else
 				return tempKeep;
 		}
-		if ((tempKeep >= GD.TuneClimate.fUC_S2Level) && (tempKeep <= GD.TuneClimate.fUC_S3Level))  // если Процент открытия менее второго уровня
+		if ((prevPosition >= GD.TuneClimate.fUC_S2Level) && (prevPosition <= GD.TuneClimate.fUC_S3Level))  // если Процент открытия менее второго уровня
 		{
-			if (delta > GD.TuneClimate.fUC_Offset2)
-				return prevPosition - GD.TuneClimate.fUC_Offset1;
+			if (delta > GD.TuneClimate.fUC_Offset3)
+				return prevPosition - GD.TuneClimate.fUC_Offset3;
 			else
 				return tempKeep;
 		}
-		if (tempKeep >= GD.TuneClimate.fUC_S3Level)  // если Процент открытия более последнего третьего уровня
+		if (prevPosition >= GD.TuneClimate.fUC_S3Level)  // если Процент открытия более последнего третьего уровня
 		{
 			if (delta > GD.TuneClimate.fUC_Offset4)
-				return prevPosition - GD.TuneClimate.fUC_Offset1;
+				return prevPosition - GD.TuneClimate.fUC_Offset4;
 			else
 				return tempKeep;
 		}
@@ -301,7 +314,8 @@ int KeepUCValve(char prevPosition)
 	GD.TuneClimate.fAHU_Offset4;
 */
 
-//	return pGD_TControl_Tepl->Systems[cSysUCValve].Keep;
+//	//return pGD_TControl_Tepl->Systems[cSysUCValve].Keep;
+//	return 0;
 }
 
 int KeepFanSystem(void)
@@ -346,8 +360,8 @@ void CheckFanSystem(void)
 		if (pGD_TControl_Tepl->Systems[cSysAHUSpeed].Keep>pGD_TControl_Tepl->Systems[cSysAHUSpeed].Min)
 			 SetBit(pGD_TControl_Tepl->Systems[cSysAHUSpeed].RCS,cSysRDown);
 	}
-	pGD_TControl_Tepl->Systems[cSysAHUSpeed].Power=1000;//pGD_ConstMechanic->ConstMixVal[cHSmAHUSpeed1].v_PFactor;
-
+	pGD_TControl_Tepl->Systems[cSysAHUSpeed].Power=1000;//pGD_ConstMechanic->ConstMixVal[cHSmAHUSpeed1].v_PFactor;  // last
+    //pGD_TControl_Tepl->Systems[cSysAHUSpeed].Power=pGD_ConstMechanic->ConstMixVal[cHSmAHUSpeed1].v_PFactor;
 }
 
 void SetPrioritySystem(int8_t fnSys, int8_t fPrior,int8_t Up)
@@ -452,8 +466,8 @@ int8_t TakeForSys(int16_t fnCritery)
 		return -1;
 	}
 	pGD_TControl_Tepl->StopVentI=0;
-	//pGD_TControl_Tepl->Systems[fnMSys].Keep+=((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnMSys].Power/10000;
-	pGD_TControl_Tepl->Systems[fnMSys].Keep = SetPID(fnCritery*pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min);
+	//pGD_TControl_Tepl->Systems[fnMSys].Keep+=((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnMSys].Power/10000; // так было
+	pGD_TControl_Tepl->Systems[fnMSys].Keep = SetPID(((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
 }
 
 //Для расчета критерия на базе текущих положений увлажнения, скорости вентиляторов, фрамуг
@@ -1258,7 +1272,10 @@ void __sLastCheckWindow(void)
 
 	//pGD_TControl_Tepl->Kontur[cSmAHUSpd].DoT=DoOn;
 
-	pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do=(*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT;
+	//pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do=(*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT;  // было так
+	pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do=pGD_TControl_Tepl->Systems[cSysUCValve].Keep;  // last
+	pGD_Hot_Tepl->Kontur[cSmWindowUnW].SError=pGD_TControl_Tepl->Systems[cSysUCValve].Power/100;  // NEW
+
 //	IntX=pGD_Hot_Tepl->InTeplSens[].Value
 //	SetPID()
 	//pGD_Hot_Tepl->Kontur[cSmAHUSpd].Do=(DoOn);
@@ -1615,15 +1632,24 @@ void __sCalcKonturs(void)
 		CheckFanSystem();
 		CheckMistSystem();
 		(*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT=pGD_Hot_Tepl->NextTCalc.TVentCritery-__MechToVentTemp();
-		//PutCritery(разница тизм-твент,DefRH());
-		PutCritery((getTempVent(fnTepl)-GD.Hot.Tepl[fnTepl].AllTask.DoTVent),DefRH());
+#warning check GD.Hot.Tepl[fnTepl].AllTask.DoTVent
+		if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0))
+				PutCritery((getTempVent(fnTepl)-GD.Hot.Tepl[fnTepl].AllTask.DoTVent),DefRH()); // first
+		//PutCritery((GD.Hot.Tepl[fnTepl].AllTask.DoTVent - getTempVent(fnTepl)),DefRH());  //last
+		//PutCritery((*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT,DefRH());  // было так
+#warning check GD.Hot.Tepl[fnTepl].AllTask.DoTVent
 		pGD_TControl_Tepl->AbsMaxVent=__MaxMechToVentTemp();
-		//TakeForSys(разница тизм-твент);
-		TakeForSys(getTempVent(fnTepl)-GD.Hot.Tepl[fnTepl].AllTask.DoTVent);
+		if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0))
+			TakeForSys(getTempVent(fnTepl)-GD.Hot.Tepl[fnTepl].AllTask.DoTVent);  // first
+		//TakeForSys(GD.Hot.Tepl[fnTepl].AllTask.DoTVent - getTempVent(fnTepl));  // last
+		//TakeForSys((*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT);  // было так
+		//if ((((int32_t)pGD_TControl_Tepl->Kontur[cSmWindowUnW].CalcT)*pGD_Hot_Tepl->NextTCalc.TVentCritery)<=0)
+		//	pGD_TControl_Tepl->StopVentI=0;  // изначально было потом убрали
+
 //!!
 
 //		if ((((int32_t)pGD_TControl_Tepl->Kontur[cSmWindowUnW].CalcT)*pGD_Hot_Tepl->NextTCalc.TVentCritery)<=0)
-//			pGD_TControl_Tepl->StopVentI=0;
+//			pGD_TControl_Tepl->StopVentI=0;  // это Дима закоментил
 		FinalCheckSys(cSysUCValve);
 		FinalCheckSys(cSysMist);
 		FinalCheckSys(cSysAHUSpeed);
@@ -1850,7 +1876,6 @@ int16_t __SetPad(char fnTepl)
 
 }
 
-
 //Процедура устанавливает регулировку фрамуг от головного клапана
 //Изменения от 13.05.2014
 void __sMechWindows(void)
@@ -1864,9 +1889,10 @@ void __sMechWindows(void)
 	{
 		SetPointersOnTepl(fnTepl);
 		UCprevPosition = pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position;
-		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmUCValve].RCS,cbManMech)))
-			pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position=KeepUCValve(UCprevPosition);//pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do;
 
+		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmUCValve].RCS,cbManMech)))
+			pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position=KeepUCValve(UCprevPosition);//;pGD_TControl_Tepl->Systems[cSysUCValve].Keep);//valveGetOldPos());//pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do;
+		//valveSetOldPos();
 		if (!(YesBit((*(pGD_Hot_Hand+cHSmAHUSpeed1)).RCS,(/*cbNoMech+*/cbManMech))))
 			(*(pGD_Hot_Hand+cHSmAHUSpeed1)).Position=KeepFanSystem();//(*pGD_Hot_Tepl).AllTask.AHUVent;//pGD_Hot_Tepl->Kontur[cSmAHUSpd].Do;
 		if (!(YesBit((*(pGD_Hot_Hand+cHSmAHUSpeed2)).RCS,(/*cbNoMech+*/cbManMech))))

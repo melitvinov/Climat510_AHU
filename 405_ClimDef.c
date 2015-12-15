@@ -36,6 +36,7 @@ bit     B_input;
 bit     EndInput;
 bit     BlkW;
 unsigned char   Second;
+//volatile unsigned char   SecondCount;
 
 //int16_t    	Mes;
 int16_t    	MesINT0;

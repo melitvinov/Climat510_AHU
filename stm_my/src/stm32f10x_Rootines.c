@@ -804,8 +804,8 @@ void CheckSensLevsNew(char fnTepl,uint8_t fnSens,char full,char met,int16_t Mes)
 
 	}
 	valueS->Value=Mes;
-	ClrBit(valueS->RCS,(cbDownAlarmSens+cbUpAlarmSens));
-	if ((levelS[cSmDownCtrlLev])&&(Mes <= levelS[cSmDownCtrlLev]))
+	//ClrBit(valueS->RCS,(cbDownAlarmSens+cbUpAlarmSens));				// task 61
+	/*if ((levelS[cSmDownCtrlLev])&&(Mes <= levelS[cSmDownCtrlLev]))
 		SetBit(valueS->RCS,cbDownCtrlSens);
     if ((levelS[cSmUpCtrlLev])&&(Mes >= levelS[cSmUpCtrlLev]))
     	SetBit(valueS->RCS,cbUpCtrlSens);
@@ -819,6 +819,7 @@ void CheckSensLevsNew(char fnTepl,uint8_t fnSens,char full,char met,int16_t Mes)
     	SetBit(valueS->RCS,cbUpAlarmSens);
         return;
     }
+    */
 }
 
 void  CalibrNew(char nSArea,char nTepl, char nSens,int16_t Mes){
@@ -844,6 +845,7 @@ void  CalibrNew(char nSArea,char nTepl, char nSens,int16_t Mes){
 		met=1;
 	}
 	fSens->RCS=(fSens->RCS&(cbNotGoodSens+cbDownAlarmSens+cbUpAlarmSens));
+
 	switch (fNameSens->TypeSens)
 	{
 		case cTypeFram:
@@ -890,7 +892,14 @@ void Measure()
         		GD.uInTeplSens[tTepl][nSens]=0;
         		continue;
         	}
-        	if (ErrModule>=iMODULE_MAX_ERR) tSensVal=0;
+        	if (ErrModule>=iMODULE_MAX_ERR)
+        	{
+        		GD.Hot.Tepl[tTepl].InTeplSens[nSens].RCS=cbNoWorkSens;
+        		GD.Hot.Tepl[tTepl].InTeplSens[nSens].Value=0;
+        		GD.uInTeplSens[tTepl][nSens]=0;
+        		continue;
+        		//        		tSensVal=0;
+        	}
         	CalibrNew(1,tTepl,nSens,tSensVal);
 		}
 	}

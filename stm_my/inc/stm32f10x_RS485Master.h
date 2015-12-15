@@ -26,6 +26,7 @@
 #define ERR_MODULE_RESET			0x40
 #define NEED_MODULE_RESET			0x80
 
+#define iMODULE_MAX_ERR1				50
 #define iMODULE_MAX_ERR				100
 #define iMODULE_MAX_FAILURES		125
 

@@ -57,7 +57,9 @@ int16_t getTempSensor(char fnTepl, char sensor)
 	}
 	if (pGD_Hot_Tepl->InTeplSens[sensor].RCS != 0)
 	{
-			return teplTmes[fnTepl][sensor];
+		if (pGD_Hot_Tepl->InTeplSens[sensor].Value == 0)
+			return 0;
+		return teplTmes[fnTepl][sensor];
 	}
 }
 

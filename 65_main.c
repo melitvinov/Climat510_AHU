@@ -119,7 +119,9 @@ start:
         ClrDog;
         B_video=1;
         if (!(Second%9))
+        {
         	Measure();
+        }
        // IMOD_WriteOutput(0,1,0xf0f0f0f0);
 
    	   }
