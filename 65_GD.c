@@ -1,6 +1,5 @@
 #pragma pack(1)
 
-
 typedef struct eeCalSensor {
 	uint8_t		Type;
 	uint8_t		nInput;
@@ -985,4 +984,23 @@ void ButtonReset(void) {
         ClrDog;
         GD.Control.rSTepl=GD.Control.ConfSTepl;//cNowSTepl;		
         GD.Control.rVersion=cVersion;
+}
+
+// дефолтные установки параметров
+void defaultSettings(void)
+{
+	if (GD.TuneClimate.fUC_Offset1 == 0)
+		GD.TuneClimate.fUC_Offset1 = 2;
+	if (GD.TuneClimate.fUC_S1Level == 0)
+		GD.TuneClimate.fUC_S1Level = 20;
+	if (GD.TuneClimate.fUC_Offset2 == 0)
+		GD.TuneClimate.fUC_Offset2 = 2;
+	if (GD.TuneClimate.fUC_S2Level == 0)
+		GD.TuneClimate.fUC_S2Level = 50;
+	if (GD.TuneClimate.fUC_Offset3 == 0)
+		GD.TuneClimate.fUC_Offset3 = 4;
+	if (GD.TuneClimate.fUC_S3Level == 0)
+		GD.TuneClimate.fUC_S3Level = 80;
+	if (GD.TuneClimate.fUC_Offset4 == 0)
+		GD.TuneClimate.fUC_Offset4 = 6;
 }
