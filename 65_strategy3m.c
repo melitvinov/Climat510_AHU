@@ -117,6 +117,30 @@ void __sMinMaxWater(char fnKontur)
 //»зменени€ от 26.04.2015
 
 //установить минимумы, максимумы, возможность вверх, возможность вниз
+void CheckTHoseSystem(void)
+{
+	pGD_TControl_Tepl->Systems[cSysTHose].Max=(*pGD_Hot_Tepl).AllTask.DoTVent+300;
+#warning temporary constants later from params
+	pGD_TControl_Tepl->Systems[cSysTHose].Min=1500;
+
+	pGD_TControl_Tepl->Systems[cSysTHose].RCS=0;
+
+	pGD_TControl_Tepl->Systems[cSysTHose].Value=pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value;
+
+	if (pGD_TControl_Tepl->Systems[cSysTHose].Keep>pGD_TControl_Tepl->Systems[cSysTHose].Max)
+		pGD_TControl_Tepl->Systems[cSysTHose].Keep=pGD_TControl_Tepl->Systems[cSysTHose].Max;
+
+	if	(!pGD_TControl_Tepl->Systems[cSysTHose].RCS)
+	{
+		if (pGD_TControl_Tepl->Systems[cSysTHose].Keep<pGD_TControl_Tepl->Systems[cSysTHose].Max)
+			 SetBit(pGD_TControl_Tepl->Systems[cSysTHose].RCS,cSysRUp);
+		if (pGD_TControl_Tepl->Systems[cSysTHose].Keep>pGD_TControl_Tepl->Systems[cSysTHose].Min)
+			 SetBit(pGD_TControl_Tepl->Systems[cSysTHose].RCS,cSysRDown);
+	}
+	pGD_TControl_Tepl->Systems[cSysTHose].Power=1000;
+}
+
+//установить минимумы, максимумы, возможность вверх, возможность вниз
 void CheckUCValveSystem(void)
 {
 	pGD_TControl_Tepl->Systems[cSysUCValve].Max=(*pGD_Hot_Tepl).Kontur[cSmWindowUnW].MaxCalc;
@@ -406,18 +430,18 @@ int8_t GetOffSet(int8_t fnSys)
 {
 	switch (fnSys)
 	{
-		case cSmKontur1: //0
-			return cSysRailPipe;
-		case cSmKontur2: //1
-			return cSysHeadPipe;
-		case cSmKontur3: //2
-			return cSysAHUPipe;
-		case cSmKontur4: //3
-			return cSysSidePipe;
-		case cSmAHUSpd:  //7
-			return cSysAHUSpeed;
-		case cSmUCValve: //8
- 			return cSysUCValve;
+		case cSysRailPipe: //0
+			return cSmKontur1;
+		case cSysHeadPipe: //1
+			return cSmKontur2;
+		case cSysAHUPipe: //2
+			return cSmKontur3;
+//		case cSysTHose: //3
+//			return cSmScreen;
+		case cSysAHUSpeed:  //7
+			return cSmAHUSpd;
+		case cSysUCValve: //8
+ 			return cSmUCValve;
 		case cSmScreen:  //10
 			return cSysScreen;
 	}
@@ -1627,6 +1651,7 @@ void __sCalcKonturs(void)
 
 		pGD_Hot_Tepl->Kontur[cSmWindowUnW].Optimal=pGD_TControl_Tepl->f_NMinDelta;	
 //–абота “-вентил€ции
+		CheckTHoseSystem();
 
 		CheckUCValveSystem();
 		CheckFanSystem();
@@ -1634,7 +1659,9 @@ void __sCalcKonturs(void)
 		(*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT=pGD_Hot_Tepl->NextTCalc.TVentCritery-__MechToVentTemp();
 #warning check GD.Hot.Tepl[fnTepl].AllTask.DoTVent
 		if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0))
+		{
 				PutCritery((getTempVent(fnTepl)-GD.Hot.Tepl[fnTepl].AllTask.DoTVent),DefRH()); // first
+		}
 		//PutCritery((GD.Hot.Tepl[fnTepl].AllTask.DoTVent - getTempVent(fnTepl)),DefRH());  //last
 		//PutCritery((*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT,DefRH());  // было так
 #warning check GD.Hot.Tepl[fnTepl].AllTask.DoTVent

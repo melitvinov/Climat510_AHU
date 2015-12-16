@@ -90,7 +90,7 @@ void BufCpy(char *pp1, char *pp2, int n) { //dest,source,number
 unsigned char analyse_get_url(char *str)
 	{
 	unsigned char i=0;
-	if (verify_password(str)==0)
+	//if (verify_password(str)==0)
 		{
 		return(-1);
 		}

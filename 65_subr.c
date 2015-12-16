@@ -990,6 +990,15 @@ uint16_t AbsHum(uint16_t fTemp, uint16_t fRH)
 	return tRez;
 }
 
+uint16_t RelHum(uint16_t fTemp, uint16_t AbsRH)
+{
+	float tT,tRH, tRez;
+	tT=fTemp/100;
+	tRH=AbsRH;
+	tRez=AbsRH/((0.000002*tT*tT*tT*tT)+(0.0002*tT*tT*tT)+(0.0095*tT*tT)+( 0.337*tT)+4.9034);
+	return tRez*100;
+}
+
 
 int8_t	SetPID(uint16_t fDelta,uint8_t fNMech,int8_t fMax, int8_t fMin)
 {

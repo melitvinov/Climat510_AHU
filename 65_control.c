@@ -917,52 +917,35 @@ void __cNextTCalc(char fnTepl)
 	IntY=getTempVent(fnTepl)-(*pGD_Hot_Tepl).AllTask.DoTVent;
 
 	(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent=((int)((((long)(IntY))*((long)pGD_Control_Tepl->f_PFactor))/100));
-	if (pGD_TControl_Tepl->StopVentI<2)
- 		(*pGD_TControl_Tepl).IntegralVent+=((((long)(IntY))*((long)pGD_Control_Tepl->f_IFactor))/10);
-	if (!pGD_Control_Tepl->f_IFactor)
-		(*pGD_TControl_Tepl).IntegralVent=0;
+ 	(*pGD_TControl_Tepl).IntegralVent+=((((long)(IntY))*((long)pGD_Control_Tepl->f_IFactor))/10);
+//	if (!pGD_Control_Tepl->f_IFactor)
+//		(*pGD_TControl_Tepl).IntegralVent=0;
 
 	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=(int)(pGD_TControl_Tepl->IntegralVent/100);
-	IntX=(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent+(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent+(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
-//Ѕлокировка фрамуг при отоплении
-	if ((pGD_TControl_Tepl->TVentCritery<IntX)&&(!pGD_TControl_Tepl->StopI)&&(IntX>0)&&((pGD_Control_Tepl->f_PFactor%100)>89))
+	IntX=(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent+(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent;//+(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
+
+	//ѕроверка на максимум расчета пока константа + 3 градуса
+	if (pGD_Hot_Tepl->AllTask.DoTVent+300<IntX)
 	{
-		pGD_TControl_Tepl->IntegralVent=pGD_TControl_Tepl->TVentCritery-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
+		pGD_TControl_Tepl->IntegralVent=pGD_Hot_Tepl->AllTask.DoTVent+300-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
 		pGD_TControl_Tepl->IntegralVent*=100;
-		IntX=pGD_TControl_Tepl->TVentCritery;
+		IntX=pGD_Hot_Tepl->AllTask.DoTVent+300;
+	}
+	//ѕроверка на мминимум расчета пока константа 14 градусов
+	if (1400>IntX)
+	{
+		pGD_TControl_Tepl->IntegralVent=1400-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
+		pGD_TControl_Tepl->IntegralVent*=100;
+		IntX=1400;
 	}
 	pGD_TControl_Tepl->TVentCritery=IntX;
-//	if (!SameSign((*pGD_TControl_Tepl).TVentCritery,(*pGD_TControl_Tepl).LastTVentCritery))
-//	  	pGD_TControl_Tepl->StopVentI=0;
-	if (pGD_TControl_Tepl->StopVentI>4)
-	{
-		(*pGD_TControl_Tepl).IntegralVent=(*pGD_TControl_Tepl).SaveIntegralVent;	
-	}
-	if (pGD_TControl_Tepl->StopVentI>3)
-	{
-		(*pGD_TControl_Tepl).SaveIntegralVent=(*pGD_TControl_Tepl).IntegralVent;
-		CorrectionRule(0,100,500,0);
-		if (pGD_TControl_Tepl->AbsMaxVent>0)
-			IntZ+=pGD_TControl_Tepl->AbsMaxVent;
-		if ((*pGD_TControl_Tepl).TVentCritery>IntZ)
-		{
-			(*pGD_TControl_Tepl).SaveIntegralVent
-				=IntZ-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
-		    (*pGD_TControl_Tepl).SaveIntegralVent*=100;
-		}
-		IntY=-IntY;
-		CorrectionRule(0,100,500,0);
-		IntZ++;
-		if ((*pGD_TControl_Tepl).TVentCritery<-IntZ)
-		{
-			(*pGD_TControl_Tepl).SaveIntegralVent
-				=-IntZ-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
-		    (*pGD_TControl_Tepl).SaveIntegralVent*=100;
-		}
-	} 
 	(*pGD_Hot_Tepl).NextTCalc.TVentCritery=(*pGD_TControl_Tepl).TVentCritery;
 
-
+	//–асчет влажности рукава по заданию влажности воздуха- пока запишем в интегральную поправку
+	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent,pGD_Hot_Tepl->AllTask.DoRHAir);
+	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=RelHum(pGD_TControl_Tepl->TVentCritery,(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent);
+	if ((*pGD_Hot_Tepl).NextTCalc.ICorrectionVent>9500)
+		(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=9500;
 
 }
 

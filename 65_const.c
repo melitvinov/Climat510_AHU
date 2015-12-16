@@ -55,7 +55,7 @@
 #define cSysAHUPipe			0
 #define cSysRailPipe		1
 #define cSysHeadPipe		2
-#define cSysSidePipe		3
+#define cSysTHose			3
 #define cSysUCValve			4
 #define cSysScreen			5
 #define cSysAHUSpeed		6
