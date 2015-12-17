@@ -914,7 +914,7 @@ void __cNextTCalc(char fnTepl)
 /******************************************************************
 		Далее расчет критерия для фрамуг
 *******************************************************************/
-	IntY=getTempVent(fnTepl)-(*pGD_Hot_Tepl).AllTask.DoTVent;
+	IntY=(*pGD_Hot_Tepl).AllTask.DoTVent-getTempVent(fnTepl);
 
 	(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent=((int)((((long)(IntY))*((long)pGD_Control_Tepl->f_PFactor))/100));
  	(*pGD_TControl_Tepl).IntegralVent+=((((long)(IntY))*((long)pGD_Control_Tepl->f_IFactor))/10);

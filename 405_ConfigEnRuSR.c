@@ -35,6 +35,7 @@
 #define cSmCOSens		11
 //#define cSmTCSens		1
 #define cSmTAHUOutSens	20
+#define cSmRHAHUOutSens	13
 #define cSmWinNSens		21
 #define cSmWinSSens		22
 #define cSmScreenSens	23

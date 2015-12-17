@@ -140,6 +140,36 @@ void CheckTHoseSystem(void)
 	pGD_TControl_Tepl->Systems[cSysTHose].Power=1000;
 }
 
+//установить минимумы, максимумы, возможность вверх, возможность вниз для контура AHU
+void CheckAHUPipeSystem(void)
+{
+	pGD_TControl_Tepl->Systems[cSysAHUPipe].Max=(*pGD_Hot_Tepl).Kontur[cSmKontur3].MaxCalc;
+
+	pGD_TControl_Tepl->Systems[cSysAHUPipe].Min=(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinCalc;
+
+	pGD_TControl_Tepl->Systems[cSysAHUPipe].RCS=0;
+	if ((YesBit(pGD_Hot_Hand[cHSmMixVal+cSmKontur3].RCS,cbManMech))||(!pGD_MechConfig->RNum[cHSmMixVal+cSmKontur3]))
+	{
+		SetBit(pGD_TControl_Tepl->Systems[cSysAHUPipe].RCS,cSysRHand);
+//		pGD_TControl_Tepl->Systems[cSysUCValve].Max=0;
+	}
+	//pGD_TControl_Tepl->Systems[cSysUCValve].Value=pGD_Hot_Hand[cHSmUCValve].Position;
+
+	if (pGD_TControl_Tepl->Systems[cSysAHUPipe].Keep>pGD_TControl_Tepl->Systems[cSysAHUPipe].Max)
+		pGD_TControl_Tepl->Systems[cSysAHUPipe].Keep=pGD_TControl_Tepl->Systems[cSysAHUPipe].Max;
+
+	if	(!pGD_TControl_Tepl->Systems[cSysAHUPipe].RCS)
+	{
+		if ((pGD_TControl_Tepl->Systems[cSysAHUPipe].Keep<pGD_TControl_Tepl->Systems[cSysAHUPipe].Max)&&(pGD_Hot_Hand[cHSmMixVal+cSmKontur3].Position!=100))
+			 SetBit(pGD_TControl_Tepl->Systems[cSysAHUPipe].RCS,cSysRUp);
+		if ((pGD_TControl_Tepl->Systems[cSysAHUPipe].Keep>pGD_TControl_Tepl->Systems[cSysAHUPipe].Min)&&(pGD_Hot_Hand[cHSmMixVal+cSmKontur3].Position))
+			 SetBit(pGD_TControl_Tepl->Systems[cSysAHUPipe].RCS,cSysRDown);
+	}
+	pGD_TControl_Tepl->Systems[cSysAHUPipe].Power=-1000; // last
+    //pGD_TControl_Tepl->Systems[cSysUCValve].Power=((int32_t)pGD_ConstMechanic->ConstMixVal[cHSmUCValve].v_PFactor)*1000/((long)pGD_TControl_Tepl->f_Power);
+}
+
+
 //установить минимумы, максимумы, возможность вверх, возможность вниз
 void CheckUCValveSystem(void)
 {
@@ -352,7 +382,10 @@ int KeepMistSystem(void)
 	return pGD_TControl_Tepl->Systems[cSysMist].Keep;
 }
 
-
+int KeepAHUPipeSystem(void)
+{
+	return pGD_TControl_Tepl->Systems[cSysAHUPipe].Keep;
+}
 
 void CheckFanSystem(void)
 {
@@ -402,26 +435,30 @@ void PutCritery(int16_t dT, int16_t dRH)
 	if ((dT>=0)&&(dRH>=0))
 	{
 		SetPrioritySystem(cSysUCValve,10,SYS_GO_UP);
-		SetPrioritySystem(cSysAHUSpeed,9,SYS_GO_UP);
-		SetPrioritySystem(cSysMist,0,SYS_GO_UP);
+		SetPrioritySystem(cSysAHUPipe,9,SYS_GO_DOWN);
+		SetPrioritySystem(cSysAHUSpeed,0,SYS_GO_UP);
+		SetPrioritySystem(cSysMist,7,SYS_GO_UP);
 	}
 	if ((dT>=0)&&(dRH<0))
 	{
-		SetPrioritySystem(cSysMist,0,SYS_GO_UP);
-		SetPrioritySystem(cSysUCValve,9,SYS_GO_UP);
-		SetPrioritySystem(cSysAHUSpeed,8,SYS_GO_UP);
+		SetPrioritySystem(cSysAHUPipe,10,SYS_GO_DOWN);
+		SetPrioritySystem(cSysMist,9,SYS_GO_UP);
+		SetPrioritySystem(cSysUCValve,8,SYS_GO_UP);
+		SetPrioritySystem(cSysAHUSpeed,0,SYS_GO_UP);
 	}
 	if ((dT<0)&&(dRH>=0))
 	{
-		SetPrioritySystem(cSysMist,0,SYS_GO_DOWN);
-		SetPrioritySystem(cSysAHUSpeed,9,SYS_GO_DOWN);
+		SetPrioritySystem(cSysMist,10,SYS_GO_DOWN);
+		SetPrioritySystem(cSysAHUPipe,9,SYS_GO_UP);
 		SetPrioritySystem(cSysUCValve,8,SYS_GO_DOWN);
+		SetPrioritySystem(cSysAHUSpeed,0,SYS_GO_DOWN);
 	}
 	if ((dT<0)&&(dRH<0))
 	{
-		SetPrioritySystem(cSysAHUSpeed,10,SYS_GO_DOWN);
-		SetPrioritySystem(cSysUCValve,9,SYS_GO_DOWN);
-		SetPrioritySystem(cSysMist,0,SYS_GO_DOWN);
+		SetPrioritySystem(cSysUCValve,10,SYS_GO_DOWN);
+		SetPrioritySystem(cSysAHUPipe,9,SYS_GO_UP);
+		SetPrioritySystem(cSysMist,8,SYS_GO_DOWN);
+		SetPrioritySystem(cSysAHUSpeed,0,SYS_GO_DOWN);
 	}
 
 }
@@ -435,7 +472,7 @@ int8_t GetOffSet(int8_t fnSys)
 		case cSysHeadPipe: //1
 			return cSmKontur2;
 		case cSysAHUPipe: //2
-			return cSmKontur3;
+			return cSmKonturAHU;
 //		case cSysTHose: //3
 //			return cSmScreen;
 		case cSysAHUSpeed:  //7
@@ -1567,6 +1604,7 @@ void __sCalcKonturs(void)
 	long MinMaxPowerReg[3];
 	long xdata temp;
 	int	 OldCrit;
+	int16_t	CriterT,CriterRH;
 	char isFram;
 	char fnTepl,tTepl;
 	
@@ -1652,22 +1690,31 @@ void __sCalcKonturs(void)
 		pGD_Hot_Tepl->Kontur[cSmWindowUnW].Optimal=pGD_TControl_Tepl->f_NMinDelta;	
 //Работа Т-вентиляции
 		CheckTHoseSystem();
-
+		CheckAHUPipeSystem();
 		CheckUCValveSystem();
 		CheckFanSystem();
 		CheckMistSystem();
+		CriterT=getTempVent(fnTepl)-GD.Hot.Tepl[fnTepl].AllTask.DoTVent;
+		CriterRH=DefRH();
+#warning Only f check
+		if (pGD_Strategy_Tepl[cSmKontur3].TempPower==22)
+		{
+			CriterT=pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value-GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery;
+			CriterRH=(*pGD_Hot_Tepl).InTeplSens[cSmRHAHUOutSens].Value-(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent;
+		}
+
 		(*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT=pGD_Hot_Tepl->NextTCalc.TVentCritery-__MechToVentTemp();
 #warning check GD.Hot.Tepl[fnTepl].AllTask.DoTVent
 		if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0))
 		{
-				PutCritery((getTempVent(fnTepl)-GD.Hot.Tepl[fnTepl].AllTask.DoTVent),DefRH()); // first
+				PutCritery(CriterT,CriterRH); // first
 		}
 		//PutCritery((GD.Hot.Tepl[fnTepl].AllTask.DoTVent - getTempVent(fnTepl)),DefRH());  //last
 		//PutCritery((*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT,DefRH());  // было так
 #warning check GD.Hot.Tepl[fnTepl].AllTask.DoTVent
 		pGD_TControl_Tepl->AbsMaxVent=__MaxMechToVentTemp();
 		if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0))
-			TakeForSys(getTempVent(fnTepl)-GD.Hot.Tepl[fnTepl].AllTask.DoTVent);  // first
+			TakeForSys(CriterT);  // first
 		//TakeForSys(GD.Hot.Tepl[fnTepl].AllTask.DoTVent - getTempVent(fnTepl));  // last
 		//TakeForSys((*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT);  // было так
 		//if ((((int32_t)pGD_TControl_Tepl->Kontur[cSmWindowUnW].CalcT)*pGD_Hot_Tepl->NextTCalc.TVentCritery)<=0)
@@ -1680,7 +1727,7 @@ void __sCalcKonturs(void)
 		FinalCheckSys(cSysUCValve);
 		FinalCheckSys(cSysMist);
 		FinalCheckSys(cSysAHUSpeed);
-
+		FinalCheckSys(cSysAHUPipe);
 // END Работа Т-вентиляции
 
 		  
@@ -1920,6 +1967,10 @@ void __sMechWindows(void)
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmUCValve].RCS,cbManMech)))
 			pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position=KeepUCValve(UCprevPosition);//;pGD_TControl_Tepl->Systems[cSysUCValve].Keep);//valveGetOldPos());//pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do;
 		//valveSetOldPos();
+#warning Only f check
+		if (pGD_Strategy_Tepl[cSmKontur3].TempPower==22)
+			pGD_Hot_Tepl->Kontur[cSmKontur3].Do=KeepAHUPipeSystem();
+
 		if (!(YesBit((*(pGD_Hot_Hand+cHSmAHUSpeed1)).RCS,(/*cbNoMech+*/cbManMech))))
 			(*(pGD_Hot_Hand+cHSmAHUSpeed1)).Position=KeepFanSystem();//(*pGD_Hot_Tepl).AllTask.AHUVent;//pGD_Hot_Tepl->Kontur[cSmAHUSpd].Do;
 		if (!(YesBit((*(pGD_Hot_Hand+cHSmAHUSpeed2)).RCS,(/*cbNoMech+*/cbManMech))))

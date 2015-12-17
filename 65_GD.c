@@ -740,7 +740,7 @@ typedef struct eeTControlTepl
 		int16_t				AbsMaxVent;
 		int16_t				LastTVentCritery;
 		int16_t				LastCritery;
-		int16_t				IntVal[cSRegCtrl];
+		int32_t				IntVal[cSRegCtrl];
 //36
 //		int16_t				PrevSig[cSWaterKontur];
 //46

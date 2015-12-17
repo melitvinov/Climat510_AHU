@@ -1000,7 +1000,7 @@ uint16_t RelHum(uint16_t fTemp, uint16_t AbsRH)
 }
 
 
-int8_t	SetPID(uint16_t fDelta,uint8_t fNMech,int8_t fMax, int8_t fMin)
+int16_t	SetPID(uint16_t fDelta,uint8_t fNMech,int8_t fMax, int8_t fMin)
 {
 	int16_t	*IntVal;
 	ClrDog;
