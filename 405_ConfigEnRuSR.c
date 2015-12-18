@@ -286,7 +286,7 @@ NameParUpr[SUM_NAME_PARS]={
 /*20  CO2*/				{"CO2 type#T\270\275 CO2",SSSS},
 /*21  SIO*/				{"SIO#\SIO",SSSS},
 /*22  Досветка*/		{"Light#\Light",SSSS},
-/*23  T heat */			{"T heat vent#T heat vent",SSSS},
+/*23  T heat */			{"T heat vent#T heat vent",SSSS}
 };
 
 
