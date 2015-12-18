@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Project version="2G - 2.0.3" name="Climat510">
   <Target name="Climat510" isCurrent="1">
-    <Device manufacturerId="9" manufacturerName="ST" chipId="707" chipName="STM32F105RCT6" boardId="" boardName="" boardUrl="" coreId="" coreName=""/>
+    <Device manufacturerId="9" manufacturerName="ST" chipId="707" chipName="STM32F105RCT6" boardId="" boardName=""/>
     <BuildOption>
       <Compile>
         <Option name="OptimizationLevel" value="1"/>
@@ -34,7 +34,7 @@
           <Memory name="IROM2" type="ReadOnly" size="" startValue=""/>
           <Memory name="IRAM2" type="ReadWrite" size="" startValue=""/>
         </MemoryAreas>
-        <LocateLinkFile path="../../users/dmitry lashin/appdata/roaming/coocox/coide/configuration/programdata/climat510/arm-gcc-link.ld" type="0"/>
+        <LocateLinkFile path="c:/coocox/coide/configuration/programdata/climat510/arm-gcc-link.ld" type="0"/>
       </Link>
       <Output>
         <Option name="OutputFileType" value="0"/>
@@ -124,7 +124,6 @@
     </ExcludeFile>
   </Target>
   <Components path="./"/>
-  <LocalComponents/>
   <Files>
     <File name="405_Display.c" path="405_Display.c" type="1"/>
     <File name="stm_my/src/ENC28J60.C" path="stm_my/src/ENC28J60.C" type="1"/>
@@ -212,5 +211,4 @@
     <File name="65_control.c" path="65_control.c" type="1"/>
     <File name="65_GD.c" path="65_GD.c" type="1"/>
   </Files>
-  <Bookmarks/>
 </Project>

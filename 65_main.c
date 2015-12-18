@@ -79,6 +79,7 @@ char    timeDog;
         ClrDog;
         ClrDog;  /* разрешение прерываний RS и T0 из init8051()*/
         ClearAllAlarms();
+        defaultSettings();
 start:
 
    if (not) {
