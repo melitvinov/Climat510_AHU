@@ -283,11 +283,10 @@ NameParUpr[SUM_NAME_PARS]={
 /*17 Ќет*/				{"Unused#He \270c\276o\273\304\267\311e\274",SSSS},
 /*18 Ёкран*/			{"Max screen T#Ma\272c \305\272\310a\275 T",SSSS},
 /*19  Ёкран затен€ющ*/	{"Max screen S#Ma\272c \305\272\310a\275 \244",SSSS},
-/*21  CO2*/				{"CO2 type#T\270\275 CO2",SSSS},
+/*20  CO2*/				{"CO2 type#T\270\275 CO2",SSSS},
+/*21  SIO*/				{"SIO#\SIO",SSSS},
 /*22  ƒосветка*/		{"Light#\Light",SSSS},
-/*23  SIO*/				{"SIO#\SIO",SSSS},
-/*24  T heat*/			{"T heat type#T heat type",SSS},
-/*25  T vent*/		    {"T vent type#T vent type",SSS}
+/*23  T heat*/			{"T heat vent#T heat vent",SSSS},
 
 };
 
