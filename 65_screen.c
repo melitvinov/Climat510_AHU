@@ -127,7 +127,7 @@ void SetPosScreen(char typScr)
 	if(pScr->Pause) {pScr->Pause--;return;}
 	
 	ByteX=(*pMech);
-	IntZ=pScr->Value;	
+	IntZ=pScr->Value-pGD_TControl_Tepl->Systems[cSysScreen].Keep;
 
 	if (!typScr) // Только если термический, то произвести коррекцию
 	{

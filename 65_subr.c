@@ -994,15 +994,34 @@ uint16_t RelHum(uint16_t fTemp, uint16_t AbsRH)
 {
 	float tT,tRH, tRez;
 	tT=fTemp/100;
-	tRH=AbsRH;
-	tRez=AbsRH/((0.000002*tT*tT*tT*tT)+(0.0002*tT*tT*tT)+(0.0095*tT*tT)+( 0.337*tT)+4.9034);
-	return tRez*100;
+	tRH=AbsRH*100;
+	tRez=tRH/((0.000002*tT*tT*tT*tT)+(0.0002*tT*tT*tT)+(0.0095*tT*tT)+( 0.337*tT)+4.9034);
+	return tRez;
+}
+
+void KeepPID(uint16_t fKeep,uint16_t fDelta,uint8_t fNMech)
+{
+	int32_t	*IntVal;
+	ClrDog;
+
+	IntVal=&(pGD_TControl_Tepl->IntVal[fNMech]);
+
+	IntX=fDelta;
+
+	LngY=pGD_ConstMechanic->ConstMixVal[fNMech].v_PFactor;
+
+	LngY=LngY*IntX;//(*IntVal);
+
+	IntY=(int16_t)(LngY/10000);
+
+	(*IntVal)=(fKeep-IntY)*100;
+
 }
 
 
-int16_t	SetPID(uint16_t fDelta,uint8_t fNMech,int8_t fMax, int8_t fMin)
+int16_t	SetPID(uint16_t fDelta,uint8_t fNMech,int16_t fMax, int16_t fMin)
 {
-	int16_t	*IntVal;
+	int32_t	*IntVal;
 	ClrDog;
 
 //	if (YesBit(pGD_Hot_Hand[fNMech].RCS,(/*cbNoMech+*/cbManMech))) continue;
@@ -1014,27 +1033,27 @@ int16_t	SetPID(uint16_t fDelta,uint8_t fNMech,int8_t fMax, int8_t fMin)
 	LngY=LngY*IntX;//(*IntVal);
 	IntY=(int16_t)(LngY/10000);
 		//if (!IntY) continue;
-	IntZ=(*IntVal)/100;
+	LngX=(*IntVal)/100;
 		//IntZ=(*(pGD_Hot_Hand_Kontur+cHSmMixVal)).Position;
-	IntZ+=IntY;
-	if (IntZ>fMax)
+	LngX+=IntY;
+	if (LngX>fMax)
 	{
 		(*IntVal)=(fMax-IntY)*100;
-		IntZ=fMax;
+		LngX=fMax;
 	}
 	else
-		if (IntZ<fMin)
+		if (LngX<fMin)
 		{
 			(*IntVal)=(fMin-IntY)*100;
-			IntZ=fMin;
+			LngX=fMin;
 		}
 		else
-			(*IntVal)+=(int16_t)((((long)IntX)*pGD_ConstMechanic->ConstMixVal[fNMech].v_IFactor)/100);
+			(*IntVal)+=(int32_t)((((long)IntX)*pGD_ConstMechanic->ConstMixVal[fNMech].v_IFactor)/100);
 
 	if (!pGD_ConstMechanic->ConstMixVal[fNMech].v_IFactor)
 		*IntVal=0;
 
-	return IntZ;
+	return LngX;
 }
 
 
