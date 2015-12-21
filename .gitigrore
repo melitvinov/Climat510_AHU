@@ -1,6 +1,0 @@
-$ cat .gitignore
-*.[cogui]
-*.[cogui1]
-*.[coproj]
-*.[comarker]
-*.[comarker1]
