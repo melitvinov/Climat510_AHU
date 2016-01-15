@@ -81,6 +81,7 @@ void InitBlockEEP(void);
 void ButtonReset(void);
 void InitRegRetEC(void);
 void w_txt(char *bu);
+//void w_txt_new(char *bu);
 void pmInfo(void);
 int16_t w1reset();
 void w1_wr(void);

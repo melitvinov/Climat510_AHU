@@ -860,7 +860,8 @@ void InitGD(char fTipReset) {
                 +sizeof(eLevel)
                 +sizeof(eTimer)*cSTimer);
 ClrDog; 
-        MemClr(&GD.ConstMechanic[0],sizeof(eTuneClimate)+sizeof(eTControl)+sizeof(eStrategy)*cSStrategy*cSTepl+sizeof(eConstMech)*cSTepl+sizeof(eMechConfig)*cSTepl);
+        //MemClr(&GD.ConstMechanic[0],sizeof(eTuneClimate)+sizeof(eTControl)+sizeof(eStrategy)*cSStrategy*cSTepl+sizeof(eConstMech)*cSTepl+sizeof(eMechConfig)*cSTepl);   // NEW strat
+		MemClr(&GD.ConstMechanic[0],sizeof(eTuneClimate)+sizeof(eTControl)+sizeof(eStrategy)*cSTepl+sizeof(eConstMech)*cSTepl+sizeof(eMechConfig)*cSTepl);
         MemClr(&GD.uInTeplSens[0][0],sizeof(uint16_t)*(cConfSMetSens+cSTepl*cConfSSens));
 ClrDog;
         /* Установка данных по умолчанию */
@@ -917,11 +918,13 @@ ClrDog;
 		for (ByteX=0;ByteX<cSTepl;ByteX++)
 		{
 			SetPointersOnTepl(ByteX);
-			for (IntX=0;IntX<cSStrategy;IntX++)
-			{
-				for (ByteY=0;ByteY<sizeof(eStrategy);ByteY++)
-					(*((&(pGD_Strategy_Tepl[IntX].TempPower))+ByteY))=(*((&DefStrategy[IntX].TempPower)+ByteY));
-			}
+			//for (IntX=0;IntX<cSStrategy;IntX++)			// NEW strat тут заполняем значения по умолчанию
+			//{
+			//	for (ByteY=0;ByteY<sizeof(eStrategy);ByteY++)
+			//		(*((&(pGD_Strategy_Tepl[IntX].TempPower))+ByteY))=(*((&DefStrategy[IntX].TempPower)+ByteY));
+			//}
+			for (ByteY=0;ByteY<sizeof(eStrategy);ByteY++)
+			  (*(&pGD_Strategy_Tepl[IntX].StratAHUvalve1+ByteY)) = DefStrategy[ByteY];
 
 			bWaterReset[ByteX]=1;
 			for (IntX=0;IntX<SUM_NAME_CONF;IntX++)

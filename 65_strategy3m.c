@@ -115,12 +115,14 @@ void __sMinMaxWater(char fnKontur)
 }
 
 //Изменения от 26.04.2015
-
 //установить минимумы, максимумы, возможность вверх, возможность вниз
 void CheckScreenSystem(void)
 {
 #warning temporary constants later from params
-	pGD_TControl_Tepl->Systems[cSysScreen].Max=pGD_TControl_Tepl->Screen[0].Value-90;
+	pGD_TControl_Tepl->Systems[cSysScreen].Max=GD.TuneClimate.sc_RHMax;
+	if (pGD_TControl_Tepl->Systems[cSysScreen].Max>15)
+		pGD_TControl_Tepl->Systems[cSysScreen].Max=15;
+//	pGD_TControl_Tepl->Systems[cSysScreen].Max=pGD_TControl_Tepl->Screen[0].Value-90;
 	if (pGD_TControl_Tepl->Systems[cSysScreen].Max<0)
 		pGD_TControl_Tepl->Systems[cSysScreen].Max=0;
 	pGD_TControl_Tepl->Systems[cSysScreen].Min=0;
@@ -192,7 +194,6 @@ void CheckUCValveSystem(void)
 
 	if	(!pGD_TControl_Tepl->Systems[cSysUCValve].RCS)
 	{
-#warning Need to take const from params
 		if ((pGD_TControl_Tepl->Systems[cSysUCValve].Keep<pGD_TControl_Tepl->Systems[cSysUCValve].Max)
 			&&((pGD_TControl_Tepl->Systems[cSysScreen].Keep>=pGD_TControl_Tepl->Systems[cSysScreen].Max)||(pGD_TControl_Tepl->Systems[cSysUCValve].Keep<10)))
 			 SetBit(pGD_TControl_Tepl->Systems[cSysUCValve].RCS,cSysRUp);
@@ -440,41 +441,42 @@ void SetPrioritySystem(int8_t fnSys, int8_t fPrior,int8_t Up)
 		pGD_TControl_Tepl->Systems[fnSys].Prior=fPrior;
 }
 
+#warning set new strategy
+// NEW
 void PutCritery(int16_t dT, int16_t dRH)
 {
 	if ((dT>=0)&&(dRH>=0))
 	{
-		SetPrioritySystem(cSysUCValve,10,SYS_GO_UP);
-		SetPrioritySystem(cSysScreen,9,SYS_GO_UP);
-		SetPrioritySystem(cSysAHUPipe,8,SYS_GO_DOWN);
-		SetPrioritySystem(cSysMist,7,SYS_GO_UP);
-		SetPrioritySystem(cSysAHUSpeed,0,SYS_GO_UP);
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve1 ,SYS_GO_UP);		// 10
+		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen1,SYS_GO_UP);		// 9
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_1,SYS_GO_DOWN);		// 8
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratTermoScreen1,SYS_GO_UP);			// 7
+		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed1,SYS_GO_UP);		// 0
 	}
 	if ((dT>=0)&&(dRH<0))
 	{
-		SetPrioritySystem(cSysAHUPipe,10,SYS_GO_DOWN);
-		SetPrioritySystem(cSysMist,9,SYS_GO_UP);
-		SetPrioritySystem(cSysUCValve,8,SYS_GO_UP);
-		SetPrioritySystem(cSysScreen,7,SYS_GO_UP);
-		SetPrioritySystem(cSysAHUSpeed,0,SYS_GO_UP);
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratAHUvalve2,SYS_GO_DOWN);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratTermoScreen2,SYS_GO_UP);
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratKontur3_2,SYS_GO_UP);
+		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen2,SYS_GO_UP);
+		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed2,SYS_GO_UP);
 	}
 	if ((dT<0)&&(dRH>=0))
 	{
-		SetPrioritySystem(cSysMist,10,SYS_GO_DOWN);
-		SetPrioritySystem(cSysAHUPipe,9,SYS_GO_UP);
-		SetPrioritySystem(cSysUCValve,8,SYS_GO_DOWN);
-		SetPrioritySystem(cSysScreen,7,SYS_GO_DOWN);
-		SetPrioritySystem(cSysAHUSpeed,0,SYS_GO_DOWN);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratAHUvalve3,SYS_GO_DOWN);
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratTermoScreen3,SYS_GO_UP);
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratKontur3_3,SYS_GO_DOWN);
+		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen3,SYS_GO_DOWN);
+		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed3,SYS_GO_DOWN);
 	}
 	if ((dT<0)&&(dRH<0))
 	{
-		SetPrioritySystem(cSysUCValve,10,SYS_GO_DOWN);
-		SetPrioritySystem(cSysScreen,9,SYS_GO_DOWN);
-		SetPrioritySystem(cSysAHUPipe,8,SYS_GO_UP);
-		SetPrioritySystem(cSysMist,7,SYS_GO_DOWN);
-		SetPrioritySystem(cSysAHUSpeed,0,SYS_GO_DOWN);
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve4,SYS_GO_DOWN);
+		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen4,SYS_GO_DOWN);
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_4,SYS_GO_UP);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratTermoScreen4,SYS_GO_DOWN);
+		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed4,SYS_GO_DOWN);
 	}
-
 }
 
 int8_t GetOffSet(int8_t fnSys)
@@ -545,10 +547,12 @@ int8_t TakeForSys(int16_t fnCritery)
 	pGD_TControl_Tepl->Systems[fnMSys].Keep = SetPID(((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
 	for (fnSys=0;fnSys<cSUCSystems;fnSys++)
 	{
+		if ((fnSys==cSysRailPipe)||(fnSys==cSysHeadPipe))
+			continue;
 		if (fnSys!=fnMSys)
 			KeepPID(pGD_TControl_Tepl->Systems[fnSys].Keep,((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnSys].Power/1000, GetOffSet(fnSys));
 	}
-	pGD_Hot_Tepl->Kontur[cSmWindowUnW].SError=fnMSys;  // NEW
+	pGD_Hot_Tepl->Kontur[cSmWindowUnW].SError=pGD_TControl_Tepl->Systems[cSysUCValve].Power/1000;  // NEW
 
 }
 
@@ -1028,6 +1032,7 @@ void __sRegulKontur(char fnKontur)
 /*************************************************************************/
 /*-*-*-*-*-*-*-*-*--Потенциальный приоритет для контура--*-*-*-*-*-*-*-*-*/
 /*************************************************************************/
+/*#warning don't use now
 void __sPotentialPosibilityKontur(char fInv)
 {	
 	int* pRealPower;
@@ -1039,7 +1044,7 @@ void __sPotentialPosibilityKontur(char fInv)
 //------------------------------------------------------------------------
 //Приоритет по влажности воздуха в теплице
 //------------------------------------------------------------------------
-	IntY=(int)pGD_Strategy_Kontur->RHPower;
+	IntY=10;//(int)pGD_Strategy_Kontur->RHPower;
 	IntX=-DefRH();
 
 	IntZ=(int)(((long)IntY)*IntX/1000);
@@ -1053,7 +1058,7 @@ void __sPotentialPosibilityKontur(char fInv)
 //------------------------------------------------------------------------
 //Если контур выключен то оптимальня температура сравнивается с минимумом контура
 //------------------------------------------------------------------------
-		IntY=(int)pGD_Strategy_Kontur->OptimalPower;
+		IntY=0;//(int)pGD_Strategy_Kontur->OptimalPower;
 		IntX=(int)(((long)IntY*IntX/100));
 	}
 	
@@ -1068,10 +1073,69 @@ void __sPotentialPosibilityKontur(char fInv)
 		(*pRealPower)=100-pGD_Strategy_Kontur->TempPower-IntX-IntZ;
 		if ((*pRealPower)<1) (*pRealPower)=1; 
 	}	
+}
+*/
 
+int16_t getValueKonturStrategy(int16_t dT, int16_t dRH, int16_t dSystem)
+{
+	if ((dT>=0)&&(dRH>=0))
+	{
+		switch (dSystem)
+		{
+			case cSysRailPipe: //0
+				return pGD_Strategy_Kontur->StratKontur1_1;
+			case cSysHeadPipe: //1
+				return pGD_Strategy_Kontur->StratKontur2_1;
+			case cSysAHUPipe:  //2
+				return pGD_Strategy_Kontur->StratKontur3_1;
+		}
+	}
+	if ((dT>=0)&&(dRH<0))
+	{
+		switch (dSystem)
+		{
+			case cSysRailPipe: //0
+				return pGD_Strategy_Kontur->StratKontur1_2;
+			case cSysHeadPipe: //1
+				return pGD_Strategy_Kontur->StratKontur2_2;
+			case cSysAHUPipe:  //2
+				return pGD_Strategy_Kontur->StratKontur3_2;
+		}
+	}
+	if ((dT<0)&&(dRH>=0))
+	{
+		switch (dSystem)
+		{
+			case cSysRailPipe: //0
+				return pGD_Strategy_Kontur->StratKontur1_3;
+			case cSysHeadPipe: //1
+				return pGD_Strategy_Kontur->StratKontur2_3;
+			case cSysAHUPipe:  //2
+				return pGD_Strategy_Kontur->StratKontur3_3;
+		}
+	}
+	if ((dT<0)&&(dRH<0))
+	{
+		switch (dSystem)
+		{
+			case cSysRailPipe: //0
+				return pGD_Strategy_Kontur->StratKontur1_4;
+			case cSysHeadPipe: //1
+				return pGD_Strategy_Kontur->StratKontur2_4;
+			case cSysAHUPipe:  //2
+				return pGD_Strategy_Kontur->StratKontur3_4;
+		}
+	}
+	return 0;
+}
 
+void SetPriorityHeating(int16_t dT, int16_t dRH, int *dRealPower, int16_t kontur)
+{
+	int res =0;
+	res = getValueKonturStrategy(dT, dRH, kontur);
+	*dRealPower = res;
+}
 
-}	
 void __WorkableKontur(char fnKontur, char fnTepl)
 {
 
@@ -1234,7 +1298,7 @@ long __sRaspKontur(void)
 	LngY=LngY/pGD_TControl_Tepl->qMaxKonturs;
 
 	LngY=LngY*50;//((long)pGD_ConstMechanic->ConstMixVal[cSmKontur1].Power);
-	LngY=LngY/((long)pGD_Strategy_Kontur->Powers);
+	LngY=LngY/50;//((long)pGD_Strategy_Kontur->Powers);
 
 	return LngY;
 }
@@ -1245,7 +1309,7 @@ long __sRaspOwnKontur(void)
 	LngY=LngY/pGD_TControl_Tepl->qMaxOwnKonturs;
 
 	LngY=LngY*50;//((long)pGD_ConstMechanic->ConstMixVal[cSmKontur1].Power);
-	LngY=LngY/((long)pGD_Strategy_Kontur->Powers);
+	LngY=LngY/50;//((long)pGD_Strategy_Kontur->Powers);
 
 
 	return LngY;
@@ -1392,7 +1456,7 @@ void __sLastCheckWindow(void)
 long __sThisToFirst(int in)
 {
 //	if (YesBit(pGD_Hot_Tepl_Kontur->RCS,cbScreenKontur)) return 0;
-	return(((((long)in)*((long)pGD_Strategy_Kontur->Powers))/50));
+	return(((((long)in)*((long)50/*pGD_Strategy_Kontur->Powers*/))/50));
 /********************************************************************
 -----------Работа автонастройки временно приостановлена--------------
 *********************************************************************
@@ -1683,10 +1747,11 @@ void __sCalcKonturs(void)
 			}
 			pGD_Hot_Tepl_Kontur->Do=(pGD_TControl_Tepl_Kontur->DoT/10);
 			ClrDog;
-			__sPotentialPosibilityKontur(0);//Приоритет в случае охлаждения
-			__sPotentialPosibilityKontur(1);//Приоритет в случае нагрева
+			//__sPotentialPosibilityKontur(0);//Приоритет в случае охлаждения   // NEW strat
+			SetPriorityHeating(-1,DefRH(),&pGD_TControl_Tepl_Kontur->RealPower[0], ByteX);
+			//__sPotentialPosibilityKontur(1);//Приоритет в случае нагрева
+			SetPriorityHeating(1,DefRH(),&pGD_TControl_Tepl_Kontur->RealPower[1], ByteX);
 			ClrDog;
-
 
 			__WorkableKontur(ByteX,fnTepl);
 			__sRealPosibilityKonturs(ByteX,MinMaxPowerReg);

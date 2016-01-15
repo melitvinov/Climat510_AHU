@@ -217,8 +217,8 @@ typedef struct eeTepl	{
 
 				uchar		tempParamHeat;  // new
 				uchar		tempParamVent;  // new
-				uint16_t 	tempHeat;  // new
-				uint16_t 	tempVent;  // new
+				uint16_t 	tempHeat;  		// new
+				uint16_t 	tempVent;  		// new
 
 				int16_t		Rez1[29];
 				//int16_t		Rez1[32];
@@ -548,8 +548,9 @@ typedef struct eeTeplControl
 		uint16_t	sLight;
 		int8_t		sensT_heat;
 		int8_t		sensT_vent;
+		uint16_t	tempPipe3;
 
-		int16_t		Rez[19];
+		int16_t		Rez[18];
 //+42 байта
 		} eTeplControl;
 
@@ -593,48 +594,48 @@ typedef struct eeControl
 
 typedef struct eeStrategy
 	{
-//	int8_t StratAHUvalve1;  	// T>Tset, RH>RHset. Клапан AHU
-//	int8_t StratAHUvalve2;		// T>Tset, RH<RHset. Клапан AHU
-//	int8_t StratAHUvalve3;		// T<Tset, RH>RHset. Клапан AHU
-//	int8_t StratAHUvalve4;		// T<Tset, RH<RHset. Клапан AHU
+	int8_t StratAHUvalve1;  	// T>Tset, RH>RHset. Клапан AHU
+	int8_t StratAHUvalve2;		// T>Tset, RH<RHset. Клапан AHU
+	int8_t StratAHUvalve3;		// T<Tset, RH>RHset. Клапан AHU
+	int8_t StratAHUvalve4;		// T<Tset, RH<RHset. Клапан AHU
 
-//	int8_t StratKontur1_1; 		// T>Tset, RH>RHset. Контур 1
-//	int8_t StratKontur1_2;		// T>Tset, RH<RHset. Контур 1
-//	int8_t StratKontur1_3;		// T<Tset, RH>RHset. Контур 1
-//	int8_t StratKontur1_4;		// T<Tset, RH<RHset. Контур 1
+	int8_t StratKontur1_1; 		// T>Tset, RH>RHset. Контур 1		RailPipe
+	int8_t StratKontur1_2;		// T>Tset, RH<RHset. Контур 1
+	int8_t StratKontur1_3;		// T<Tset, RH>RHset. Контур 1
+	int8_t StratKontur1_4;		// T<Tset, RH<RHset. Контур 1
 
-//	int8_t StratKontur2_1;		// T>Tset, RH>RHset. Контур 2
-//	int8_t StratKontur2_2;		// T>Tset, RH<RHset. Контур 2
-//	int8_t StratKontur2_3;		// T<Tset, RH>RHset. Контур 2
-//	int8_t StratKontur2_4;		// T<Tset, RH<RHset. Контур 2
+	int8_t StratKontur2_1;		// T>Tset, RH>RHset. Контур 2		HeadPipe
+	int8_t StratKontur2_2;		// T>Tset, RH<RHset. Контур 2
+	int8_t StratKontur2_3;		// T<Tset, RH>RHset. Контур 2
+	int8_t StratKontur2_4;		// T<Tset, RH<RHset. Контур 2
 
-//	int8_t StratKontur3_1;		// T>Tset, RH>RHset. Контур 3
-//	int8_t StratKontur3_2;		// T>Tset, RH<RHset. Контур 3
-//	int8_t StratKontur3_3;		// T<Tset, RH>RHset. Контур 3
-//	int8_t StratKontur3_4;		// T<Tset, RH<RHset. Контур 3
+	int8_t StratKontur3_1;		// T>Tset, RH>RHset. Контур 3		AHUPipe
+	int8_t StratKontur3_2;		// T>Tset, RH<RHset. Контур 3
+	int8_t StratKontur3_3;		// T<Tset, RH>RHset. Контур 3
+	int8_t StratKontur3_4;		// T<Tset, RH<RHset. Контур 3
 
-//	int8_t StratTermoScreen1;	// T>Tset, RH>RHset. Экран термический
-//	int8_t StratTermoScreen2;	// T>Tset, RH<RHset. Экран термический
-//	int8_t StratTermoScreen3;	// T<Tset, RH>RHset. Экран термический
-//	int8_t StratTermoScreen4;	// T<Tset, RH<RHset. Экран термический
+	int8_t StratTermoScreen1;	// T>Tset, RH>RHset. Экран термический
+	int8_t StratTermoScreen2;	// T>Tset, RH<RHset. Экран термический
+	int8_t StratTermoScreen3;	// T<Tset, RH>RHset. Экран термический
+	int8_t StratTermoScreen4;	// T<Tset, RH<RHset. Экран термический
 
-//	int8_t StratAHUspeed1;		// T>Tset, RH>RHset. Скорость AHU
-//	int8_t StratAHUspeed2;		// T>Tset, RH<RHset. Скорость AHU
-//	int8_t StratAHUspeed3;		// T<Tset, RH>RHset. Скорость AHU
-//	int8_t StratAHUspeed4;		// T<Tset, RH<RHset. Скорость AHU
+	int8_t StratAHUspeed1;		// T>Tset, RH>RHset. Скорость AHU
+	int8_t StratAHUspeed2;		// T>Tset, RH<RHset. Скорость AHU
+	int8_t StratAHUspeed3;		// T<Tset, RH>RHset. Скорость AHU
+	int8_t StratAHUspeed4;		// T<Tset, RH<RHset. Скорость AHU
 
-//	int8_t StratPressReg1;		// T>Tset, RH>RHset. Регулятор давления
-//	int8_t StratPressReg2;		// T>Tset, RH<RHset. Регулятор давления
-//	int8_t StratPressReg3;		// T<Tset, RH>RHset. Регулятор давления
-//	int8_t StratPressReg4;		// T<Tset, RH<RHset. Регулятор давления
+	int8_t StratPressReg1;		// T>Tset, RH>RHset. Регулятор давления  // увлажнение		Mist
+	int8_t StratPressReg2;		// T>Tset, RH<RHset. Регулятор давления
+	int8_t StratPressReg3;		// T<Tset, RH>RHset. Регулятор давления
+	int8_t StratPressReg4;		// T<Tset, RH<RHset. Регулятор давления
 
-	int8_t TempPower;
-	int8_t RHPower;
-	int8_t OptimalPower;
-	int8_t Economic;
-	int8_t Powers;
-	int8_t Separate;
-	int8_t KonturHelp;
+//	int8_t TempPower;
+//	int8_t RHPower;
+//	int8_t OptimalPower;
+//	int8_t Economic;
+//	int8_t Powers;
+//	int8_t Separate;
+//	int8_t KonturHelp;
 
 	} eStrategy;
 #endif
@@ -885,7 +886,8 @@ struct  eGData{
         eFullCal        Cal;
         eTimer          Timer[cSTimer];
 		eConstMech		ConstMechanic[cSTepl];
-		eStrategy		Strategy[cSTepl][cSStrategy];
+		//eStrategy		Strategy[cSTepl][cSStrategy]; // NEW strat
+		eStrategy		Strategy[cSTepl];
 		eMechConfig		MechConfig[cSTepl];
 		eTuneClimate	TuneClimate;		
         eTControl       TControl;
@@ -935,8 +937,10 @@ void InitBlockEEP(void){
         BlockEEP[2].AdrCopyRAM=&GD.TuneClimate;
         BlockEEP[2].Size=(sizeof(eTuneClimate));
 
-        BlockEEP[3].AdrCopyRAM=&GD.Strategy[0][0];
-        BlockEEP[3].Size=(sizeof(eStrategy)*cSStrategy*cSTepl);
+        //BlockEEP[3].AdrCopyRAM=&GD.Strategy[0][0];	// NEW strat
+        //BlockEEP[3].Size=(sizeof(eStrategy)*cSStrategy*cSTepl);   // NEW strat
+        BlockEEP[3].AdrCopyRAM=&GD.Strategy[0];
+        BlockEEP[3].Size=(sizeof(eStrategy)*cSTepl);
 
         BlockEEP[4].AdrCopyRAM=&GD.MechConfig[0];
         BlockEEP[4].Size=(sizeof(eMechConfig)*cSTepl);
@@ -961,7 +965,8 @@ void ButtonReset(void) {
         AdrGD[3/*cblTuneClimate*/].Adr=&GD.TuneClimate;
         AdrGD[3].MaxSize=sizeof(eTuneClimate);
         AdrGD[4/*cblStrategy*/].Adr=&GD.Strategy[0];
-        AdrGD[4].MaxSize=sizeof(eStrategy)*cSTepl*cSStrategy;
+        //AdrGD[4].MaxSize=sizeof(eStrategy)*cSTepl*cSStrategy;   // NEW strat
+        AdrGD[4].MaxSize=sizeof(eStrategy)*cSTepl;
         AdrGD[5/*cblMechConfig*/].Adr=&GD.MechConfig[0];
         AdrGD[5].MaxSize=sizeof(eMechConfig)*cSTepl;
         AdrGD[6/*cblCal*/].Adr=&GD.Cal;

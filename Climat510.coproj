@@ -40,7 +40,7 @@
       <Output>
         <Option name="OutputFileType" value="0"/>
         <Option name="Path" value="c:/coocox/coide/workspace/"/>
-        <Option name="Name" value="Climat510AHU"/>
+        <Option name="Name" value="Climat510"/>
         <Option name="HEX" value="1"/>
         <Option name="BIN" value="1"/>
       </Output>

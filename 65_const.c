@@ -36,6 +36,9 @@
 #define cSTimer			40
 /*Количество программ для задания*/			
 
+#define cSStrat			8
+/*Количество параметров стратегий*/
+
 #define cSTimerSave		20
 /*Количество программ для задания*/			
 
@@ -48,7 +51,7 @@
 
 #define cSUCSystems		8
 #ifdef AHU
-#define cSStrategy		cSUCSystems
+//#define cSStrategy		cSUCSystems     // NEW Strat
 #define cSPipeSystems	4
 
 
@@ -71,7 +74,7 @@
 
 
 #else
-#define cSStrategy		8
+//#define cSStrategy		8
 #endif
 /*Количество контуров 1-5 - фрамуги,экран,СИО*/
 //#define cSMechanic		10
@@ -477,7 +480,7 @@ char NowDayOfWeek;
 
 
 /*-----------------------------*/
-typedef struct eeDefStrategy {
+/*typedef struct eeDefStrategy {
 		char TempPower;
 		char RHPower;
 		char OptimalPower;
@@ -486,7 +489,7 @@ typedef struct eeDefStrategy {
 		char Separate;	
 		char KonturHelp;
 		} eDefStrategy;
-
+*/
 
 /*typedef struct eeNameLev {
         char Name[12];
@@ -517,7 +520,7 @@ typedef struct  eeNameConst {
         } eNameConst;
 
 
-eDefStrategy code DefStrategy[]={
+/*eDefStrategy code DefStrategy[]={
 {40,	0,	20,	0,	50,	0,	0},
 {60,	0,	20,	0,	30,	0,	0},
 {30,	0,	20,	0,	15,	0,	0},
@@ -526,7 +529,16 @@ eDefStrategy code DefStrategy[]={
 {80,	0,	1,	0,	25,	0,	0},
 {0,		0,	0,	0,	0,	0,	0},
 {0,		0,	0,	0,	0,	0,	0}
-};
+};*/
+
+int code DefStrategy[]=
+{10, 10, 10, 10,    // AHU valve
+ 5, 6, 7, 8,		// RailPipe
+ 9, 10, 11, 12,		// HeadPipe
+ 8, 8, 8, 8,		// AHUPipe
+ 9, 9, 9, 9,		// Screen
+ 0, 0, 0, 0,		// AHUSpeed
+ 7, 7, 7, 7};		// Mist
 
 int code DefMechanic[]={
 60,

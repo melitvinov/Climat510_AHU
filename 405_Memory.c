@@ -189,6 +189,7 @@ void TestMem(uchar TipReset) {
 	   ButtonReset();
 //	   TipReset=2;
 /*------ проверка контр суммы блока CONTROL ---------------------------*/
+	   //InitGD(5);  // Убрать
        if(TipReset>5) InitGD(5);
        if((!Menu) && TestRAM0()) TipReset=2;
        if(!TipReset) return;

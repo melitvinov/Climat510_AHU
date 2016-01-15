@@ -925,18 +925,26 @@ void __cNextTCalc(char fnTepl)
 	IntX=(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent+(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent;//+(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
 
 	//Проверка на максимум расчета пока константа + 3 градуса
-	if (pGD_Hot_Tepl->AllTask.DoTVent+300<IntX)
+	int tempPipe3 = GD.Control.Tepl[fnTepl].tempPipe3 * 100;
+	//if (pGD_Hot_Tepl->AllTask.DoTVent+300<IntX)  // old
+	if (pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3<IntX)
 	{
-		pGD_TControl_Tepl->IntegralVent=pGD_Hot_Tepl->AllTask.DoTVent+300-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
+		//pGD_TControl_Tepl->IntegralVent=pGD_Hot_Tepl->AllTask.DoTVent+300-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF; 		// old
+		pGD_TControl_Tepl->IntegralVent=pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
 		pGD_TControl_Tepl->IntegralVent*=100;
-		IntX=pGD_Hot_Tepl->AllTask.DoTVent+300;
+		//IntX=pGD_Hot_Tepl->AllTask.DoTVent+300;	// old
+		IntX=pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3;
 	}
 	//Проверка на мминимум расчета пока константа 14 градусов
-	if (1400>IntX)
+	int minMinPipeTemp = GD.Timer[fnTepl].MinTPipe3 * 100;
+	if (minMinPipeTemp > IntX)
+	//if (1400>IntX)
 	{
-		pGD_TControl_Tepl->IntegralVent=1400-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
+		//pGD_TControl_Tepl->IntegralVent=1400-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;  old
+		pGD_TControl_Tepl->IntegralVent=minMinPipeTemp-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
 		pGD_TControl_Tepl->IntegralVent*=100;
-		IntX=1400;
+		//IntX=1400; // old
+		IntX=minMinPipeTemp;
 	}
 	pGD_TControl_Tepl->TVentCritery=IntX;
 	(*pGD_Hot_Tepl).NextTCalc.TVentCritery=(*pGD_TControl_Tepl).TVentCritery;

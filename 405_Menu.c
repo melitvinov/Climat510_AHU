@@ -203,7 +203,7 @@ void pmDate(void) {
         }
 }
 
-void pmStrategy(void) {
+/*void pmStrategy(void) {
                 w_txt(Mes72); //Irrigation archive
 				if (x_menu>cSWaterKontur) x_menu=0;
                 if(!x_menu)	return;
@@ -213,16 +213,47 @@ void pmStrategy(void) {
 				w_int(&x_menu,SS);
 				Ad_Buf=Str3;
 				w_txt(Mes73);
-				w_int(&GD.Strategy[0][x_menu-1].TempPower,SS);
+				//w_int(&GD.Strategy[0][x_menu-1].TempPower,SS);  // NEW strat
 				if (!Y_menu2) BlkW=1;
 				Ad_Buf=Str4;
 				w_txt(Mes74);
-				w_int(&GD.Strategy[0][x_menu-1].RHPower,SS);
+				//w_int(&GD.Strategy[0][x_menu-1].RHPower,SS);
 				if (Y_menu2==1) BlkW=1;
 				Ad_Buf=Str5;
 				w_txt(Mes75);
-				w_int(&GD.Strategy[0][x_menu-1].OptimalPower,SS);
+				//w_int(&GD.Strategy[0][x_menu-1].OptimalPower,SS);
 				return;
+} */
+
+void	pmStrategy(void)
+{
+    w_txt(Mes72);
+	if (x_menu > cSStrat) x_menu=0;
+	if (!x_menu) {
+		return;
+		}
+    Ad_Buf=Str2;
+    ByteZ=x_menu-1;
+	if(Y_menu2 > SUM_NAME_STRAT) Y_menu2=0;
+	if(Y_menu2 >=SUM_NAME_STRAT) Y_menu2=SUM_NAME_STRAT-1;
+    w_txt(Mes7); //-Zone-
+	w_int(&x_menu,SS);
+    Ad_Buf=Str3;
+	if(Y_menu2 < StartY_menu2) StartY_menu2 = Y_menu2;
+	if(Y_menu2 > (StartY_menu2+2)) StartY_menu2 = Y_menu2-2;
+    for (ByteY=StartY_menu2;ByteY < (StartY_menu2+3);ByteY++)
+	{
+		ByteX=ByteY % SUM_NAME_STRAT;
+		//w_txt_new(&NameStrat[ByteX].Name);
+		w_txt(&NameStrat[ByteX].Name);
+		Ad_Buf=(Ad_Buf / DisplCols)*DisplCols+20;
+		buf[Ad_Buf++]='=';
+	   	//w_int(&GD.Timer[ByteZ].Zone[NameStrat[ByteX].Index],eNameStrat[ByteX].Frm);
+		w_int(&GD.Strategy[ByteZ].StratAHUvalve1+ByteY,NameStrat[ByteX].Frm);
+		if(Y_menu2 == ByteY) BlkW=1;
+		Ad_Buf=((Ad_Buf / DisplCols)+1)*DisplCols;
+	}
+	return;
 }
 
 void pmParam() {
@@ -855,7 +886,6 @@ void	pmProgClimate(void)
 		Ad_Buf=((Ad_Buf / DisplCols)+1)*DisplCols;
 	}
 	return;
-	
 }
 
 void pmVersion(void)

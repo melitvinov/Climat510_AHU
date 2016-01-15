@@ -56,11 +56,11 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 		CorrectionRule(GD.TuneClimate.sc_GlassStart,GD.TuneClimate.sc_GlassEnd,GD.TuneClimate.sc_GlassMax,0);
 		if ((YesBit(pGD_Hot_Tepl->InTeplSens[cSmGlassSens].RCS,cbMinMaxVSens))) IntZ=GD.TuneClimate.sc_GlassMax;
 		pScr->Value=pScr->Mode*(pGD_Control_Tepl->sc_TMaxOpen-(GD.TuneClimate.sc_GlassMax-IntZ));		
-/*Влияние разницы влажности на открытие экрана*/
+/*Влияние разницы влажности на открытие экрана
 		IntY=pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value-pGD_Hot_Tepl->AllTask.DoRHAir;
 		CorrectionRule(GD.TuneClimate.sc_RHStart,GD.TuneClimate.sc_RHEnd,GD.TuneClimate.sc_RHMax,0);
 		if (!pGD_Hot_Tepl->AllTask.DoRHAir) IntZ=0;
-		pScr->Value-=IntZ;
+		pScr->Value-=IntZ;*/
 
 	break;
 	case 1:
