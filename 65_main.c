@@ -62,7 +62,8 @@ char    timeDog;
         Menu=0;
 		EndInput=0;
         nReset=3;
-        w_txt("\252\245TO F405 (c)APL&DAL");
+        //w_txt("\252\245TO F405 (c)APL&DAL");
+        w_txt("ิศาฮ F405 (c)APL&DAL");	// NEW disp
         ClrDog;
         Video();
         ClrDog;

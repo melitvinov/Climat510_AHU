@@ -532,13 +532,13 @@ typedef struct  eeNameConst {
 };*/
 
 int code DefStrategy[]=
-{10, 10, 10, 10,    // AHU valve
- 5, 6, 7, 8,		// RailPipe
- 9, 10, 11, 12,		// HeadPipe
- 8, 8, 8, 8,		// AHUPipe
- 9, 9, 9, 9,		// Screen
+{10, 8, 8, 10,    // AHU valve
+ 9, 10, 10, 9,		// RailPipe
+ 10, 9, 9, 10,		// HeadPipe
+ 8, 10, 9, 8,		// AHUPipe
+ 9, 7, 7, 9,		// Screen
  0, 0, 0, 0,		// AHUSpeed
- 7, 7, 7, 7};		// Mist
+ 7, 9, 10, 7};		// Mist
 
 int code DefMechanic[]={
 60,

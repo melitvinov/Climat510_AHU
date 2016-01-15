@@ -103,6 +103,7 @@ if(GD.Control.Language)
     while((*bu)&&((*bu)!='#')) {buf[Ad_Buf++]=(*(bu++));};
 	//while((*bu)&&((*bu)!='#')) {buf[Ad_Buf++]=charTable[(int)*bu++];};
 }
+
 /*void w_txt(char code *bu)
         {
         while((*bu)) {buf[Ad_Buf++]=(*(bu++));};

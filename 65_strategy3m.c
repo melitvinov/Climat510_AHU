@@ -447,11 +447,11 @@ void PutCritery(int16_t dT, int16_t dRH)
 {
 	if ((dT>=0)&&(dRH>=0))
 	{
-		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve1 ,SYS_GO_UP);		// 10
-		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen1,SYS_GO_UP);		// 9
-		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_1,SYS_GO_DOWN);		// 8
-		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratTermoScreen1,SYS_GO_UP);			// 7
-		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed1,SYS_GO_UP);		// 0
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve1 ,SYS_GO_UP);
+		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen1,SYS_GO_UP);
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_1,SYS_GO_DOWN);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratTermoScreen1,SYS_GO_UP);
+		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed1,SYS_GO_UP);
 	}
 	if ((dT>=0)&&(dRH<0))
 	{
