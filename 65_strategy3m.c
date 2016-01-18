@@ -450,22 +450,22 @@ void PutCritery(int16_t dT, int16_t dRH)
 		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve1 ,SYS_GO_UP);
 		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen1,SYS_GO_UP);
 		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_1,SYS_GO_DOWN);
-		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratTermoScreen1,SYS_GO_UP);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg1,SYS_GO_UP);
 		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed1,SYS_GO_UP);
 	}
 	if ((dT>=0)&&(dRH<0))
 	{
-		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratAHUvalve2,SYS_GO_DOWN);
-		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratTermoScreen2,SYS_GO_UP);
-		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratKontur3_2,SYS_GO_UP);
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_2,SYS_GO_DOWN);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg2,SYS_GO_UP);
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve2,SYS_GO_UP);
 		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen2,SYS_GO_UP);
 		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed2,SYS_GO_UP);
 	}
 	if ((dT<0)&&(dRH>=0))
 	{
-		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratAHUvalve3,SYS_GO_DOWN);
-		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratTermoScreen3,SYS_GO_UP);
-		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratKontur3_3,SYS_GO_DOWN);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg3,SYS_GO_DOWN);
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_3,SYS_GO_UP);
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve3,SYS_GO_DOWN);
 		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen3,SYS_GO_DOWN);
 		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed3,SYS_GO_DOWN);
 	}
@@ -474,7 +474,7 @@ void PutCritery(int16_t dT, int16_t dRH)
 		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve4,SYS_GO_DOWN);
 		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen4,SYS_GO_DOWN);
 		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_4,SYS_GO_UP);
-		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratTermoScreen4,SYS_GO_DOWN);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg4,SYS_GO_DOWN);
 		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed4,SYS_GO_DOWN);
 	}
 }
