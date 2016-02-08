@@ -923,8 +923,14 @@ ClrDog;
 			//	for (ByteY=0;ByteY<sizeof(eStrategy);ByteY++)
 			//		(*((&(pGD_Strategy_Tepl[IntX].TempPower))+ByteY))=(*((&DefStrategy[IntX].TempPower)+ByteY));
 			//}
+
+#warning fix defaults
+
 			for (ByteY=0;ByteY<sizeof(eStrategy);ByteY++)
-			  (*(&pGD_Strategy_Tepl[IntX].StratAHUvalve1+ByteY)) = DefStrategy[ByteY];
+			{
+			  (*(&pGD_Strategy_Tepl[IntX].StratAHUvalve1[0] + (ByteY*2) )) = DefStrategy[ByteY*2];
+			  (*(&pGD_Strategy_Tepl[IntX].StratAHUvalve1[0] + (ByteY*2+1) )) = DefStrategy[ByteY*2+1];
+			}
 
 			bWaterReset[ByteX]=1;
 			for (IntX=0;IntX<SUM_NAME_CONF;IntX++)

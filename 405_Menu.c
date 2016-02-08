@@ -240,8 +240,8 @@ void	pmStrategy(void)
 	w_int(&x_menu,SS);
     Ad_Buf=Str3;
 	if(Y_menu2 < StartY_menu2) StartY_menu2 = Y_menu2;
-	if(Y_menu2 > (StartY_menu2+2)) StartY_menu2 = Y_menu2-2;
-    for (ByteY=StartY_menu2;ByteY < (StartY_menu2+3);ByteY++)
+	if(Y_menu2 > (StartY_menu2+2)) StartY_menu2 = Y_menu2-2;	// Y_menu2-2;
+    for (ByteY=StartY_menu2;ByteY < (StartY_menu2+3);ByteY++)  //(StartY_menu2+3);B
 	{
 		ByteX=ByteY % SUM_NAME_STRAT;
 		//w_txt_new(&NameStrat[ByteX].Name);
@@ -249,7 +249,7 @@ void	pmStrategy(void)
 		Ad_Buf=(Ad_Buf / DisplCols)*DisplCols+20;
 		buf[Ad_Buf++]='=';
 	   	//w_int(&GD.Timer[ByteZ].Zone[NameStrat[ByteX].Index],eNameStrat[ByteX].Frm);
-		w_int(&GD.Strategy[ByteZ].StratAHUvalve1+ByteY,NameStrat[ByteX].Frm);
+		w_int(&GD.Strategy[ByteZ].StratAHUvalve1[0]+ByteY,NameStrat[ByteX].Frm);
 		if(Y_menu2 == ByteY) BlkW=1;
 		Ad_Buf=((Ad_Buf / DisplCols)+1)*DisplCols;
 	}
@@ -888,6 +888,9 @@ void	pmProgClimate(void)
 	return;
 }
 
+//#define K1 "Kontur1: #Kontur1: "
+//#define K2 "Kontur2: #Kontur2: "
+
 void pmVersion(void)
 {
 	if ((Y_menu2%4)==2) BlkW=1;
@@ -900,10 +903,23 @@ void pmVersion(void)
     ByteZ=x_menu-1;
 	if(Y_menu2 > SUM_NAME_TIMER) Y_menu2=0;
 	if(Y_menu2 >=SUM_NAME_TIMER) Y_menu2=SUM_NAME_TIMER-1;
-
 	w_txt(FWVersion);
-    Ad_Buf=Str3;
-	return;
+	Ad_Buf=Str3;
+
+	//SetPointersOnTepl(0);
+	//SetPointersOnKontur(0);
+
+	//w_txt(K1);
+	//w_int(&pGD_TControl_Tepl_Kontur->RealPower[0],SS);
+	//w_int(&K1_0, SS);
+    //Ad_Buf=Ad_Buf + 23;
+
+    //w_txt(K1);
+    //w_int(&pGD_TControl_Tepl_Kontur->RealPower[1],SS);
+    //w_int(&K1_1, SS);
+    //Ad_Buf=Ad_Buf + 23;
+
+    return;
 }
 
 void YMenu(char vPozY) {

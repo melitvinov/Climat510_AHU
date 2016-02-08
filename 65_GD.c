@@ -594,40 +594,40 @@ typedef struct eeControl
 
 typedef struct eeStrategy
 	{
-	int8_t StratAHUvalve1;  	// T>Tset, RH>RHset. Клапан AHU
-	int8_t StratAHUvalve2;		// T>Tset, RH<RHset. Клапан AHU
-	int8_t StratAHUvalve3;		// T<Tset, RH>RHset. Клапан AHU
-	int8_t StratAHUvalve4;		// T<Tset, RH<RHset. Клапан AHU
+	int8_t StratAHUvalve1[2];  		// T>Tset, RH>RHset. Клапан AHU
+	int8_t StratAHUvalve2[2];		// T>Tset, RH<RHset. Клапан AHU
+	int8_t StratAHUvalve3[2];		// T<Tset, RH>RHset. Клапан AHU
+	int8_t StratAHUvalve4[2];		// T<Tset, RH<RHset. Клапан AHU
 
-	int8_t StratKontur1_1; 		// T>Tset, RH>RHset. Контур 1		RailPipe
-	int8_t StratKontur1_2;		// T>Tset, RH<RHset. Контур 1
-	int8_t StratKontur1_3;		// T<Tset, RH>RHset. Контур 1
-	int8_t StratKontur1_4;		// T<Tset, RH<RHset. Контур 1
+	int8_t StratKontur1_1[2]; 		// T>Tset, RH>RHset. Контур 1		RailPipe
+	int8_t StratKontur1_2[2];		// T>Tset, RH<RHset. Контур 1
+	int8_t StratKontur1_3[2];		// T<Tset, RH>RHset. Контур 1
+	int8_t StratKontur1_4[2];		// T<Tset, RH<RHset. Контур 1
 
-	int8_t StratKontur2_1;		// T>Tset, RH>RHset. Контур 2		HeadPipe
-	int8_t StratKontur2_2;		// T>Tset, RH<RHset. Контур 2
-	int8_t StratKontur2_3;		// T<Tset, RH>RHset. Контур 2
-	int8_t StratKontur2_4;		// T<Tset, RH<RHset. Контур 2
+	int8_t StratKontur2_1[2];		// T>Tset, RH>RHset. Контур 2		HeadPipe
+	int8_t StratKontur2_2[2];		// T>Tset, RH<RHset. Контур 2
+	int8_t StratKontur2_3[2];		// T<Tset, RH>RHset. Контур 2
+	int8_t StratKontur2_4[2];		// T<Tset, RH<RHset. Контур 2
 
-	int8_t StratKontur3_1;		// T>Tset, RH>RHset. Контур 3		AHUPipe
-	int8_t StratKontur3_2;		// T>Tset, RH<RHset. Контур 3
-	int8_t StratKontur3_3;		// T<Tset, RH>RHset. Контур 3
-	int8_t StratKontur3_4;		// T<Tset, RH<RHset. Контур 3
+	int8_t StratKontur3_1[2];		// T>Tset, RH>RHset. Контур 3		AHUPipe
+	int8_t StratKontur3_2[2];		// T>Tset, RH<RHset. Контур 3
+	int8_t StratKontur3_3[2];		// T<Tset, RH>RHset. Контур 3
+	int8_t StratKontur3_4[2];		// T<Tset, RH<RHset. Контур 3
 
-	int8_t StratTermoScreen1;	// T>Tset, RH>RHset. Экран термический
-	int8_t StratTermoScreen2;	// T>Tset, RH<RHset. Экран термический
-	int8_t StratTermoScreen3;	// T<Tset, RH>RHset. Экран термический
-	int8_t StratTermoScreen4;	// T<Tset, RH<RHset. Экран термический
+	int8_t StratTermoScreen1[2];	// T>Tset, RH>RHset. Экран термический
+	int8_t StratTermoScreen2[2];	// T>Tset, RH<RHset. Экран термический
+	int8_t StratTermoScreen3[2];	// T<Tset, RH>RHset. Экран термический
+	int8_t StratTermoScreen4[2];	// T<Tset, RH<RHset. Экран термический
 
-	int8_t StratAHUspeed1;		// T>Tset, RH>RHset. Скорость AHU
-	int8_t StratAHUspeed2;		// T>Tset, RH<RHset. Скорость AHU
-	int8_t StratAHUspeed3;		// T<Tset, RH>RHset. Скорость AHU
-	int8_t StratAHUspeed4;		// T<Tset, RH<RHset. Скорость AHU
+	int8_t StratAHUspeed1[2];		// T>Tset, RH>RHset. Скорость AHU
+	int8_t StratAHUspeed2[2];		// T>Tset, RH<RHset. Скорость AHU
+	int8_t StratAHUspeed3[2];		// T<Tset, RH>RHset. Скорость AHU
+	int8_t StratAHUspeed4[2];		// T<Tset, RH<RHset. Скорость AHU
 
-	int8_t StratPressReg1;		// T>Tset, RH>RHset. Регулятор давления  // увлажнение		Mist
-	int8_t StratPressReg2;		// T>Tset, RH<RHset. Регулятор давления
-	int8_t StratPressReg3;		// T<Tset, RH>RHset. Регулятор давления
-	int8_t StratPressReg4;		// T<Tset, RH<RHset. Регулятор давления
+	int8_t StratPressReg1[2];		// T>Tset, RH>RHset. Регулятор давления  // увлажнение		Mist
+	int8_t StratPressReg2[2];		// T>Tset, RH<RHset. Регулятор давления
+	int8_t StratPressReg3[2];		// T<Tset, RH>RHset. Регулятор давления
+	int8_t StratPressReg4[2];		// T<Tset, RH<RHset. Регулятор давления
 
 //	int8_t TempPower;
 //	int8_t RHPower;

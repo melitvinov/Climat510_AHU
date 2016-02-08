@@ -4,7 +4,7 @@
 ********************************
 ------------------------------*/
 
-#define FWVersion		"ver.09/15.2.00.16" // изменения в работе клапана UC
+#define FWVersion		"ver.09/15.2.00.17" // все для стратегий, версия для тестирования
 
 #define NameProg        "\310\252\245TO-K\247\245MAT\311"
 #define Proect          "FC325-K-II-"
@@ -109,6 +109,8 @@
 #define f_MaxTFreeze		500
 #define f_StartWind			500
 #define f_StormPause		60
+
+#define MINPIPETEMPER		1400
 
 #define c_MaxWaterOff		5000
 
@@ -531,14 +533,15 @@ typedef struct  eeNameConst {
 {0,		0,	0,	0,	0,	0,	0}
 };*/
 
-int code DefStrategy[]=
-{10, 8, 8, 10,    // AHU valve
- 9, 10, 10, 9,		// RailPipe
- 10, 9, 9, 10,		// HeadPipe
- 8, 10, 9, 8,		// AHUPipe
- 9, 7, 7, 9,		// Screen
- 0, 0, 0, 0,		// AHUSpeed
- 7, 9, 10, 7};		// Mist
+int code DefStrategy[]= {
+        //st   way
+          10,	0, 	8, 	0,	8, 	0, 	10,	1,      // AHU valve
+          9, 	1, 	10,	1,	10,	1, 	9, 	1,		// RailPipe
+          10, 	1, 	9,	1,	9,	1, 	10,	1,		// HeadPipe
+          8,	1, 	10,	1,	9,	0, 	8,	0,		// AHUPipe
+          9,	0, 	7,	0,	7,	1, 	9,	1,		// Screen
+          6,	0, 	6,	0,	6,	1, 	6,	1,		// AHUSpeed
+          7,	0, 	9,	0,	10,	1, 	7,	1,};	// Mist
 
 int code DefMechanic[]={
 60,

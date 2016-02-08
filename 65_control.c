@@ -937,6 +937,7 @@ void __cNextTCalc(char fnTepl)
 	}
 	//Проверка на мминимум расчета пока константа 14 градусов
 	int minMinPipeTemp = GD.Timer[fnTepl].MinTPipe3 * 100;
+	if (minMinPipeTemp < 1400) minMinPipeTemp = MINPIPETEMPER;
 	if (minMinPipeTemp > IntX)
 	//if (1400>IntX)
 	{

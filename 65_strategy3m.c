@@ -428,7 +428,7 @@ void CheckFanSystem(void)
 		if (pGD_TControl_Tepl->Systems[cSysAHUSpeed].Keep>pGD_TControl_Tepl->Systems[cSysAHUSpeed].Min)
 			 SetBit(pGD_TControl_Tepl->Systems[cSysAHUSpeed].RCS,cSysRDown);
 	}
-	pGD_TControl_Tepl->Systems[cSysAHUSpeed].Power=1000;//pGD_ConstMechanic->ConstMixVal[cHSmAHUSpeed1].v_PFactor;  // last
+	pGD_TControl_Tepl->Systems[cSysAHUSpeed].Power=1000;//pGD_ConstMechanic->ConstMixVal[cHSfmAHUSpeed1].v_PFactor;  // last
     //pGD_TControl_Tepl->Systems[cSysAHUSpeed].Power=pGD_ConstMechanic->ConstMixVal[cHSmAHUSpeed1].v_PFactor;
 }
 
@@ -447,37 +447,72 @@ void PutCritery(int16_t dT, int16_t dRH)
 {
 	if ((dT>=0)&&(dRH>=0))
 	{
-		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve1 ,SYS_GO_UP);
-		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen1,SYS_GO_UP);
-		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_1,SYS_GO_DOWN);
-		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg1,SYS_GO_UP);
-		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed1,SYS_GO_UP);
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve1[0],pGD_Strategy_Tepl->StratAHUvalve1[1]);
+		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen1[0],pGD_Strategy_Tepl->StratTermoScreen1[1]);
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_1[0],pGD_Strategy_Tepl->StratKontur3_1[1]);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg1[0],pGD_Strategy_Tepl->StratPressReg1[1]);
+		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed1[0],pGD_Strategy_Tepl->StratAHUspeed1[1]);
 	}
 	if ((dT>=0)&&(dRH<0))
 	{
-		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_2,SYS_GO_DOWN);
-		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg2,SYS_GO_UP);
-		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve2,SYS_GO_UP);
-		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen2,SYS_GO_UP);
-		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed2,SYS_GO_UP);
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_2[0],pGD_Strategy_Tepl->StratKontur3_2[1]);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg2[0],pGD_Strategy_Tepl->StratPressReg2[1]);
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve2[0],pGD_Strategy_Tepl->StratAHUvalve2[1]);
+		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen2[0],pGD_Strategy_Tepl->StratTermoScreen2[1]);
+		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed2[0],pGD_Strategy_Tepl->StratAHUspeed2[1]);
 	}
 	if ((dT<0)&&(dRH>=0))
 	{
-		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg3,SYS_GO_DOWN);
-		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_3,SYS_GO_UP);
-		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve3,SYS_GO_DOWN);
-		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen3,SYS_GO_DOWN);
-		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed3,SYS_GO_DOWN);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg3[0],pGD_Strategy_Tepl->StratPressReg3[1]);
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_3[0],pGD_Strategy_Tepl->StratKontur3_3[1]);
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve3[0],pGD_Strategy_Tepl->StratAHUvalve3[1]);
+		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen3[0],pGD_Strategy_Tepl->StratTermoScreen3[1]);
+		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed3[0],pGD_Strategy_Tepl->StratAHUspeed3[1]);
 	}
 	if ((dT<0)&&(dRH<0))
 	{
-		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve4,SYS_GO_DOWN);
-		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen4,SYS_GO_DOWN);
-		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_4,SYS_GO_UP);
-		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg4,SYS_GO_DOWN);
-		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed4,SYS_GO_DOWN);
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve4[0],pGD_Strategy_Tepl->StratAHUvalve4[1]);
+		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen4[0],pGD_Strategy_Tepl->StratTermoScreen4[1]);
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_4[0],pGD_Strategy_Tepl->StratKontur3_4[1]);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg4[0],pGD_Strategy_Tepl->StratPressReg4[1]);
+		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed4[0],pGD_Strategy_Tepl->StratAHUspeed4[1]);
 	}
+/*void PutCritery(int16_t dT, int16_t dRH)
+{
+	if ((dT>=0)&&(dRH>=0))
+	{
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve1[0],SYS_GO_UP);
+		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen1[0],SYS_GO_UP);
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_1[0],SYS_GO_DOWN);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg1[0],SYS_GO_UP);
+		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed1[0],SYS_GO_UP);
+	}
+	if ((dT>=0)&&(dRH<0))
+	{
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_2[0],SYS_GO_DOWN);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg2[0],SYS_GO_UP);
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve2[0],SYS_GO_UP);
+		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen2[0],SYS_GO_UP);
+		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed2[0],SYS_GO_UP);
+	}
+	if ((dT<0)&&(dRH>=0))
+	{
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg3[0],SYS_GO_DOWN);
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_3[0],SYS_GO_UP);
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve3[0],SYS_GO_DOWN);
+		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen3[0],SYS_GO_DOWN);
+		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed3[0],SYS_GO_DOWN);
+	}
+	if ((dT<0)&&(dRH<0))
+	{
+		SetPrioritySystem(cSysUCValve,pGD_Strategy_Tepl->StratAHUvalve4[0],SYS_GO_DOWN);
+		SetPrioritySystem(cSysScreen,pGD_Strategy_Tepl->StratTermoScreen4[0],SYS_GO_DOWN);
+		SetPrioritySystem(cSysAHUPipe,pGD_Strategy_Tepl->StratKontur3_4[0],SYS_GO_UP);
+		SetPrioritySystem(cSysMist,pGD_Strategy_Tepl->StratPressReg4[0],SYS_GO_DOWN);
+		SetPrioritySystem(cSysAHUSpeed,pGD_Strategy_Tepl->StratAHUspeed4[0],SYS_GO_DOWN);
+	}*/
 }
+
 
 int8_t GetOffSet(int8_t fnSys)
 {
@@ -1082,48 +1117,48 @@ int16_t getValueKonturStrategy(int16_t dT, int16_t dRH, int16_t dSystem)
 	{
 		switch (dSystem)
 		{
-			case cSysRailPipe: //0
-				return pGD_Strategy_Kontur->StratKontur1_1;
-			case cSysHeadPipe: //1
-				return pGD_Strategy_Kontur->StratKontur2_1;
-			case cSysAHUPipe:  //2
-				return pGD_Strategy_Kontur->StratKontur3_1;
+			case cSmKontur1: // reil
+				return pGD_Strategy_Kontur->StratKontur1_1[0];
+			case cSmKontur2: // head
+				return pGD_Strategy_Kontur->StratKontur2_1[0];
+			case cSmKontur3: // pipe
+				return pGD_Strategy_Kontur->StratKontur3_1[0];
 		}
 	}
 	if ((dT>=0)&&(dRH<0))
 	{
 		switch (dSystem)
 		{
-			case cSysRailPipe: //0
-				return pGD_Strategy_Kontur->StratKontur1_2;
-			case cSysHeadPipe: //1
-				return pGD_Strategy_Kontur->StratKontur2_2;
-			case cSysAHUPipe:  //2
-				return pGD_Strategy_Kontur->StratKontur3_2;
+			case cSmKontur1: //0
+				return pGD_Strategy_Kontur->StratKontur1_2[0];
+			case cSmKontur2: //1
+				return pGD_Strategy_Kontur->StratKontur2_2[0];
+			case cSmKontur3:  //2
+				return pGD_Strategy_Kontur->StratKontur3_2[0];
 		}
 	}
 	if ((dT<0)&&(dRH>=0))
 	{
 		switch (dSystem)
 		{
-			case cSysRailPipe: //0
-				return pGD_Strategy_Kontur->StratKontur1_3;
-			case cSysHeadPipe: //1
-				return pGD_Strategy_Kontur->StratKontur2_3;
-			case cSysAHUPipe:  //2
-				return pGD_Strategy_Kontur->StratKontur3_3;
+			case cSmKontur1: //0
+				return pGD_Strategy_Kontur->StratKontur1_3[0];
+			case cSmKontur2: //1
+				return pGD_Strategy_Kontur->StratKontur2_3[0];
+			case cSmKontur3:  //2
+				return pGD_Strategy_Kontur->StratKontur3_3[0];
 		}
 	}
 	if ((dT<0)&&(dRH<0))
 	{
 		switch (dSystem)
 		{
-			case cSysRailPipe: //0
-				return pGD_Strategy_Kontur->StratKontur1_4;
-			case cSysHeadPipe: //1
-				return pGD_Strategy_Kontur->StratKontur2_4;
-			case cSysAHUPipe:  //2
-				return pGD_Strategy_Kontur->StratKontur3_4;
+			case cSmKontur1: //0
+				return pGD_Strategy_Kontur->StratKontur1_4[0];
+			case cSmKontur2: //1
+				return pGD_Strategy_Kontur->StratKontur2_4[0];
+			case cSmKontur3:  //2
+				return pGD_Strategy_Kontur->StratKontur3_4[0];
 		}
 	}
 	return 0;
@@ -1782,12 +1817,13 @@ void __sCalcKonturs(void)
 		CheckMistSystem();
 //		CriterT=getTempVent(fnTepl)-GD.Hot.Tepl[fnTepl].AllTask.DoTVent;
 //		CriterRH=DefRH();
-#warning Only f check
+//#warning Only f check
 //		if (pGD_Strategy_Tepl[cSmKontur3].TempPower==22)
-		{
-			CriterT=pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value-GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery;
-			CriterRH=(*pGD_Hot_Tepl).InTeplSens[cSmRHAHUOutSens].Value-(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent;
-		}
+		//{
+			CriterT =pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value-GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery;
+			//CriterRH=(*pGD_Hot_Tepl).InTeplSens[cSmRHAHUOutSens].Value-(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent;
+			CriterRH=pGD_Hot_Tepl->InTeplSens[cSmRHAHUOutSens].Value-(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent;
+		//}
 
 		(*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT=pGD_Hot_Tepl->NextTCalc.TVentCritery-__MechToVentTemp();
 #warning check GD.Hot.Tepl[fnTepl].AllTask.DoTVent

@@ -58,7 +58,7 @@
 
 #define MAX_SUM_RELAY	80
 
-const char charTable[256] = {
+/*const char charTable[256] = {
         0x00,0x01,0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x0B,0x0C,0x0D,0x0E,0x0F,
         0x10,0x11,0x12,0x13,0x14,0x15,0x16,0x17,0x18,0x19,0x1A,0x1B,0x1C,0x1D,0x1E,0x1F,
         0x20,0x21,0x22,0x23,0x24,0x25,0x26,0x27,0x28,0x29,0x2A,0x2B,0x2C,0x2D,0x2E,0x2F,
@@ -74,7 +74,7 @@ const char charTable[256] = {
         0x41,0xA0,0x42,0xA1,0xE0,0x45,0xA3,0xA4,0xA5,0xA6,0x4B,0xA7,0x4D,0x48,0x4F,0xA8,
         0x50,0x43,0x54,0xA9,0xAA,0x58,0xE1,0xAB,0xAC,0xE2,0xAD,0xAE,0x62,0xAF,0xB0,0xB1,
         0x61,0xB2,0xB3,0xB4,0xE3,0x65,0xB6,0xB7,0xB8,0xB9,0xBA,0xBB,0xBC,0xBD,0x6F,0xBE,
-        0x70,0x63,0xBF,0x79,0xE4,0x78,0xE5,0xC0,0xC1,0xE6,0xC2,0xC3,0xC4,0xC5,0xC6,0xC7};
+        0x70,0x63,0xBF,0x79,0xE4,0x78,0xE5,0xC0,0xC1,0xE6,0xC2,0xC3,0xC4,0xC5,0xC6,0xC7};	*/
 
 eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 		/*
@@ -364,7 +364,7 @@ NameTimer[SUM_NAME_TIMER]={
 {"Fans mode#Pe\266\270\274 \263e\275\277\270\273\307\277o\310",			oS,		25}, 
 };
 
-#define SUM_NAME_STRAT 28
+#define SUM_NAME_STRAT 56
 code struct  eNameStrat {
         char Name[30];
 		char Frm;
@@ -392,10 +392,10 @@ code struct  eNameStrat {
 {"T<Tset, RH>RHset. AHUPipe#T<Tset, RH>RHset. Kontur3", 				SS,		14},
 {"T<Tset, RH<RHset. AHUPipe#T<Tset, RH<RHset. Kontur3", 				SS,		15},
 
-{"T>Tset, RH>RHset. Termo screen#T>Tset, RH>RHset. Termo screen", 		SS,		16},
-{"T>Tset, RH<RHset. Termo screen#T>Tset, RH<RHset. Termo screen", 		SS,		17},
-{"T<Tset, RH>RHset. Termo screen#T<Tset, RH>RHset. Termo screen", 		SS,		18},
-{"T<Tset, RH<RHset. Termo screen#T<Tset, RH<RHset. Termo screen", 		SS,		19},
+{"T>Tset, RH>RHset. TScreen#T>Tset, RH>RHset. Termo screen", 		SS,		16},
+{"T>Tset, RH<RHset. TScreen#T>Tset, RH<RHset. Termo screen", 		SS,		17},
+{"T<Tset, RH>RHset. TScreen#T<Tset, RH>RHset. Termo screen", 		SS,		18},
+{"T<Tset, RH<RHset. TScreen#T<Tset, RH<RHset. Termo screen", 		SS,		19},
 
 {"T>Tset, RH>RHset. AHU speed#T>Tset, RH>RHset. AHU speed", 			SS,		20},
 {"T>Tset, RH<RHset. AHU speed#T>Tset, RH<RHset. AHU speed", 			SS,		21},
@@ -409,39 +409,67 @@ code struct  eNameStrat {
 };*/
 NameStrat[SUM_NAME_STRAT]={
 {"AHUvalve 1#AHU valve 1", 			SS,		0},
-{"AHUvalve 2#AHU valve 2", 			SS,		1},
-{"AHUvalve 3#AHU valve 3", 			SS,		2},
-{"AHUvalve 4#AHU valve 4", 			SS,		3},
+{"Way AHUvalve 1#Way AHUvalve 1",	SS,		1},
+{"AHUvalve 2#AHU valve 2", 			SS,		2},
+{"Way AHUvalve 2#Way AHUvalve 2",	SS,		3},
+{"AHUvalve 3#AHU valve 3", 			SS,		4},
+{"Way AHUvalve 3#Way AHUvalve 3",	SS,		5},
+{"AHUvalve 4#AHU valve 4", 			SS,		6},
+{"Way AHUvalve 4#Way AHUvalve 4",	SS,		7},
 
-{"RailPipe 1#Kontur1 1", 				SS,		4},
-{"RailPipe 2#Kontur1 2", 				SS,		5},
-{"RailPipe 3#Kontur1 3", 				SS,		6},
-{"RailPipe 4#Kontur1 4", 				SS,		7},
+{"RailPipe 1#RailPipe 1",			SS,		8},
+{"Way RailPipe 1#Way RailPipe 1",	SS,		9},
+{"RailPipe 2#Kontur1 2",			SS,		10},
+{"Way RailPipe 2#Way RailPipe 2",	SS,		11},
+{"RailPipe 3#Kontur1 3",			SS,		12},
+{"Way RailPipe 3#Way RailPipe 3",	SS,		13},
+{"RailPipe 4#Kontur1 4",			SS,		14},
+{"Way RailPipe 4#Way RailPipe 4",	SS,		15},
 
-{"HeadPipe 1#Kontur2 1", 				SS,		8},
-{"HeadPipe 2#Kontur2 2", 				SS,		9},
-{"HeadPipe 3#Kontur2 3", 				SS,		10},
-{"HeadPipe 4#Kontur2 4", 				SS,		11},
+{"HeadPipe 1#HeadPipe 1",			SS,		16},
+{"Way HeadPipe 1#Way HeadPipe 1",	SS,		17},
+{"HeadPipe 2#Kontur2 2",			SS,		18},
+{"Way HeadPipe 2#Way HeadPipe 2",	SS,		19},
+{"HeadPipe 3#Kontur2 3",			SS,		20},
+{"Way HeadPipe 3#Way HeadPipe 3",	SS,		21},
+{"HeadPipe 4#Kontur2 4",			SS,		22},
+{"Way HeadPipe 4#Way HeadPipe 4",	SS,		23},
 
-{"AHUPipe 1#Kontur3 1", 				SS,		12},
-{"AHUPipe 2#Kontur3 2", 				SS,		13},
-{"AHUPipe 3#Kontur3 3", 				SS,		14},
-{"AHUPipe 4#Kontur3 4", 				SS,		15},
+{"AHUPipe 1#AHUPipe 1", 			SS,		24},
+{"Way AHUPipe 1#Way AHUPipe 1",		SS,		25},
+{"AHUPipe 2#Kontur3 2", 			SS,		26},
+{"Way AHUPipe 2#Way AHUPipe 2",		SS,		27},
+{"AHUPipe 3#Kontur3 3", 			SS,		28},
+{"Way AHUPipe 3#Way AHUPipe 3",		SS,		29},
+{"AHUPipe 4#Kontur3 4", 			SS,		30},
+{"Way AHUPipe 4#Way AHUPipe 4",		SS,		31},
 
-{"Termo screen 1#Termo screen 1", 		SS,		16},
-{"Termo screen 2#Termo screen 2", 		SS,		17},
-{"Termo screen 3#Termo screen 3", 		SS,		18},
-{"Termo screen 4#Termo screen 4", 		SS,		19},
+{"Termo screen 1#Termo screen 1",	SS,		32},
+{"Way TScreen 1#Way TScreen 1",		SS,		33},
+{"Termo screen 2#Termo screen 2",	SS,		34},
+{"Way TScreen 2#Way TScreen 2",		SS,		35},
+{"Termo screen 3#Termo screen 3",	SS,		36},
+{"Way TScreen 3#Way TScreen 3",		SS,		37},
+{"Termo screen 4#Termo screen 4",	SS,		38},
+{"Way TScreen 4#Way TScreen 4",		SS,		39},
 
-{"AHU speed 1#AHU speed 1", 			SS,		20},
-{"AHU speed 2#AHU speed 2", 			SS,		21},
-{"AHU speed 3#AHU speed 3", 			SS,		22},
-{"AHU speed 4#AHU speed 4", 			SS,		23},
+{"AHU speed 1#AHU speed 1", 		SS,		40},
+{"WayAHUspeed 1#WayAHUspeed1",	    SS,		41},
+{"AHU speed 2#AHU speed 2", 		SS,		42},
+{"WayAHUspeed 2#WayAHUspeed2",		SS,		43},
+{"AHU speed 3#AHU speed 3", 		SS,		44},
+{"WayAHUspeed3#WayAHUspeed3",		SS,		45},
+{"AHU speed 4#AHU speed 4", 		SS,		46},
+{"WayAHUspeed4#WayAHUspeed4",		SS,		47},
 
-{"Mist 1#Mist 1", 						SS,		24},
-{"Mist 2#Mist 2", 						SS,		25},
-{"Mist 3#Mist 3", 						SS,		26},
-{"Mist 4#Mist 4", 						SS,		27},
+{"Mist 1#Mist 1", 					SS,		48},
+{"Way Mist 1#Way Mist 1",			SS,		49},
+{"Mist 2#Mist 2", 					SS,		50},
+{"Way Mist 2#Way Mist 2",			SS,		51},
+{"Mist 3#Mist 3", 					SS,		52},
+{"Way Mist 3#Way Mist 3",			SS,		53},
+{"Mist 4#Mist 4", 					SS,		54},
+{"Way Mist 4#Way Mist 4",			SS,		55},
 };
 
 
