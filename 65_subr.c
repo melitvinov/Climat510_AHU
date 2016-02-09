@@ -992,7 +992,7 @@ int CorrectionRule(int fStartCorr,int fEndCorr, int fCorrectOnEnd, int fbSet)
 
 uint16_t AbsHum(uint16_t fTemp, uint16_t fRH)
 {
-	float tT,tRH, tRez;
+	volatile float tT,tRH, tRez;
 	tT=fTemp/100;
 	tRH=fRH/100;
 	tRez=((0.000002*tT*tT*tT*tT)+(0.0002*tT*tT*tT)+(0.0095*tT*tT)+( 0.337*tT)+4.9034)*tRH;
@@ -1001,8 +1001,10 @@ uint16_t AbsHum(uint16_t fTemp, uint16_t fRH)
 
 uint16_t RelHum(uint16_t fTemp, uint16_t AbsRH)
 {
-	float tT,tRH, tRez;
-	tT=fTemp/100;
+	volatile float tT,tRH, tRez;
+	//tT=(fTemp/100) + (fTemp%100);
+	tT = fTemp;
+	tT /= 100;
 	tRH=AbsRH*100;
 	tRez=tRH/((0.000002*tT*tT*tT*tT)+(0.0002*tT*tT*tT)+(0.0095*tT*tT)+( 0.337*tT)+4.9034);
 	return tRez;

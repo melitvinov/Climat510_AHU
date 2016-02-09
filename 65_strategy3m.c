@@ -122,7 +122,9 @@ void CheckScreenSystem(void)
 	pGD_TControl_Tepl->Systems[cSysScreen].Max=GD.TuneClimate.sc_RHMax;
 	if (pGD_TControl_Tepl->Systems[cSysScreen].Max>15)
 		pGD_TControl_Tepl->Systems[cSysScreen].Max=15;
+
 //	pGD_TControl_Tepl->Systems[cSysScreen].Max=pGD_TControl_Tepl->Screen[0].Value-90;
+
 	if (pGD_TControl_Tepl->Systems[cSysScreen].Max<0)
 		pGD_TControl_Tepl->Systems[cSysScreen].Max=0;
 	pGD_TControl_Tepl->Systems[cSysScreen].Min=0;
@@ -132,6 +134,7 @@ void CheckScreenSystem(void)
 	pGD_TControl_Tepl->Systems[cSysScreen].Value=pGD_TControl_Tepl->Screen[0].Value;
 
 	if (pGD_TControl_Tepl->Systems[cSysScreen].Keep>pGD_TControl_Tepl->Systems[cSysScreen].Max)
+	//if (pGD_TControl_Tepl->Systems[cSysScreen].Keep<pGD_TControl_Tepl->Systems[cSysScreen].Max)
 		pGD_TControl_Tepl->Systems[cSysScreen].Keep=pGD_TControl_Tepl->Systems[cSysScreen].Max;
 
 	if	(!pGD_TControl_Tepl->Systems[cSysScreen].RCS)
@@ -1189,7 +1192,9 @@ void __WorkableKontur(char fnKontur, char fnTepl)
 		  &&(!(YesBit((*pGD_Hot_Tepl_Kontur).ExtRCS,cbAlarmErrKontur)))
 #endif
 		  &&((*pGD_TControl_Tepl_Kontur).PumpStatus)
+#ifndef DEMO
 		  &&((IntY<100))
+#endif
 //Для защиты от перегрева рукава
 		  &&((fnKontur!=cSmKontur3)||(pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value-pGD_Hot_Tepl->AllTask.DoTHeat<200)))
 //Конец защиты от перегрева рукава
@@ -1214,11 +1219,11 @@ void __WorkableKontur(char fnKontur, char fnTepl)
 //------------------------------------------------------------------------
 //Установить возможности регулирования
 //------------------------------------------------------------------------
-			if (((*pGD_Hot_Tepl_Kontur).Do>(*pGD_Hot_Tepl_Kontur).MinCalc)
+			if (((*pGD_Hot_Tepl_Kontur).Do>(*pGD_Hot_Tepl_Kontur).MinCalc))
 #ifndef DEMO
 		  		&&(!(YesBit((*pGD_Hot_Tepl_Kontur).ExtRCS,cbAlarmErrKontur)))
-#endif
 				&&(IntY>0))
+#endif
 				SetBit((*pGD_Hot_Tepl_Kontur).ExtRCS,cbReadyRegDownKontur);
 //------------------------------------------------------------------------
 //Установить возможности работы насосом

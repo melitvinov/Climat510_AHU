@@ -1,5 +1,7 @@
 
 //#define DEBUG
+
+#define DEMO  // работа контуров будет разрешена, даже если смесительные клапана открыты на 100%
 #define AHU
 //#define AGAPOVSKIY_DOUBLE_VALVE
 //#define SIO_PAUSE	1

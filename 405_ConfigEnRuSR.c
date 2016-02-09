@@ -274,7 +274,7 @@ eNameConfig NameInputConfig[cConfSInputs]={
 /*6 Авария света*/				{"Light alarm#A\263a\310\270\307 \343oc\263e\277",tpLEVEL,0,MAX_SUM_RELAY}
 };
 
-#define SUM_NAME_PARS 25
+#define SUM_NAME_PARS 24
 code struct  eNameParUpr
         {
         char Name[30];
