@@ -1219,7 +1219,7 @@ void __WorkableKontur(char fnKontur, char fnTepl)
 //------------------------------------------------------------------------
 //Установить возможности регулирования
 //------------------------------------------------------------------------
-			if (((*pGD_Hot_Tepl_Kontur).Do>(*pGD_Hot_Tepl_Kontur).MinCalc))
+			if (((*pGD_Hot_Tepl_Kontur).Do>(*pGD_Hot_Tepl_Kontur).MinCalc)
 #ifndef DEMO
 		  		&&(!(YesBit((*pGD_Hot_Tepl_Kontur).ExtRCS,cbAlarmErrKontur)))
 				&&(IntY>0))
