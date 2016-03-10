@@ -732,6 +732,7 @@ void __sMinMaxWindows(void)
 	IntY=GD.TControl.MeteoSensing[cSmOutTSens];
 	CorrectionRule(GD.TuneClimate.f_MinTFreeze,GD.TuneClimate.f_MinTFreeze+f_MaxTFreeze,200,0);
 	IntX=IntZ;
+
 //--------------------------------------------------------------------------------
 //Если не хотим чтобы открывалась подветренная сторона устанавливаем максимальный ветер в 0 
 //--------------------------------------------------------------------------------

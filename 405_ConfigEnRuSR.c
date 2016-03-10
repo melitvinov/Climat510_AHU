@@ -419,11 +419,11 @@ NameStrat[SUM_NAME_STRAT]={
 
 {"RailPipe 1#RailPipe 1",			SS,		8},
 {"Way RailPipe 1#Way RailPipe 1",	SS,		9},
-{"RailPipe 2#Kontur1 2",			SS,		10},
+{"RailPipe 2#RailPipe 2",			SS,		10},
 {"Way RailPipe 2#Way RailPipe 2",	SS,		11},
-{"RailPipe 3#Kontur1 3",			SS,		12},
+{"RailPipe 3#RailPipe 3",			SS,		12},
 {"Way RailPipe 3#Way RailPipe 3",	SS,		13},
-{"RailPipe 4#Kontur1 4",			SS,		14},
+{"RailPipe 4#RailPipe 4",			SS,		14},
 {"Way RailPipe 4#Way RailPipe 4",	SS,		15},
 
 {"HeadPipe 1#HeadPipe 1",			SS,		16},

@@ -879,7 +879,7 @@ void Measure()
 	char tTepl,nSens;
 	uint16_t	tSensVal;
 	int nModule;
-	int8_t ErrModule;
+	int8_t ErrModule = 0;
 	for (tTepl=0;tTepl<cSTepl;tTepl++)
 	{
         for(nSens=0;nSens<cConfSSens;nSens++)
@@ -897,6 +897,7 @@ void Measure()
         		GD.Hot.Tepl[tTepl].InTeplSens[nSens].RCS=cbNoWorkSens;
         		GD.Hot.Tepl[tTepl].InTeplSens[nSens].Value=0;
         		GD.uInTeplSens[tTepl][nSens]=0;
+        		NVIC_SystemReset();
         		continue;
         		//        		tSensVal=0;
         	}
