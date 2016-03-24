@@ -1156,7 +1156,9 @@ char bRelay;
 
 
 void __SetBitOutReg(char fnTepl,char fnMech,char fnclr,char fnSm)
-{	uint16_t nBit,nByte,Mask;
+{
+	uint16_t nBit,nByte,Mask;
+
 	if (fnTepl==-1) 
 	  nBit=fnMech;
 	else

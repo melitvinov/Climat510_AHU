@@ -458,6 +458,12 @@ void pmHand(void) {
                         BlkW=1;
 						buf[Ad_Buf++]='(';
                   	  	w_int(&pGD_TControl_Tepl->MechBusy[ByteW].TimeRealMech,SSSi);
+
+                  	  	buf[Ad_Buf++]=',';												//
+                  	  	w_int(&pGD_TControl_Tepl->MechBusy[ByteW].TimeSetMech,SSSi);	//
+                  	    buf[Ad_Buf++]=',';												//
+                  	    w_int(&pGD_Hot_Hand_Kontur->Position,SSS);						//
+
 				  	  	w_txt("s) #c) ");
 				  	  	if  (pGD_TControl_Tepl->MechBusy[ByteW].Sens)
 				  	  	{

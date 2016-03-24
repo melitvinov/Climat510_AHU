@@ -1252,6 +1252,7 @@ ClrDog;
 void DoMechanics(char fnTepl) 
 {
 	char fErr;
+	int TimeVol = 0;
 	ClrDog;
 //	if (count <= 50000 * 3)
 //	{
@@ -1263,8 +1264,12 @@ void DoMechanics(char fnTepl)
 	for(ByteX=cHSmMixVal;ByteX<cHSmPump;ByteX++)
 	{
 		SetPointersOnKontur(ByteX);
-//		pGD_Hot_Hand_Kontur=pGD_Hot_Hand+ByteX;
-		MBusy=&(pGD_TControl_Tepl->MechBusy[ByteX]);
+//		pGD_Hot_Hand_Kontur=pGD_Hot_Hand+ByteX;  // было убрано !!!
+
+		//MBusy=&(pGD_TControl_Tepl->MechBusy[ByteX]);
+		MBusy = &GD.TControl.Tepl[fnTepl].MechBusy[ByteX];
+
+		MBusy=&(  pGD_TControl_Tepl->MechBusy[ByteX]);
 
 		if(pGD_Hot_Hand_Kontur->Position>100)
 			pGD_Hot_Hand_Kontur->Position=100;
@@ -1299,7 +1304,7 @@ void DoMechanics(char fnTepl)
 
 		ClrBit(MBusy->RCS,cMSBusyMech);
 		ByteY=0;
-		if ((!YesBit(MBusy->RCS,cMSAlarm))&&(MBusy->Sens)&&(!YesBit(MBusy->Sens->RCS,cbNoWorkSens))&&(GD.TuneClimate.f_MaxAngle))
+		if ((!YesBit(MBusy->RCS,cMSAlarm))&&(MBusy->Sens)&&(!YesBit(MBusy->Sens->RCS,cbNoWorkSens))&&(GD.TuneClimate.f_MaxAngle))   // TuneClimate.f_MaxAngle - о
 		{
 			MBusy->PauseMech=10;
 			if (YesBit(MBusy->RCS,cMSFreshSens))
@@ -1384,18 +1389,31 @@ void DoMechanics(char fnTepl)
 				if (!pGD_Hot_Hand_Kontur->Position)
 					{
 					SetBit(MBusy->RCS,cMSBlockRegs);
-					MBusy->TimeRealMech+=pGD_ConstMechanic_Mech->v_TimeMixVal/4;
+
+					TimeVol = pGD_ConstMechanic_Mech->v_TimeMixVal/4;
+					if (MBusy->TimeRealMech + TimeVol <= pGD_ConstMechanic_Mech->v_TimeMixVal)
+						MBusy->TimeRealMech+=TimeVol;
+					//MBusy->TimeRealMech+=pGD_ConstMechanic_Mech->v_TimeMixVal/4;
 					}
 				if (pGD_Hot_Hand_Kontur->Position==100)
 					{
 					SetBit(MBusy->RCS,cMSBlockRegs);
-					MBusy->TimeRealMech-=pGD_ConstMechanic_Mech->v_TimeMixVal/4;
+
+					TimeVol = pGD_ConstMechanic_Mech->v_TimeMixVal/4;
+					if (MBusy->TimeRealMech - TimeVol > 0)
+						MBusy->TimeRealMech-=TimeVol;
+					//MBusy->TimeRealMech-=pGD_ConstMechanic_Mech->v_TimeMixVal/4;
+
 					}
 				}
 			}
+		//if (MBusy->TimeRealMech > MBusy->TimeSetMech)
+		//	MBusy->TimeRealMech = MBusy->TimeSetMech;
 		if (MBusy->TimeSetMech>MBusy->TimeRealMech)
 			{
-			MBusy->TimeRealMech++;
+			if (MBusy->TimeRealMech < MBusy->TimeSetMech)
+				MBusy->TimeRealMech++; else
+				MBusy->TimeRealMech = MBusy->TimeSetMech;
 			__SetBitOutReg(fnTepl,ByteX,0,1);
 			SetBit(MBusy->RCS,cMSBusyMech);
 			//SetBit(pGD_Hot_Hand_Kontur->RCS,cbBusyMech);
@@ -1403,7 +1421,8 @@ void DoMechanics(char fnTepl)
 			}
 		if (MBusy->TimeSetMech<MBusy->TimeRealMech)
 			{
-			MBusy->TimeRealMech--;
+			if (MBusy->TimeRealMech > 0)
+				MBusy->TimeRealMech--;
 			__SetBitOutReg(fnTepl,ByteX,0,0);
 			SetBit(MBusy->RCS,cMSBusyMech);
 			//SetBit(pGD_Hot_Hand_Kontur->RCS,cbBusyMech);
