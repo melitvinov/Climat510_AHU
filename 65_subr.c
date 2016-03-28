@@ -915,27 +915,16 @@ ClrDog;
 			//eCS->Input=OutPortsAndInputs[ByteX][0];
 			//eCS->nInput=OutPortsAndInputs[ByteX][1];
 			}
-		for (ByteX=0;ByteX<cSTepl;ByteX++)
+
+        for (ByteX=0;ByteX<cSTepl;ByteX++)
 		{
 			SetPointersOnTepl(ByteX);
-			//for (IntX=0;IntX<cSStrategy;IntX++)			// NEW strat тут заполняем значения по умолчанию
-			//{
-			//	for (ByteY=0;ByteY<sizeof(eStrategy);ByteY++)
-			//		(*((&(pGD_Strategy_Tepl[IntX].TempPower))+ByteY))=(*((&DefStrategy[IntX].TempPower)+ByteY));
-			//}
-
-#warning fix defaults
-
-			for (ByteY=0;ByteY<sizeof(eStrategy);ByteY++)
-			{
-			  (*(&pGD_Strategy_Tepl[IntX].StratAHUvalve1[0] + (ByteY*2) )) = DefStrategy[ByteY*2];
-			  (*(&pGD_Strategy_Tepl[IntX].StratAHUvalve1[0] + (ByteY*2+1) )) = DefStrategy[ByteY*2+1];
-			}
+			for (IntX=0;IntX<sizeof(eStrategy);IntX++)
+				(*((&(pGD_Strategy_Tepl[0].StratAHUvalve1[0]))+IntX)) = DefStrategy[IntX];
 
 			bWaterReset[ByteX]=1;
 			for (IntX=0;IntX<SUM_NAME_CONF;IntX++)
 				pGD_MechConfig->RNum[IntX]=MechC[ByteX][IntX];
-
 			for (IntX=0;IntX<cConfSSystem;IntX++)
 				pGD_MechConfig->Systems[IntX]=InitSystems[ByteX][IntX];
 
@@ -955,7 +944,7 @@ ClrDog;
 				pGD_ConstMechanic->ConstMixVal[IntX].v_IFactor=DefMechanic[2];
 				//pGD_ConstMechanic->ConstMixVal[IntX].Power=(char)DefMechanic[3];
 			}
-/* Первоначальна настройка калибровок */
+// Первоначальна настройка калибровок
 	        for(ByteY=0;ByteY<cConfSSens;ByteY++)
 			{
 				eCS=&GD.Cal.InTeplSens[ByteX][ByteY];
