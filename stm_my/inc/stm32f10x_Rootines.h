@@ -7,6 +7,8 @@
 #define KEYB_OUT	0x000f
 #define KEYB_STARTUP RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE)
 
+int16_t saveAHUOutTemp[8];
+
 void Init_IWDG(uint16_t* fIWDG_reset);
 
 void Check_IWDG(void);

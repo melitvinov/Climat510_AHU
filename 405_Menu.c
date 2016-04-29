@@ -238,6 +238,44 @@ void	pmStrategy(void)
 	if(Y_menu2 >=SUM_NAME_STRAT) Y_menu2=SUM_NAME_STRAT-1;
     w_txt(Mes7); //-Zone-
 	w_int(&x_menu,SS);
+
+
+
+							BlkW=1;
+							buf[Ad_Buf++]='(';
+							w_int(&fnMSysOut[ByteZ],SS);
+
+	                  	  	buf[Ad_Buf++]=',';												//
+	                  	  	w_int(&fnMPriorOut[ByteZ],SS);
+
+	                  	  	buf[Ad_Buf++]=',';												//
+	                  	  	w_int(&CriterT1Out[ByteZ],SSSS);
+
+	                  	  	buf[Ad_Buf++]='-';												//
+	                  	  	w_int(&CriterT2Out[ByteZ],SSSS);
+
+	                  	  	buf[Ad_Buf++]=',';
+	                  	    w_int(&CriterT3Out[ByteZ], SSSS);
+
+	                  	  	buf[Ad_Buf++]=',';
+	                  	    w_int(&saveAHUOutTemp[ByteZ], SSSS);
+
+	                  	    buf[Ad_Buf++]=')';
+
+					  	  	//w_txt("s) #c) ");
+					  	  	//if  (pGD_TControl_Tepl->MechBusy[ByteW].Sens)
+					  	  	//{
+		                    //    buf[Ad_Buf++]='(';
+		                  	//  	w_int(&pGD_TControl_Tepl->MechBusy[ByteW].Sens->Value,SSSpS);
+		                    //    buf[Ad_Buf++]=')';
+					  	  	//}
+					  	  	//Ad_Buf=Str5;
+
+
+
+
+
+
     Ad_Buf=Str3;
 	if(Y_menu2 < StartY_menu2) StartY_menu2 = Y_menu2;
 	if(Y_menu2 > (StartY_menu2+2)) StartY_menu2 = Y_menu2-2;	// Y_menu2-2;

@@ -1254,12 +1254,6 @@ void DoMechanics(char fnTepl)
 	char fErr;
 	int TimeVol = 0;
 	ClrDog;
-//	if (count <= 50000 * 3)
-//	{
-//		count++;
-//		GD.TControl.Tepl[fnTepl].Systems[cSysUCValve].Keep = 0;
-//	}
-
 
 	for(ByteX=cHSmMixVal;ByteX<cHSmPump;ByteX++)
 	{

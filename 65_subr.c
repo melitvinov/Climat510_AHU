@@ -46,7 +46,7 @@
 #define	DS18B20_FILL_EEPROM	0x48
 #define	DS18B20_SKIP_ROM	0xCC
 
-int16_t teplTmes[8][6];
+int16_t teplTmes[8][30];
 
 int16_t getTempSensor(char fnTepl, char sensor)
 {
@@ -61,6 +61,21 @@ int16_t getTempSensor(char fnTepl, char sensor)
 			return 0;
 		return teplTmes[fnTepl][sensor];
 	}
+}
+
+/*!
+\brief Температура воздуха на выходе AHU
+@return int16_t Температура
+*/
+int16_t getTempOutAHU(char fnTepl)
+{
+	int16_t error = 0;
+	int16_t temp = 0;
+	temp = getTempSensor(fnTepl, cSmTAHUOutSens);
+	if ( temp != 0 )
+		error = 1;
+	if (error)
+		return GD.Hot.Tepl[fnTepl].tempVent;
 }
 
 /*!
@@ -854,7 +869,8 @@ void InitGD(char fTipReset) {
         ClrDog;
         SIM=100;
 		NDat=0;
-		if (fTipReset>2) MemClr(&GD.Hot,(sizeof(eHot)));
+		if (fTipReset>2)
+			MemClr(&GD.Hot,(sizeof(eHot)));
         MemClr(&GD.Control,sizeof(eControl)
                 +sizeof(eFullCal)
                 +sizeof(eLevel)

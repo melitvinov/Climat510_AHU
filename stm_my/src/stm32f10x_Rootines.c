@@ -872,8 +872,6 @@ void  CalibrNew(char nSArea,char nTepl, char nSens,int16_t Mes){
 	}
 }
 
-
-
 void Measure()
 {
 	char tTepl,nSens;
@@ -897,12 +895,14 @@ void Measure()
         		GD.Hot.Tepl[tTepl].InTeplSens[nSens].RCS=cbNoWorkSens;
         		GD.Hot.Tepl[tTepl].InTeplSens[nSens].Value=0;
         		GD.uInTeplSens[tTepl][nSens]=0;
-        		NVIC_SystemReset();
+        		NVIC_SystemReset();   // помогло при пропадании датчиков по причине потери связи
         		continue;
         		//        		tSensVal=0;
         	}
         	CalibrNew(1,tTepl,nSens,tSensVal);
+        	saveAHUOutTemp[tTepl] = GD.Hot.Tepl[tTepl].InTeplSens[cSmTAHUOutSens].Value;
 		}
+
 	}
     for(nSens=0;nSens<cConfSMetSens;nSens++)
     {

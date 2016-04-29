@@ -522,7 +522,10 @@ typedef struct eeTuneClimate
 		uchar		fUC_S3Level;
 		uchar		fUC_Offset4;
 
-		int8_t     Rez[11];
+		uchar		vAHU_MinTempr;
+		uchar		vAHU_MaxTempr;
+
+		int8_t     Rez[9];
 //		int16_t     Rez[9];  // было 14
 //280		
        }

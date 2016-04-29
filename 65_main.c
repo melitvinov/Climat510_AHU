@@ -93,7 +93,8 @@ start:
 #ifdef STM32_UNIT
 	   	   	   NMinPCOut=0;
 #endif
-				if(!NumBlock && (GD.Hot.News&0x80)) SetRTC();
+	   	   	if(!NumBlock && (GD.Hot.News&bInClock)) SetRTC();	// NEW
+	   	   	    //if(!NumBlock && (GD.Hot.News&0x80)) SetRTC();
             	ClrDog;
             /*-- Была запись с ПК в блок NumBlock, переписать в EEPROM ------*/
             	if (NumBlock) ReWriteFRAM();
