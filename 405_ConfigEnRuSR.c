@@ -29,6 +29,9 @@
 
 #define cSmRHSens		6
 #define cSmInLightSens	10
+
+#define cSmT1AHUOutSens	14
+
 #define cSmOverPSens	15
 #define cSmRoofSens		16
 #define cSmGlassSens	18
@@ -36,6 +39,7 @@
 //#define cSmTCSens		1
 #define cSmTAHUOutSens	20
 #define cSmRHAHUOutSens	13
+
 #define cSmWinNSens		21
 #define cSmWinSSens		22
 #define cSmScreenSens	23

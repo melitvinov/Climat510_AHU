@@ -1403,37 +1403,38 @@ void DoMechanics(char fnTepl)
 			}
 		//if (MBusy->TimeRealMech > MBusy->TimeSetMech)
 		//	MBusy->TimeRealMech = MBusy->TimeSetMech;
-		if (MBusy->TimeSetMech>MBusy->TimeRealMech)
+		if (MBusy->TimeSetMech > MBusy->TimeRealMech)
 			{
-			if (MBusy->TimeRealMech < MBusy->TimeSetMech)
-				MBusy->TimeRealMech++; else
-				MBusy->TimeRealMech = MBusy->TimeSetMech;
-			__SetBitOutReg(fnTepl,ByteX,0,1);
-			SetBit(MBusy->RCS,cMSBusyMech);
-			//SetBit(pGD_Hot_Hand_Kontur->RCS,cbBusyMech);
-			ByteY++;
+				if (MBusy->TimeRealMech < MBusy->TimeSetMech)
+					MBusy->TimeRealMech++;
+				else
+					MBusy->TimeRealMech = MBusy->TimeSetMech;
+				__SetBitOutReg(fnTepl,ByteX,0,1);
+				SetBit(MBusy->RCS,cMSBusyMech);
+				//SetBit(pGD_Hot_Hand_Kontur->RCS,cbBusyMech);
+				ByteY++;
 			}
-		if (MBusy->TimeSetMech<MBusy->TimeRealMech)
+		if (MBusy->TimeSetMech < MBusy->TimeRealMech)
 			{
-			if (MBusy->TimeRealMech > 0)
-				MBusy->TimeRealMech--;
-			__SetBitOutReg(fnTepl,ByteX,0,0);
-			SetBit(MBusy->RCS,cMSBusyMech);
-			//SetBit(pGD_Hot_Hand_Kontur->RCS,cbBusyMech);
-			ByteY++;
+				if (MBusy->TimeRealMech > 0)
+					MBusy->TimeRealMech--;
+				__SetBitOutReg(fnTepl,ByteX,0,0);
+				SetBit(MBusy->RCS,cMSBusyMech);
+				//SetBit(pGD_Hot_Hand_Kontur->RCS,cbBusyMech);
+				ByteY++;
 			}
 		if(ByteY) 
 			{
-			IntY=(int)pGD_ConstMechanic_Mech->v_MinTim;
+				IntY=(int)pGD_ConstMechanic_Mech->v_MinTim;
 /*			if ((ByteX==cHSmWinN)||(ByteX==cHSmWinS))
 			{
 				ogrMin(&IntY,90);
 				pGD_TControl_Tepl->FramUpdate[ByteX-cHSmWinN]=0;
 			}*/
-			ogrMin(&IntY,5);
-			MBusy->PauseMech=IntY;			
-			if(YesBit(MBusy->RCS,cMSBlockRegs))
-				MBusy->PauseMech=150;
+				ogrMin(&IntY,5);
+				MBusy->PauseMech=IntY;
+				if(YesBit(MBusy->RCS,cMSBlockRegs))
+					MBusy->PauseMech=150;
 			}
 	//	if (GD.Hot.Hand) continue;
 		if(MBusy->PauseMech) 

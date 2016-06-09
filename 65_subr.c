@@ -72,10 +72,25 @@ int16_t getTempOutAHU(char fnTepl)
 	int16_t error = 0;
 	int16_t temp = 0;
 	temp = getTempSensor(fnTepl, cSmTAHUOutSens);
-	if ( temp != 0 )
-		error = 1;
-	if (error)
-		return GD.Hot.Tepl[fnTepl].tempVent;
+//	if ( temp != 0 )
+//		error = 1;
+//	if (error)
+//		return GD.Hot.Tepl[fnTepl].tempVent;
+}
+
+/*!
+\brief Температура воздуха на выходе в конце AHU
+@return int16_t Температура
+*/
+int16_t getTempOutEndAHU(char fnTepl)
+{
+	int16_t error = 0;
+	int16_t temp = 0;
+	temp = getTempSensor(fnTepl, cSmT1AHUOutSens);
+//	if ( temp != 0 )
+//		error = 1;
+//	if (error)
+//		return GD.Hot.Tepl[fnTepl].tempVent;
 }
 
 /*!

@@ -178,7 +178,6 @@ void InitMainTimer(void)
 
     RCC->APB1ENR |= RCC_APB1Periph_TIM2;
 
-
     TIM2->PSC = 8000-1; // Clock prescaler;
 
     TIM2->ARR = 100; // Auto reload value
@@ -279,7 +278,8 @@ void InitRTC(void)
 		/* Wait until last write operation on RTC registers has finished */
 		RTC_WaitForLastTask();
 		/* Set RTC prescaler: set RTC period to 1sec */
-		RTC_SetPrescaler(40000); /* RTC period = RTCCLK/RTC_PR = (32.768 KHz)/(32767+1) */
+		//RTC_SetPrescaler(40000); /* RTC period = RTCCLK/RTC_PR = (32.768 KHz)/(32767+1) */   // было так !!!
+		RTC_SetPrescaler(32000); /* RTC period = RTCCLK/RTC_PR = (32.768 KHz)/(32767+1) */   // вернул 32767 как более понятное
 		/* Wait until last write operation on RTC registers has finished */
 		RTC_WaitForLastTask();
 		/* Set initial value */
@@ -315,8 +315,6 @@ void RTC_IRQHandler(void)
 		//IntCount=0;
 	}
 }
-
-
 
 #define PORT1WIRE	GPIOB
 #define PIN1WIRE	GPIO_Pin_12

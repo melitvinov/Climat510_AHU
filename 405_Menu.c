@@ -483,11 +483,24 @@ void pmHand(void) {
 						w_int(&ByteX,SS);
 						Ad_Buf++;
                         w_txt(NameOutputConfig[ByteW].Name); /* Клап бойлера*/ //Boiler val \310ost~
+
+                        if (ByteW == cHSmUCValve)
+                        {
+                        	buf[Ad_Buf++]='(';
+                        	w_int(&fnMKeepOut[ByteZ][cSysUCValve] ,SSS);
+                   	  		buf[Ad_Buf++]=',';
+                   	  		w_int(&fnMKeepErrorOut[ByteZ] ,SSS);
+                   	  		buf[Ad_Buf++]=')';
+                        }
+
                         Ad_Buf=Str3;
                         w_txt(Mes134); /* Ход клап */ //Boiler val time~~
 						ByteX=0x01;
                         w_int(&pGD_Hot_Hand_Kontur->RCS,bS);
 						AutoMan(pGD_Hot_Hand_Kontur->RCS,ByteX);
+
+						//BlkW=1;
+
                         if (!(Y_menu2%2)) BlkW=1;
                         Ad_Buf=Str4;
                         w_txt(Mes133); /* Ход клап */ //Boiler val time~~
@@ -513,7 +526,23 @@ void pmHand(void) {
 						w_txt(Mes136); Ad_Buf++;
                         IntX=(*pGD_MechConfig_Kontur);
                         w_int(&IntX,SpSSpSS);
-						return;
+
+                        if (ByteW == cHSmUCValve)
+                        {
+                        buf[Ad_Buf++]='(';
+                  	  	w_int(&fnMKeepParamOut[ByteZ][0],SSSS);							//
+                  	    buf[Ad_Buf++]=',';												//
+                  	    w_int(&fnMKeepParamOut[ByteZ][1],SSS);
+                  	    buf[Ad_Buf++]=',';												//
+                  	    w_int(&fnMKeepParamOut[ByteZ][2],SSS);
+                  	    buf[Ad_Buf++]=',';												//
+                  	    w_int(&fnMKeepParamOut[ByteZ][3],SSS);
+                  	    buf[Ad_Buf++]=',';												//
+                  	    w_int(&fnMKeepParamOut[ByteZ][4],SSS);
+                  	    buf[Ad_Buf++]=')';												//
+                        }
+
+                        return;
                 		}
 				ByteZ-=SumTeplZones;
                 if(ByteZ<SumTeplZones){
