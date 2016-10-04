@@ -50,6 +50,11 @@ eSocket	Sockets[MAX_SOCKET_COUNT];
 
 
 
+uint8_t UDPout1;
+uint8_t UDPout2;
+uint16_t UDPout3;
+//static uint8_t dis_ip[4] = {192,168,1,106};	// my ip
+static uint8_t dis_ip[4] = {192,168,1,251};	// lipetsk phase3
 
 
 

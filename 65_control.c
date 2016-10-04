@@ -1113,17 +1113,36 @@ void SetAlarm(void)
 
 }
 
+uint16_t fPadWorkTime = 0;
+uint16_t fPadOnPad = 0;
+uint16_t fPadPause = 0;
+
+void AHUPadInit(void)
+	{
+		fPadWorkTime = 0;
+		fPadOnPad = 0;
+		fPadPause = 0;
+	}
+
 void SetDiskr(char fnTepl)
 {
 	int	nLight;
 	char tMaxLight;
-/*
-	if (!(YesBit((*(pGD_Hot_Hand+cHSmAHUSpeed1)).RCS,cbManMech)))
-		(*(pGD_Hot_Hand+cHSmAHUSpeed1)).Position=(*pGD_Hot_Tepl).Kontur[cSmKontur4].Do/10;
-	if (!(YesBit((*(pGD_Hot_Hand+cHSmAHUSpeed2)).RCS,cbManMech)))
-		(*(pGD_Hot_Hand+cHSmAHUSpeed2)).Position=(*pGD_Hot_Tepl).Kontur[cSmKontur4].Do/10;
-*/
+
+	// новое
 	ByteY=0;
+	if ( ((*(pGD_Hot_Hand+cHSmAHUPad)).Position) )
+		ByteY=1;
+	if (!(YesBit((*(pGD_Hot_Hand+cHSmAHUPump)).RCS,cbManMech)))
+	{
+		if (ByteY)
+			(*(pGD_Hot_Hand+cHSmAHUPump)).Position=1;
+		else
+			(*(pGD_Hot_Hand+cHSmAHUPump)).Position=0;
+	}
+
+	// старое
+/*	ByteY=0;
 	for (ByteX=0;ByteX<5;ByteX++)
 	{
 		if (YesBit(((*(pGD_Hot_Hand+cHSmAHUPad)).Position),(0x02<<ByteX)))
@@ -1140,19 +1159,17 @@ void SetDiskr(char fnTepl)
 			(*(pGD_Hot_Hand+cHSmAHUPump)).Position=0;
 
 	}
+*/
 
 	for(ByteX=cHSmPump;ByteX<cHSmRegs;ByteX++)
 	{
-		if ((ByteX==cHSmSIOVals)||(ByteX==cHSmLight)) continue;
+		if ((ByteX==cHSmSIOVals)||(ByteX==cHSmLight)||(ByteX==cHSmAHUPad) ) continue;
 		__SetBitOutReg(fnTepl,ByteX,1,0);
 		if (YesBit((*(pGD_Hot_Hand+ByteX)).Position,0x01))
 			__SetBitOutReg(fnTepl,ByteX,0,0);
 		if (((ByteX==cHSmHeat)||(ByteX==cHSmVent))&&(YesBit((*(pGD_Hot_Hand+ByteX)).Position,0x02)))
 			__SetBitOutReg(fnTepl,ByteX,0,1);
 	}
-
-
-
 
 	nLight=0;
 	if (((uchar)((*(pGD_Hot_Hand+cHSmLight)).Position))>100) (*(pGD_Hot_Hand+cHSmLight)).Position=100;
@@ -1229,6 +1246,29 @@ ClrDog;
 	if ((pGD_TControl_Tepl->SetupRegs[0].On)
 		&&(pGD_Control_Tepl->co_model))
 		__SetBitOutReg(fnTepl,cHSmCO2,0,ByteX);
+
+// ahuPad
+	int8_t PadPosition;
+	PadPosition = ((*(pGD_Hot_Hand+cHSmAHUPad)).Position);
+	if ( PadPosition )
+	{
+		fPadWorkTime = pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_TimeMixVal;
+		fPadPause++;
+		if ( fPadPause <= PadPosition )
+			fPadOnPad = 1;
+		if ( fPadPause > PadPosition )
+			fPadOnPad = 0;
+		if ( fPadPause > fPadWorkTime )
+			fPadPause = 1;
+		if (fPadOnPad)
+			__SetBitOutReg(fnTepl,cHSmAHUPad,0,0);	// вкл
+		else
+			__SetBitOutReg(fnTepl,cHSmAHUPad,1,0);  // выкл
+
+	}
+	else
+		__SetBitOutReg(fnTepl,cHSmAHUPad,1,0);  // выкл
+
 	for (ByteX=0;ByteX<4;ByteX++)
 	{
 		IntX=1;
@@ -1246,8 +1286,6 @@ ClrDog;
 			__SetBitOutReg(fnTepl,ByteX+cHSmRegs,0,0);
 	}
 }
-
-//long count = 0;
 
 void DoMechanics(char fnTepl) 
 {
@@ -1288,9 +1326,7 @@ void DoMechanics(char fnTepl)
 			continue;
 		}
 
-
 		if ((ByteX==cHSmCO2)&&(pGD_Control_Tepl->co_model==1)) continue;
-
 		if (ByteX==cHSmAHUPad) continue;
 
 		__SetBitOutReg(fnTepl,ByteX,1,0);
@@ -1485,6 +1521,91 @@ void SetMeteo(void)
 		GD.TControl.Tepl[0].TimeSumSens=0;
 	}
 }
+
+// досветку перенес и обычного климата т.к. там она проверялась и работает корректно
+void SetLighting(void)
+{
+	char bZad;
+	if (!(pGD_MechConfig->RNum[cHSmLight])) return;  // if hand mode exit
+	IntZ=0;
+
+//	if(SameSign(IntY,IntZ)) pGD_TControl_Tepl->LightExtraPause=0;
+
+	pGD_TControl_Tepl->LightPauseMode--;
+	if ((pGD_TControl_Tepl->LightPauseMode<0)||(pGD_TControl_Tepl->LightPauseMode>GD.TuneClimate.l_PauseMode))
+		pGD_TControl_Tepl->LightPauseMode=0;
+	ClrDog;
+	bZad=0;		// if bZab = 0 calc sun sensor
+	if (pGD_TControl_Tepl->LightPauseMode) bZad=1;  // if bZad = 1 don't calc sun senasor
+
+// old
+//	if ((pGD_Hot_Tepl->AllTask.ModeLight<2))//&&(!bZad))	// если режим досветки не авто
+//	{
+//		pGD_TControl_Tepl->LightMode=pGD_Hot_Tepl->AllTask.ModeLight*pGD_Hot_Tepl->AllTask.Light;
+//		bZad=1;
+//	}
+
+	pGD_TControl_Tepl->LightMode = pGD_Hot_Tepl->AllTask.ModeLight * pGD_Hot_Tepl->AllTask.Light;
+	//bZad=1;
+
+	if (!bZad)
+	{
+		if (GD.Hot.Zax-60>GD.Hot.Time)
+			pGD_TControl_Tepl->LightMode=0;
+		if (GD.TControl.Tepl[0].SensHalfHourAgo>GD.TuneClimate.l_SunOn50)  // sun > 50% then off light
+			pGD_TControl_Tepl->LightMode=0;
+
+		if (GD.TControl.Tepl[0].SensHalfHourAgo<GD.TuneClimate.l_SunOn50)
+		{
+//			pGD_TControl_Tepl->LightMode=50;
+			IntY=GD.Hot.MidlSR;
+			CorrectionRule(GD.TuneClimate.l_SunOn100,GD.TuneClimate.l_SunOn50,50,0);
+			pGD_TControl_Tepl->LightMode=100-IntZ;
+		}
+
+//		if (GD.TControl.Tepl[0].SensHalfHourAgo<GD.TuneClimate.l_SunOn100)
+//			pGD_TControl_Tepl->LightMode=100;
+	}
+	if (pGD_TControl_Tepl->LightMode!=pGD_TControl_Tepl->OldLightMode)
+	{
+		if (!(((int)pGD_TControl_Tepl->LightMode)*((int)pGD_TControl_Tepl->OldLightMode)))
+		{
+			pGD_TControl_Tepl->DifLightMode=pGD_TControl_Tepl->LightMode-pGD_TControl_Tepl->OldLightMode;
+			pGD_TControl_Tepl->LightPauseMode=GD.TuneClimate.l_PauseMode;
+//			pGD_TControl_Tepl->LightExtraPause=o_DeltaTime;
+		}
+		else
+		{
+			pGD_TControl_Tepl->LightPauseMode=GD.TuneClimate.l_SoftPauseMode;
+		}
+	}
+	pGD_TControl_Tepl->OldLightMode=pGD_TControl_Tepl->LightMode;
+
+//	pGD_TControl_Tepl->LightExtraPause--;
+//	if (pGD_TControl_Tepl->LightExtraPause>0) return;
+//	pGD_TControl_Tepl->LightExtraPause=0;
+
+	// new
+	if (pGD_Hot_Tepl->AllTask.ModeLight == 2)    		// авто досветка
+	{
+		if (pGD_Hot_Tepl->AllTask.Light < pGD_TControl_Tepl->LightMode)
+			pGD_TControl_Tepl->LightValue = pGD_Hot_Tepl->AllTask.Light;
+		else
+			pGD_TControl_Tepl->LightValue=pGD_TControl_Tepl->LightMode;
+	}
+	else
+		pGD_TControl_Tepl->LightValue=pGD_TControl_Tepl->LightMode;
+	// new
+
+	if (pGD_TControl_Tepl->LightValue > 100)
+		pGD_TControl_Tepl->LightValue = 100;
+
+	//old
+	//pGD_TControl_Tepl->LightValue=pGD_TControl_Tepl->LightMode;		// значение досветки
+
+}
+
+/*
 void SetLighting(void)
 {
 	char bZad;
@@ -1538,7 +1659,7 @@ void SetLighting(void)
 //	pGD_TControl_Tepl->LightExtraPause=0;	 
 	pGD_TControl_Tepl->LightValue=pGD_TControl_Tepl->LightMode;		
 
-}
+}*/
 
 void SetTepl(char fnTepl)
 {

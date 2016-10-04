@@ -26,6 +26,7 @@ void CheckWithoutPC(void)
 		NMinPCOut=0;
 		USART_PC_Configuration(&GD.Control.NFCtr,AdrGD,&GD.SostRS,&NumBlock,9600);
 		simple_server(AdrGD,&GD.SostRS,&NumBlock,GD.Control.IPAddr,mymac,&PORTNUM);
+		//simple_client(AdrGD,&GD.SostRS,&NumBlock,GD.Control.cIPAddr,mymac,&PORTNUM);
 		GD.TControl.Tepl[0].WithoutPC++;
 	}
 	NMinPCOut++;

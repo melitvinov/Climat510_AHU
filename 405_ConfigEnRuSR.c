@@ -28,6 +28,8 @@
 #define cSmTSens6		5
 
 #define cSmRHSens		6
+#define cSmRHSens1		7
+#define cSmRHSens2		8
 #define cSmInLightSens	10
 
 #define cSmT1AHUOutSens	14

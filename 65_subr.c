@@ -48,6 +48,11 @@
 
 int16_t teplTmes[8][30];
 
+int16_t getRHoutAHUSensor(void)
+{
+	return pGD_Hot_Tepl->InTeplSens[cSmRHSens2].Value;
+}
+
 int16_t getTempSensor(char fnTepl, char sensor)
 {
 	if (pGD_Hot_Tepl->InTeplSens[sensor].RCS == 0)

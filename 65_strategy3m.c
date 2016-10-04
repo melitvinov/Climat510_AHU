@@ -207,7 +207,9 @@ void CheckUCValveSystem(void)															// отрабатывает
     //pGD_TControl_Tepl->Systems[cSysUCValve].Power=((int32_t)pGD_ConstMechanic->ConstMixVal[cHSmUCValve].v_PFactor)*1000/((long)pGD_TControl_Tepl->f_Power);
 }
 
-//
+
+// старый выриант
+/*
 void CheckMistSystem(void)
 {
 	int16_t	OutAbsH, InAbsH;
@@ -216,11 +218,62 @@ void CheckMistSystem(void)
 	if ((GD.TControl.MeteoSensing[cSmOutTSens]<1200)&&(GD.TControl.MeteoSensing[cSmOutTSens]))
 		pGD_TControl_Tepl->Systems[cSysMist].Max=0;
 
-	OutAbsH=DefOutAbsHum();
-	InAbsH=DefAbsHum();
-/*	if ((OutAbsH)&&(InAbsH))
+//	OutAbsH=DefOutAbsHum();
+//	InAbsH=DefAbsHum();
+//	if ((OutAbsH)&&(InAbsH))
+//	{
+//		if (OutAbsH>InAbsH)
+//			pGD_TControl_Tepl->SaveMaxMist--;
+//		else
+//			pGD_TControl_Tepl->SaveMaxMist++;
+//		if (pGD_TControl_Tepl->SaveMaxMist>pGD_TControl_Tepl->Systems[cSysMist].Max)
+//			pGD_TControl_Tepl->SaveMaxMist=pGD_TControl_Tepl->Systems[cSysMist].Max;
+//		if (pGD_TControl_Tepl->SaveMaxMist<0)
+//			pGD_TControl_Tepl->SaveMaxMist=0;
+//		pGD_TControl_Tepl->Systems[cSysMist].Max=pGD_TControl_Tepl->SaveMaxMist;
+//	}
+//	else
+//		pGD_TControl_Tepl->SaveMaxMist=pGD_TControl_Tepl->Systems[cSysMist].Max;
+
+	pGD_TControl_Tepl->Systems[cSysMist].Min=0;
+
+	if (pGD_TControl_Tepl->Systems[cSysUCValve].Value<30)
+		pGD_TControl_Tepl->Systems[cSysMist].Max=0;
+
+	pGD_TControl_Tepl->Systems[cSysMist].RCS=0;
+	if ((YesBit(pGD_Hot_Hand[cHSmAHUPad].RCS,cbManMech))||(!pGD_MechConfig->RNum[cHSmAHUPad]))
 	{
-		if (OutAbsH>InAbsH)
+		SetBit(pGD_TControl_Tepl->Systems[cSysMist].RCS,cSysRHand);
+//		pGD_TControl_Tepl->Systems[cSysMist].Max=0;
+	}
+	pGD_TControl_Tepl->Systems[cSysMist].Value=pGD_Hot_Hand[cHSmAHUPad].Position;
+
+	if (pGD_TControl_Tepl->Systems[cSysMist].Keep>pGD_TControl_Tepl->Systems[cSysMist].Max)
+		pGD_TControl_Tepl->Systems[cSysMist].Keep=pGD_TControl_Tepl->Systems[cSysMist].Max;
+
+	if	(!pGD_TControl_Tepl->Systems[cSysMist].RCS)
+	{
+		if (pGD_TControl_Tepl->Systems[cSysMist].Keep<pGD_TControl_Tepl->Systems[cSysMist].Max)
+			 SetBit(pGD_TControl_Tepl->Systems[cSysMist].RCS,cSysRUp);
+		if (pGD_TControl_Tepl->Systems[cSysMist].Keep>pGD_TControl_Tepl->Systems[cSysMist].Min)
+			 SetBit(pGD_TControl_Tepl->Systems[cSysMist].RCS,cSysRDown);
+	}
+	pGD_TControl_Tepl->Systems[cSysMist].Power=1000;//pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_PFactor; // last
+    //pGD_TControl_Tepl->Systems[cSysMist].Power=pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_PFactor;
+} */
+
+void CheckMistSystemNew(void)
+{
+	int16_t	OutAbsH, InAbsH;
+	pGD_TControl_Tepl->Systems[cSysMist].Max = 100;//pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_TimeMixVal;
+//Меньше 12 градусов температура на улице - панель не запускать
+	if ((GD.TControl.MeteoSensing[cSmOutTSens]<1200)&&(GD.TControl.MeteoSensing[cSmOutTSens]))
+		pGD_TControl_Tepl->Systems[cSysMist].Max=0;
+
+
+	if (getRHoutAHUSensor())
+	{
+		if (getRHoutAHUSensor() > 9500)
 			pGD_TControl_Tepl->SaveMaxMist--;
 		else
 			pGD_TControl_Tepl->SaveMaxMist++;
@@ -232,11 +285,12 @@ void CheckMistSystem(void)
 	}
 	else
 		pGD_TControl_Tepl->SaveMaxMist=pGD_TControl_Tepl->Systems[cSysMist].Max;
-*/
-	pGD_TControl_Tepl->Systems[cSysMist].Min=0;
 
-	if (pGD_TControl_Tepl->Systems[cSysUCValve].Value<30)
+	pGD_TControl_Tepl->Systems[cSysMist].Min=0;
+	if (pGD_TControl_Tepl->Systems[cSysUCValve].Value<30)	// минимальное открытие клапана для работы панели 30
+	{
 		pGD_TControl_Tepl->Systems[cSysMist].Max=0;
+	}
 
 	pGD_TControl_Tepl->Systems[cSysMist].RCS=0;
 	if ((YesBit(pGD_Hot_Hand[cHSmAHUPad].RCS,cbManMech))||(!pGD_MechConfig->RNum[cHSmAHUPad]))
@@ -1886,7 +1940,9 @@ void __sCalcKonturs(void)
 		CheckAHUPipeSystem();
 		CheckUCValveSystem();
 		CheckFanSystem();
-		CheckMistSystem();
+
+//		CheckMistSystem(); 					// убрал временно вернуть
+		CheckMistSystemNew();
 //		CriterT=getTempVent(fnTepl)-GD.Hot.Tepl[fnTepl].AllTask.DoTVent;
 //		CriterRH=DefRH();
 //#warning Only f check

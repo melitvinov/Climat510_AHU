@@ -80,8 +80,9 @@ char    timeDog;
         ClrDog;
         ClrDog;  /* разрешение прерываний RS и T0 из init8051()*/
         ClearAllAlarms();
+        UDPSendDataInit();
+        AHUPadInit();
 start:
-
    if (not) {
         if(!ton_t--) { ton_t=ton; not--; Sound;}
         }
@@ -106,9 +107,11 @@ start:
 #ifdef STM32_UNIT
 	   if (Second==58)
 	   {
+		   UDPStartSend();
 		   CheckWithoutPC();
 	   	   CheckInputConfig();
 	   }
+
 		CheckRSTime();
 #endif
 #ifndef NOTESTMEM
@@ -123,6 +126,7 @@ start:
         if (!(Second%9))
         {
         	Measure();
+   	      	UDPSend();
         }
        // IMOD_WriteOutput(0,1,0xf0f0f0f0);
 
