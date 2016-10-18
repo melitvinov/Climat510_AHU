@@ -407,7 +407,8 @@ void pmParam() {
 				ByteZ--;  //if (!GD.Config[cfReturn1Val] && !GD.Config[cfRegulRetEC]) 
                 if(!ByteZ)
 				{
-		                Y_menu2%=8;
+		                //Y_menu2%=8;
+                		Y_menu2%=12;
                         w_txt(Mes126); //Controller num~
                         w_int(&GD.Control.NFCtr,SS);
                         if(!Y_menu2) BlkW=1;
@@ -425,12 +426,37 @@ void pmParam() {
 						if (!Menu) SaveChar=0;
                         if(Y_menu2==2) BlkW=1;
                        	Ad_Buf=Str5;
-						if (Y_menu2<=3) 
+
+                       	if (Y_menu2<=3)
 						{
                         	w_txt(Mes5);
                         	w_int(&GD.Control.ConfSTepl,oS);
 						}
-						else
+
+                       	if ( (Y_menu2>=4) && (Y_menu2<=7) )
+                       	{
+                        	w_txt("IP:");
+                        	w_int(&GD.Control.IPAddr[0],SSS);
+                            if(Y_menu2==4) BlkW=1;
+                        	w_txt(".");
+                        	w_int(&GD.Control.IPAddr[1],SSS);
+                            if(Y_menu2==5) BlkW=1;
+                        	w_txt(".");
+                        	w_int(&GD.Control.IPAddr[2],SSS);
+                            if(Y_menu2==6) BlkW=1;
+                        	w_txt(".");
+                        	w_int(&GD.Control.IPAddr[3],SSS);
+                       	}
+
+                       	if (Y_menu2>=8)
+                       	{
+                        	w_txt("Time correction:");
+                        	w_int(&GD.Control.TimeCorrection,SSS);
+                       	}
+
+                       	/*
+                       	if (Y_menu2==3)
+                       	else
 						{
                         	w_txt("IP:");
                         	w_int(&GD.Control.IPAddr[0],SSS);
@@ -444,9 +470,18 @@ void pmParam() {
                         	w_txt(".");
                         	w_int(&GD.Control.IPAddr[3],SSS);
 
-							//w_txt(Mes206);
-                        	//w_int(&GD.Control.Screener,SSS);
 						}
+                       	/*
+						if (Y_menu2==3)
+						{
+							BlkW=1;
+							w_txt("IP:");
+							w_int(&GD.Control.IPAddr[0],SSS);
+							//if(Y_menu2==9) BlkW=1;
+							//if(Y_menu2==6) BlkW=1;
+						}
+						*/
+
                        return;
 				}
                 if(ByteZ > 1)	x_menu=0;

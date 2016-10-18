@@ -1008,6 +1008,8 @@ void	DoVentCalorifer(void)
 
 }
 
+
+
 void	DoLights(void)
 {
 	if (YesBit((*(pGD_Hot_Hand+cHSmLight)).RCS,(/*cbNoMech+*/cbManMech))) return;
@@ -1124,22 +1126,31 @@ void AHUPadInit(void)
 		fPadPause = 0;
 	}
 
+uint16_t fInRHWorkTime = 0;
+uint16_t fInRHOn = 0;
+uint16_t fInRHPause = 0;
+uint16_t fInRHPumpPos = 0;
+
+void InRHInit(void)
+	{
+		fInRHWorkTime = 0;
+		fInRHOn = 0;
+		fInRHPause = 0;
+		fInRHPumpPos = 0;
+	}
+
 void SetDiskr(char fnTepl)
 {
 	int	nLight;
 	char tMaxLight;
 
-	// новое
-	ByteY=0;
-	if ( ((*(pGD_Hot_Hand+cHSmAHUPad)).Position) )
-		ByteY=1;
-	if (!(YesBit((*(pGD_Hot_Hand+cHSmAHUPump)).RCS,cbManMech)))
-	{
-		if (ByteY)
-			(*(pGD_Hot_Hand+cHSmAHUPump)).Position=1;
-		else
-			(*(pGD_Hot_Hand+cHSmAHUPump)).Position=0;
-	}
+	//if  ((*(pGD_Hot_Hand+cHSmInRH)).Position > 0) // || (GD.Hot.Tepl[fnTepl].HandCtrl[cHSmAHUPad].Position > 0) )
+/*
+	if  ((*(pGD_Hot_Hand+cHSmInRH)).Position > 0)
+		(*(pGD_Hot_Hand+cHSmAHUPump)).Position=1;
+	else
+		(*(pGD_Hot_Hand+cHSmAHUPump)).Position=0;
+*/
 
 	// старое
 /*	ByteY=0;
@@ -1163,7 +1174,7 @@ void SetDiskr(char fnTepl)
 
 	for(ByteX=cHSmPump;ByteX<cHSmRegs;ByteX++)
 	{
-		if ((ByteX==cHSmSIOVals)||(ByteX==cHSmLight)||(ByteX==cHSmAHUPad) ) continue;
+		if ((ByteX==cHSmSIOVals)||(ByteX==cHSmLight)||(ByteX==cHSmAHUPad)||(ByteX==cHSmInRH)||(ByteX==cHSmAHUPump) ) continue;
 		__SetBitOutReg(fnTepl,ByteX,1,0);
 		if (YesBit((*(pGD_Hot_Hand+ByteX)).Position,0x01))
 			__SetBitOutReg(fnTepl,ByteX,0,0);
@@ -1230,10 +1241,7 @@ void SetDiskr(char fnTepl)
 	{
 		if (YesBit(nLight,(0x01<<ByteX)))
 			__SetBitOutReg(fnTepl,cHSmLight,0,ByteX+1);
-
 	}
-
-
 
 /*	if (YesBit((*(pGD_Hot_Hand+cHSmVent)).Position,0x01))
 		__SetBitOutReg(fnTepl,cHSmVent,0,0);
@@ -1249,10 +1257,13 @@ ClrDog;
 
 // ahuPad
 	int8_t PadPosition;
+	int8_t InRHPosition;
 	PadPosition = ((*(pGD_Hot_Hand+cHSmAHUPad)).Position);
 	if ( PadPosition )
 	{
-		fPadWorkTime = pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_TimeMixVal;
+		PadPosition = (PadPosition * pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_TimeMixVal) / 100;
+		fPadWorkTime = pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_TimeMixVal;//(pGD_Control_Tepl->f_MaxOpenUn * pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_TimeMixVal) / 100;
+		//fPadWorkTime = pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_TimeMixVal;
 		fPadPause++;
 		if ( fPadPause <= PadPosition )
 			fPadOnPad = 1;
@@ -1264,10 +1275,38 @@ ClrDog;
 			__SetBitOutReg(fnTepl,cHSmAHUPad,0,0);	// вкл
 		else
 			__SetBitOutReg(fnTepl,cHSmAHUPad,1,0);  // выкл
-
 	}
 	else
 		__SetBitOutReg(fnTepl,cHSmAHUPad,1,0);  // выкл
+
+// InRH
+	InRHPosition = ((*(pGD_Hot_Hand+cHSmInRH)).Position);
+	if (( InRHPosition > 0 ) && (getTempHeat(fnTepl) > 0 ))
+	{
+		InRHPosition = (InRHPosition * pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_TimeMixVal) / 100;
+		fInRHWorkTime = (pGD_Control_Tepl->InRHMax * pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_TimeMixVal) / 100;
+		fInRHPause++;
+		if ( fInRHPause <= InRHPosition )
+			fInRHOn = 1;
+		if ( fInRHPause > InRHPosition )
+			fInRHOn = 0;
+		if ( fInRHPause > fInRHWorkTime )
+			fInRHPause = 1;
+		if (fInRHOn)
+			__SetBitOutReg(fnTepl,cHSmInRH,0,1);	// вкл
+		else
+			__SetBitOutReg(fnTepl,cHSmInRH,1,0);  // выкл
+	}
+	else
+		__SetBitOutReg(fnTepl,cHSmInRH,1,0);  // выкл
+
+
+	InRHPosition = ((*(pGD_Hot_Hand+cHSmInRH)).Position);
+	if  (( InRHPosition > 0 ) || ( PadPosition > 0 ))
+		__SetBitOutReg(fnTepl,cHSmAHUPump,0,0);
+	else
+		__SetBitOutReg(fnTepl,cHSmAHUPump,1,0);
+
 
 	for (ByteX=0;ByteX<4;ByteX++)
 	{
@@ -1328,6 +1367,9 @@ void DoMechanics(char fnTepl)
 
 		if ((ByteX==cHSmCO2)&&(pGD_Control_Tepl->co_model==1)) continue;
 		if (ByteX==cHSmAHUPad) continue;
+		if (ByteX==cHSmInRH) continue;
+
+		if (ByteX==cHSmAHUPump) continue;
 
 		__SetBitOutReg(fnTepl,ByteX,1,0);
 		__SetBitOutReg(fnTepl,ByteX,1,1);

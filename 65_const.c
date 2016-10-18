@@ -4,7 +4,9 @@
 ********************************
 ------------------------------*/
 
-#define FWVersion		"ver.09/15.2.00.32" // Поправил свет как в обычном климате
+#define FWVersion		"ver.09/15.2.00.34" // источники отопления и вент при сбросе параметров устан в 257
+											// Внутренее увлажнение и исправленный ШИМ увлажнения панели
+											// Поправил свет как в обычном климате
 											// Тестовая выгрузка данных с контроллера
 											// TakeForSys сделал проверку если при делении на 1000 = 0 то pGD_TControl_Tepl->Systems[fnMSys].Power = 1000
 											// добавил вывод состояния для разбора ситуации с клапаном
@@ -55,8 +57,9 @@
 
 /*Количество контуров 1-5 - вода,6 - подветренная сторона, 7 - наветренная сторона*/
 
-
-#define cSUCSystems		8
+#warning NEW INRH
+//#define cSUCSystems		8
+#define cSUCSystems		9
 #ifdef AHU
 //#define cSStrategy		cSUCSystems     // NEW Strat
 #define cSPipeSystems	4
@@ -70,6 +73,8 @@
 #define cSysScreen			5
 #define cSysAHUSpeed		6
 #define cSysMist			7
+#define cSysInRH			8
+
 
 #define SYS_GO_UP			1
 #define SYS_GO_DOWN			0
@@ -817,7 +822,8 @@ uint16_t code DefControl[]={
 100,
 1,
 4,
-1
+1,
+257
 };
 
 

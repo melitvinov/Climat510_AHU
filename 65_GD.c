@@ -552,8 +552,11 @@ typedef struct eeTeplControl
 		int8_t		sensT_heat;
 		int8_t		sensT_vent;
 		uint16_t	tempPipe3;
+		uint16_t	InRHMax;
+		uint16_t	InRHMin;
 
-		int16_t		Rez[18];
+
+		int16_t		Rez[16];
 //+42 байта
 		} eTeplControl;
 
@@ -575,7 +578,10 @@ typedef struct eeControl
 		uint8_t			Screener;
 		uint8_t			Cod;
 	//	uint8_t			Saverez;
-        int16_t     		Rez[5];
+
+		uint8_t			TimeCorrection;
+		int8_t     		Rez[9];
+		//int16_t     		Rez[5];
 	
 	} eControl;
 
@@ -631,6 +637,11 @@ typedef struct eeStrategy
 	int8_t StratPressReg2[2];		// T>Tset, RH<RHset. Регулятор давления
 	int8_t StratPressReg3[2];		// T<Tset, RH>RHset. Регулятор давления
 	int8_t StratPressReg4[2];		// T<Tset, RH<RHset. Регулятор давления
+
+	int8_t StratInRH1[2];			// T>Tset, RH>RHset. Внутренние увлажнение
+	int8_t StratInRH2[2];			// T>Tset, RH<RHset. Внутренние увлажнение
+	int8_t StratInRH3[2];			// T<Tset, RH>RHset. Внутренние увлажнение
+	int8_t StratInRH4[2];			// T<Tset, RH<RHset. Внутренние увлажнение
 
 //	int8_t TempPower;
 //	int8_t RHPower;
@@ -770,7 +781,12 @@ typedef struct eeTControlTepl
 		int16_t			nReset;
 		int16_t			COPosition;
 		
-		int32_t			Rez3[2];
+		int16_t			InRHMode;
+		int16_t			InRHStatus;
+
+
+		int32_t			Rez3[1];	// 2
+
 //141
 
 //143

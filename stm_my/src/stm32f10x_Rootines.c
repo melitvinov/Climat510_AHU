@@ -542,7 +542,6 @@ void ReadFromFRAM()
 
 }
 
-
 void SetRTC(void) {
 		eDateTime	fDateTime;
         fDateTime.sec=Second;
@@ -554,7 +553,9 @@ void SetRTC(void) {
         ClrDog;
         WriteDateTime(&fDateTime);
 }
+
 void GetRTC(void) {
+
 		eDateTime	fDateTime;
         ReadDateTime(&fDateTime); //CtrTime=0;
 

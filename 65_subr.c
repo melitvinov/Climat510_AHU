@@ -48,6 +48,16 @@
 
 int16_t teplTmes[8][30];
 
+int16_t getRH1AHUSensor(void)
+{
+	return pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
+}
+
+int16_t getRH2AHUSensor(void)
+{
+	return pGD_Hot_Tepl->InTeplSens[cSmRHSens1].Value;
+}
+
 int16_t getRHoutAHUSensor(void)
 {
 	return pGD_Hot_Tepl->InTeplSens[cSmRHSens2].Value;
@@ -937,6 +947,7 @@ ClrDog;
 		GD.Control.Language=cDefLanguage;
 		GD.Control.Cod=111;
 		GD.Control.Screener=40;
+		GD.Control.TimeCorrection = 1;
 
         GD.Control.NFCtr=NumCtr;
 

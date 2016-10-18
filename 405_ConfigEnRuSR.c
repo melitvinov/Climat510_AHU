@@ -183,7 +183,10 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 #define cHSmCO2			17
 #define cHSmAHUPad		18
 #define cHSmLight		19
-#define cHSmRez1		20
+
+#warning NEW Mech
+#define cHSmInRH		20
+//#define cHSmRez1		20
 #define cHSmRez2		21
 #define cHSmRez3		22
 #define cHSmRez4		23
@@ -227,7 +230,7 @@ eNameConfig NameOutputConfig[cConfSOutput]={
 /*17 СО2 дозатор*/		{"CO2 valve#CO2 \272\273a\276a\275",tpRELAY,0,MAX_SUM_RELAY},
 /*18 Клапан панели*/	{"AHU Pad valve#K\273a\276a\275\303 \276a\275e\273\270",tpRELAY,0,MAX_SUM_RELAY},
 /*19 Досветка */		{"Lighting#\340oc\263e\277\272a",tpRELAY,0,MAX_SUM_RELAY},
-/*20 Резерв*/			{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+/*20 ВнутрУвлаж*/		{"Internal RH#Internal RH",tpRELAY,0,MAX_SUM_RELAY},
 /*21 Резерв*/			{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
 /*22 Резерв*/			{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
 /*23 Резерв*/			{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
