@@ -49,13 +49,13 @@
 #define cSmAHUPipeSens	26
 
 #define cConfSSystem		10
-#define cConfSOutput		46
+#define cConfSOutput		46  //46    // NEW LIGHT
 #define cConfSInputs		7
 #define cConfSSens			30
 #define cConfSMetSens		11
 #define cSHandCtrl			cConfSOutput
-#define cSRegCtrl			24
-#define cSDiskrCtrl			22
+#define cSRegCtrl			25   // 24
+#define cSDiskrCtrl			22	 // 22
 
 #define SUM_NAME_INPUTS			(cConfSOutput)
 #define SUM_NAME_INSENS			(SUM_NAME_INPUTS+cConfSInputs)
@@ -120,8 +120,8 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 //16
 {"Tem\310 roof#Te\274\276 \272\310o\263\273\270",					SSpS0,  cuT,	cTypeAnal,	3,	0,	0,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Температура кровли*/
 {"Tem\310 soil#Te\274\276 \276o\300\263\303",						SSpS0,  cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Температура почвы*/
-{"Tem\310 glass#Te\274\276 c\277e\272\273a",						SSpS0,  cuT,	cTypeAnal,	3,	0,	-2000,9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /*Температура стекла*/
-{"Tem\310 in AHU#Te\274\276 \263xo\343a AHU",						SSpS0,	cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /*Т входа в AHU*/
+{"Tem\310 glass#Te\274\276 c\277e\272\273a",						SSpS0,  cuT,	cTypeAnal,	3,	0,	-2000,9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Температура стекла*/
+{"Tem\310 in AHU#Te\274\276 \263xo\343a AHU",						SSpS0,	cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Т входа в AHU*/
 {"Tem\310 out AHU#Te\274\276 \263\303xo\343a AHU",					SSpS0,	cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /*Т выхода из AHU*/
 //21
 {"N vent \310os#\250o\273o\266 \344\310a\274\311\264\270 C",		SSSpS,	cuPr,	cTypeFram,	1,	0,	0,	  1000, 	0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,		400}, /*Сокодвижение*/
@@ -201,6 +201,10 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 #define cHSmAlarm		36
 #define cHSmRegs		37
 
+#define cHSmLight50		48
+#define cHSmLight100	49
+
+
 typedef struct  eeNameConfig
         {
         char Name[30];
@@ -260,7 +264,6 @@ eNameConfig NameOutputConfig[cConfSOutput]={
 /*43 Регулятор 1*/		{"Rez 1#Pez 1",tpRELAY,0,MAX_SUM_RELAY},
 /*44 Регулятор 1*/		{"Rez 1#Pez 1",tpRELAY,0,MAX_SUM_RELAY},
 /*45 Регулятор 1*/		{"Rez 1#Pez 1",tpRELAY,0,MAX_SUM_RELAY},
-
 };
 
 
@@ -373,7 +376,7 @@ NameTimer[SUM_NAME_TIMER]={
 {"Fans mode#Pe\266\270\274 \263e\275\277\270\273\307\277o\310",			oS,		25}, 
 };
 
-#define SUM_NAME_STRAT 56
+#define SUM_NAME_STRAT 64
 code struct  eNameStrat {
         char Name[30];
 		char Frm;
@@ -479,6 +482,15 @@ NameStrat[SUM_NAME_STRAT]={
 {"Way Mist 3#Way Mist 3",			SS,		53},
 {"Mist 4#Mist 4", 					SS,		54},
 {"Way Mist 4#Way Mist 4",			SS,		55},
+
+{"InRH 1#InRH 1", 					SS,		56},
+{"Way InRH 1#Way InRH 1",			SS,		57},
+{"InRH 2#InRH 2", 					SS,		58},
+{"Way InRH 2#Way InRH 2",			SS,		59},
+{"InRH 3#InRH 3", 					SS,		60},
+{"Way InRH 3#Way InRH 3",			SS,		61},
+{"InRH 4#InRH 4", 					SS,		62},
+{"Way InRH 4#Way InRH 4",			SS,		63},
 };
 
 

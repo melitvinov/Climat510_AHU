@@ -220,8 +220,11 @@ typedef struct eeTepl	{
 				uint16_t 	tempHeat;  		// new
 				uint16_t 	tempVent;  		// new
 
-				int16_t		Rez1[29];
-				//int16_t		Rez1[32];
+				uint16_t	Light50;
+				uint16_t	Light100;
+				uint16_t	CurrentStratSys;
+
+				int16_t		Rez1[26];  // 27
 
 				int16_t		MaxReqWater;
 				int16_t		Rez[9];
@@ -248,6 +251,7 @@ typedef struct eeHot {
 //50
 				uchar		isLight;
 				uchar		blockCO2;
+
 				uchar		Rez[4];
 				int16_t		MidlSR;
 				int16_t		MidlWind;
@@ -259,7 +263,8 @@ typedef struct eeHot {
 				uchar 		Demo;
 /***************************************/				
 				eTepl 		Tepl[cSTepl];
-				int16_t		Rez2[10];
+
+				int16_t		Rez2[10];     // 10
 /***************************************/
 				} eHot;
 
@@ -525,7 +530,12 @@ typedef struct eeTuneClimate
 		uchar		vAHU_MinTempr;
 		uchar		vAHU_MaxTempr;
 
-		int8_t     Rez[9];
+		char       CriteryLevel;
+
+		//uchar		countVent;
+		//int16_t	greenhouseArea;
+
+		int8_t     Rez[8];  // 9
 //		int16_t     Rez[9];  // было 14
 //280		
        }

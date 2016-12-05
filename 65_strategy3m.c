@@ -219,7 +219,7 @@ void CheckAHUPipeSystem(void)
 
 
 //установить минимумы, максимумы, возможность вверх, возможность вниз для клапана AHU
-void CheckUCValveSystem(void)															// отрабатывает
+void CheckUCValveSystem(void)			// отрабатывает
 {
 	pGD_TControl_Tepl->Systems[cSysUCValve].Max=(*pGD_Hot_Tepl).Kontur[cSmWindowUnW].MaxCalc;
 
@@ -689,11 +689,11 @@ int8_t GetOffSet(int8_t fnSys)
 {
 	switch (fnSys)
 	{
-		case cSysRailPipe: 	//0
+		case cSysRailPipe: 	//1
 			return cHSmMixVal+cSmKontur1;
-		case cSysHeadPipe: 	//1
+		case cSysHeadPipe: 	//2
 			return cHSmMixVal+cSmKontur2;
-		case cSysAHUPipe: 	//2
+		case cSysAHUPipe: 	//0
 			return cHSmMixVal+cSmKonturAHU;
 //		case cSysTHose: //3
 //			return cSmScreen;
@@ -740,6 +740,7 @@ int8_t fnMKeepErrorOut[8];
 int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 {
 	int16_t fnSys,fnMSys,fnMPrior;
+	int32_t CriterNew;
 	fnMSys=-1;
 	fnMPrior=0;
 	for (fnSys=0;fnSys<cSUCSystems;fnSys++)
@@ -750,8 +751,6 @@ int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 			fnMSys=fnSys;
 		}
 	}
-
-
 	if (fnMSys<0)
 	{
 		pGD_TControl_Tepl->StopVentI++;
@@ -759,17 +758,17 @@ int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 		fnMKeepErrorOut[fnTepl] = 1;
 		fnMSysOut[fnTepl] = 0;
 		fnMPriorOut[fnTepl] = 0;
+		pGD_Hot_Tepl->CurrentStratSys = 0;
+		GD.Hot.Tepl[fnTepl].CurrentStratSys = 0;
 		return -1;
 	}
+	//pGD_TControl_Tepl->Systems[fnMSys].Keep+=((int32_t)CriterNew)*pGD_TControl_Tepl->Systems[fnMSys].Power/10000; // так было
 	fnMKeepErrorOut[fnTepl] = 0;  // есть активная система
 	pGD_TControl_Tepl->StopVentI=0;
-	//pGD_TControl_Tepl->Systems[fnMSys].Keep+=((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnMSys].Power/10000; // так было
-
 	if (pGD_TControl_Tepl->Systems[fnMSys].Power/1000 == 0)
 		pGD_TControl_Tepl->Systems[fnMSys].Power = 1000;
-	pGD_TControl_Tepl->Systems[fnMSys].Keep = SetPID(((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
-	//pGD_TControl_Tepl->Systems[fnMSys].Keep = SetPID(((int32_t)fnCritery)*1, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
 
+	pGD_TControl_Tepl->Systems[fnMSys].Keep = SetPID(((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
 
 	if (fnMSys == cSysUCValve)
 	{
@@ -779,9 +778,8 @@ int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 		fnMKeepParamOut[fnTepl][3] = pGD_TControl_Tepl->Systems[fnMSys].Max;
 		fnMKeepParamOut[fnTepl][4] = pGD_TControl_Tepl->Systems[fnMSys].Min;
 	}
-
+	GD.Hot.Tepl[fnTepl].CurrentStratSys = fnMSys * 10;   // вывод в hot блок текущей системы
 	fnMKeepOut[fnTepl][fnMSys] = pGD_TControl_Tepl->Systems[fnMSys].Keep;
-
 	for (fnSys=0;fnSys<cSUCSystems;fnSys++)
 	{
 		if ((fnSys==cSysRailPipe)||(fnSys==cSysHeadPipe))
@@ -1322,11 +1320,12 @@ int16_t getValueKonturStrategy(int16_t dT, int16_t dRH, int16_t dSystem)
 		switch (dSystem)
 		{
 			case cSmKontur1: // reil
-				return pGD_Strategy_Kontur->StratKontur1_1[0];
+				return pGD_Strategy_Tepl->StratKontur1_1[0];
+				//return pGD_Strategy_Kontur->StratKontur1_1[0];
 			case cSmKontur2: // head
-				return pGD_Strategy_Kontur->StratKontur2_1[0];
-			case cSmKontur3: // pipe
-				return pGD_Strategy_Kontur->StratKontur3_1[0];
+				return pGD_Strategy_Tepl->StratKontur2_1[0];
+			//case cSmKontur3: // pipe
+			//	return pGD_Strategy_Kontur->StratKontur3_1[0];
 		}
 	}
 	if ((dT>=0)&&(dRH<0))
@@ -1334,11 +1333,11 @@ int16_t getValueKonturStrategy(int16_t dT, int16_t dRH, int16_t dSystem)
 		switch (dSystem)
 		{
 			case cSmKontur1: //0
-				return pGD_Strategy_Kontur->StratKontur1_2[0];
+				return pGD_Strategy_Tepl->StratKontur1_2[0];
 			case cSmKontur2: //1
-				return pGD_Strategy_Kontur->StratKontur2_2[0];
-			case cSmKontur3:  //2
-				return pGD_Strategy_Kontur->StratKontur3_2[0];
+				return pGD_Strategy_Tepl->StratKontur2_2[0];
+			//case cSmKontur3:  //2
+			//	return pGD_Strategy_Kontur->StratKontur3_2[0];
 		}
 	}
 	if ((dT<0)&&(dRH>=0))
@@ -1346,11 +1345,11 @@ int16_t getValueKonturStrategy(int16_t dT, int16_t dRH, int16_t dSystem)
 		switch (dSystem)
 		{
 			case cSmKontur1: //0
-				return pGD_Strategy_Kontur->StratKontur1_3[0];
+				return pGD_Strategy_Tepl->StratKontur1_3[0];
 			case cSmKontur2: //1
-				return pGD_Strategy_Kontur->StratKontur2_3[0];
-			case cSmKontur3:  //2
-				return pGD_Strategy_Kontur->StratKontur3_3[0];
+				return pGD_Strategy_Tepl->StratKontur2_3[0];
+			//case cSmKontur3:  //2
+			//	return pGD_Strategy_Kontur->StratKontur3_3[0];
 		}
 	}
 	if ((dT<0)&&(dRH<0))
@@ -1358,21 +1357,28 @@ int16_t getValueKonturStrategy(int16_t dT, int16_t dRH, int16_t dSystem)
 		switch (dSystem)
 		{
 			case cSmKontur1: //0
-				return pGD_Strategy_Kontur->StratKontur1_4[0];
+				return pGD_Strategy_Tepl->StratKontur1_4[0];
 			case cSmKontur2: //1
-				return pGD_Strategy_Kontur->StratKontur2_4[0];
-			case cSmKontur3:  //2
-				return pGD_Strategy_Kontur->StratKontur3_4[0];
+				return pGD_Strategy_Tepl->StratKontur2_4[0];
+			//case cSmKontur3:  //2
+			//	return pGD_Strategy_Kontur->StratKontur3_4[0];
 		}
 	}
 	return 0;
 }
 
-void SetPriorityHeating(int16_t dT, int16_t dRH, int *dRealPower, int16_t kontur)
+//void SetPriorityHeating(int16_t dT, int16_t dRH, int *dRealPower, int16_t kontur)
+//{
+//	int res =0;
+//	res = getValueKonturStrategy(dT, dRH, kontur);
+//	*dRealPower = res;
+//}
+
+int SetPriorityHeating(int16_t dT, int16_t dRH, int16_t kontur)
 {
 	int res =0;
 	res = getValueKonturStrategy(dT, dRH, kontur);
-	*dRealPower = res;
+	return res;
 }
 
 void __WorkableKontur(char fnKontur, char fnTepl)
@@ -2001,9 +2007,11 @@ void __sCalcKonturs(void)
 			pGD_Hot_Tepl_Kontur->Do=(pGD_TControl_Tepl_Kontur->DoT/10);
 			ClrDog;
 			//__sPotentialPosibilityKontur(0);//Приоритет в случае охлаждения   // NEW strat
-			SetPriorityHeating(-1,DefRH(),&pGD_TControl_Tepl_Kontur->RealPower[0], ByteX);
+			//SetPriorityHeating(-1,DefRH(),&pGD_TControl_Tepl_Kontur->RealPower[0], ByteX);
+			pGD_TControl_Tepl_Kontur->RealPower[0] = SetPriorityHeating(-1,DefRH(),ByteX);
 			//__sPotentialPosibilityKontur(1);//Приоритет в случае нагрева
-			SetPriorityHeating(1,DefRH(),&pGD_TControl_Tepl_Kontur->RealPower[1], ByteX);
+			//SetPriorityHeating(1,DefRH(),&pGD_TControl_Tepl_Kontur->RealPower[1], ByteX);
+			pGD_TControl_Tepl_Kontur->RealPower[1] = SetPriorityHeating(1,DefRH(),ByteX);
 			ClrDog;
 
 			__WorkableKontur(ByteX,fnTepl);
@@ -2046,7 +2054,8 @@ void __sCalcKonturs(void)
 			//TakeCriterForOut(GD.Hot.Tepl[fnTepl].InTeplSens[cSmTAHUOutSens].Value,GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery, GD.Hot.Tepl[fnTepl].AllTask.DoTVent, fnTepl);
 			TakeCriterForOut(pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value,GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery, GD.Hot.Tepl[fnTepl].AllTask.DoTVent, fnTepl);
 
-			CriterT =pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value-GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery;  // было на 20 апреля
+			CriterT = pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value-GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery;  // было на 20 апреля
+
 			//CriterT = GD.Hot.Tepl[fnTepl].InTeplSens[cSmTAHUOutSens].Value - GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery;
 			//CriterRH=(*pGD_Hot_Tepl).InTeplSens[cSmRHAHUOutSens].Value-(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent;  // старый коммент
 

@@ -146,7 +146,10 @@ void	TestFRAM(char EraseBl) {
             cSum=CalcRAMSum(BlockEEP[nBlFRAM].AdrCopyRAM,BlockEEP[nBlFRAM].Size);
             ClrDog;
 
-          if(CalcRAMSum(BlockEEP[nBlFRAM].AdrCopyRAM,BlockEEP[nBlFRAM].Size)!=BlockEEP[nBlFRAM].CSum || (EraseBl==(nBlFRAM+10)))
+#warning	Reset param
+            //if(CalcRAMSum(BlockEEP[nBlFRAM].AdrCopyRAM,BlockEEP[nBlFRAM].Size)!=BlockEEP[nBlFRAM].CSum || (EraseBl==(nBlFRAM+10)))
+
+          if ( (CalcRAMSum(BlockEEP[nBlFRAM].AdrCopyRAM,BlockEEP[nBlFRAM].Size)!=BlockEEP[nBlFRAM].CSum) || (BlockEEP[nBlFRAM].Erase == 1) )
           {
         	  /* если неверная контр сумма ЕЕР, то перзапись EEPROM */
         	  InitGD(5);

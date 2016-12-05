@@ -18,7 +18,6 @@ static unsigned char myip[4] = {192,168,1,231};
 uint16_t* IWDG_Reset;
 uint8_t KeyDelay;
 
-
 void CheckWithoutPC(void)
 {
 	if (NMinPCOut>3)
@@ -878,8 +877,21 @@ void Measure()
 	uint16_t	tSensVal;
 	int nModule;
 	int8_t ErrModule = 0;
+
 	for (tTepl=0;tTepl<cSTepl;tTepl++)
 	{
+		tSensVal=GetInIPC(GD.MechConfig[tTepl].RNum[48],&ErrModule);
+		if ((ErrModule>=0) && (tSensVal > 3500))
+			GD.Hot.Tepl[tTepl].Light50 = 10;
+		else
+			GD.Hot.Tepl[tTepl].Light50 = 0;
+
+		tSensVal=GetInIPC(GD.MechConfig[tTepl].RNum[49],&ErrModule);
+		if ((ErrModule>=0) && (tSensVal > 3500))
+			GD.Hot.Tepl[tTepl].Light100 = 10;
+		else
+			GD.Hot.Tepl[tTepl].Light100 = 0;
+
         for(nSens=0;nSens<cConfSSens;nSens++)
 		{
         	tSensVal=GetInIPC(GetSensConfig(tTepl,nSens),&ErrModule);

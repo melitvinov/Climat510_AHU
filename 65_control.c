@@ -864,7 +864,24 @@ void __cNextTCalc(char fnTepl)
 
 	(*pGD_TControl_Tepl).Critery=(*pGD_Hot_Tepl).NextTCalc.PCorrection+(*pGD_Hot_Tepl).NextTCalc.ICorrection-(*pGD_Hot_Tepl).NextTCalc.dSumCalc;
 	CalcAllKontur=__sCalcTempKonturs();
-	(*pGD_TControl_Tepl).Critery-=CalcAllKontur;
+   (*pGD_TControl_Tepl).Critery-=CalcAllKontur;
+
+    // 45 изменение
+	if (GD.TuneClimate.CriteryLevel != 0)
+	{
+		int CritP, CritM;
+		CritP = GD.TuneClimate.CriteryLevel * 100;
+		CritM = -1 * GD.TuneClimate.CriteryLevel * 100;
+		if ((*pGD_TControl_Tepl).Critery > 0)
+		if ((*pGD_TControl_Tepl).Critery >= CritP)
+			(*pGD_TControl_Tepl).Critery = CritP;
+		if ((*pGD_TControl_Tepl).Critery < 0)
+		if ( (*pGD_TControl_Tepl).Critery <= CritM )
+			(*pGD_TControl_Tepl).Critery = CritM;
+	}
+	// 45 изменение
+
+
 //	(*pGD_Hot_Tepl).NextTCalc.dNextTCalc=CalcAllKontur;
 	if (pGD_TControl_Tepl->StopI>4)
 	{
@@ -936,10 +953,13 @@ void __cNextTCalc(char fnTepl)
 		IntX=pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3;
 	}
 	//ѕроверка на мминимум расчета пока константа 14 градусов
+	// 41 изменение ставим т рукава как тепмпература дл€ отоплени€. Ѕыло так:
 	int minMinPipeTemp = GD.Timer[fnTepl].MinTPipe3 * 100;
+	// стало так
+	//int minMinPipeTemp = GD.Hot.Tepl[fnTepl].AllTask.DoTVent;
 	if (minMinPipeTemp < 1400) minMinPipeTemp = MINPIPETEMPER;
+	// стало так
 	if (minMinPipeTemp > IntX)
-	//if (1400>IntX)
 	{
 		//pGD_TControl_Tepl->IntegralVent=1400-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;  old
 		pGD_TControl_Tepl->IntegralVent=minMinPipeTemp-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
@@ -948,8 +968,10 @@ void __cNextTCalc(char fnTepl)
 		IntX=minMinPipeTemp;
 	}
 	pGD_TControl_Tepl->TVentCritery=IntX;
+	// 41 правка было так:
 	(*pGD_Hot_Tepl).NextTCalc.TVentCritery=(*pGD_TControl_Tepl).TVentCritery;
-
+	// стало так:
+	//(*pGD_Hot_Tepl).NextTCalc.TVentCritery = ( (*pGD_Hot_Tepl).AllTask.DoTHeat * 4 ) - (getTempHeat(fnTepl) * 3);
 	//–асчет влажности рукава по заданию влажности воздуха- пока запишем в интегральную поправку
 	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent,pGD_Hot_Tepl->AllTask.DoRHAir);
 	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=RelHum(pGD_TControl_Tepl->TVentCritery,(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent);
@@ -1587,8 +1609,11 @@ void SetLighting(void)
 //		bZad=1;
 //	}
 
-	pGD_TControl_Tepl->LightMode = pGD_Hot_Tepl->AllTask.ModeLight * pGD_Hot_Tepl->AllTask.Light;
-	//bZad=1;
+	if (pGD_Hot_Tepl->AllTask.ModeLight<2)
+	{
+		pGD_TControl_Tepl->LightMode = pGD_Hot_Tepl->AllTask.ModeLight * pGD_Hot_Tepl->AllTask.Light;
+		bZad=1;
+	}
 
 	if (!bZad)
 	{
