@@ -83,7 +83,10 @@ char    timeDog;
         UDPSendDataInit();
         AHUPadInit();
         InRHInit();
+        startFlag = 3;
 start:
+
+
    if (not) {
         if(!ton_t--) { ton_t=ton; not--; Sound;}
         }
@@ -106,6 +109,7 @@ start:
             SIM=105;
             }
    if(bSec) {
+
 #ifdef STM32_UNIT
 	   if (Second==58)
 	   {

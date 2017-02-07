@@ -668,7 +668,7 @@ uint16_t vCpM,bOut,i,j,vInput;
 			ModulData[i].CpM=vCpM;
 		if(vCpM == ModulData[i].CpM)	{
 			*nErr=ModulData[i].Err;
-			if ((ModulData[i].InValues[vInput-1]>2500)&&(ModulData[i].Err<iMODULE_MAX_ERR))
+			if ((ModulData[i].InValues[vInput-1]>4000)&&(ModulData[i].Err<iMODULE_MAX_ERR))
 				return 1;
 			else
 				return 0;

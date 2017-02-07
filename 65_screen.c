@@ -279,9 +279,6 @@ void    SetReg(char fHSmReg,int DoValue,int MeasValue)
 
 	}
 
-	
-	
-	
 	IntX=(((long)DoValue-MeasValue)*pGD_ConstMechanic->ConstMixVal[fHSmReg].v_PFactor/*GD.TuneClimate.reg_PFactor[fHSmReg-cHSmCO2]*/)/1000;
 	IntY=(fReg->IntVal/100);
 	IntZ=100;

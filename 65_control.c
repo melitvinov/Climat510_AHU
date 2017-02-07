@@ -797,7 +797,22 @@ void __cNextTCalc(char fnTepl)
 	(*pGD_Hot_Tepl).NextTCalc.LowOutWinWind+=IntZ;
 	
 //	if (YesBit((*pGD_Hot_Tepl).DiskrSens[0],cSmLightDiskr))
-		(*pGD_Hot_Tepl).NextTCalc.UpLight=(((long)GD.TuneClimate.c_LightFactor)*((*(pGD_Hot_Hand+cHSmLight)).Position))/100;
+
+	// понижение температуры контура при вкл досветки
+	// 46 правка. Компенсация досветки по входу от досветки 50 и 100
+	// было
+	//  (*pGD_Hot_Tepl).NextTCalc.UpLight=(  ((long)GD.TuneClimate.c_LightFactor)*((*(pGD_Hot_Hand+cHSmLight)).Position) ) / 100;
+	// стало
+	//int LightIn = 0;
+	if (GD.Hot.Tepl[fnTepl].Light50 > 0)
+		(*pGD_Hot_Tepl).NextTCalc.UpLight = ( (GD.TuneClimate.c_LightFactor/2) * (GD.Hot.Tepl[fnTepl].Light50*10)) / 100;
+	if (GD.Hot.Tepl[fnTepl].Light100 > 0)
+		(*pGD_Hot_Tepl).NextTCalc.UpLight = ((long)GD.TuneClimate.c_LightFactor * (GD.Hot.Tepl[fnTepl].Light100*10)) / 100;
+		//LightIn = 100;
+
+	//(*pGD_Hot_Tepl).NextTCalc.UpLight= GD.TuneClimate.c_LightFactor *  LightIn  / 100;
+	// стало
+
 //******************** NOT NEEDED
 //	IntY=1;
 //	IntY<<=fnTepl;
@@ -864,21 +879,32 @@ void __cNextTCalc(char fnTepl)
 
 	(*pGD_TControl_Tepl).Critery=(*pGD_Hot_Tepl).NextTCalc.PCorrection+(*pGD_Hot_Tepl).NextTCalc.ICorrection-(*pGD_Hot_Tepl).NextTCalc.dSumCalc;
 	CalcAllKontur=__sCalcTempKonturs();
-   (*pGD_TControl_Tepl).Critery-=CalcAllKontur;
+	// 45 изменение-*=-4
 
-    // 45 изменение
-	if (GD.TuneClimate.CriteryLevel != 0)
+	// было
+	(*pGD_TControl_Tepl).Critery-=CalcAllKontur;
+	// стало
+	/*if (GD.TuneClimate.CriteryLevel != 0)
 	{
 		int CritP, CritM;
 		CritP = GD.TuneClimate.CriteryLevel * 100;
 		CritM = -1 * GD.TuneClimate.CriteryLevel * 100;
 		if ((*pGD_TControl_Tepl).Critery > 0)
-		if ((*pGD_TControl_Tepl).Critery >= CritP)
+		{
+		  (*pGD_TControl_Tepl).Critery-=CalcAllKontur;
+		  if ((*pGD_TControl_Tepl).Critery >= CritP)
 			(*pGD_TControl_Tepl).Critery = CritP;
+	    }
 		if ((*pGD_TControl_Tepl).Critery < 0)
-		if ( (*pGD_TControl_Tepl).Critery <= CritM )
+		{
+		  if ( (*pGD_TControl_Tepl).Critery <= CritM )
+		  {
 			(*pGD_TControl_Tepl).Critery = CritM;
-	}
+		  }
+		  else
+			(*pGD_TControl_Tepl).Critery-=CalcAllKontur;
+		}
+	}*/
 	// 45 изменение
 
 
@@ -925,8 +951,27 @@ void __cNextTCalc(char fnTepl)
 		if ((*pGD_Hot_Tepl).NextTCalc.DifTAirTDo<0)
 			(*pGD_TControl_Tepl).Critery=-1;
 
-	}	
+	}
+	// было
 	pGD_Hot_Tepl->NextTCalc.Critery=(*pGD_TControl_Tepl).Critery;
+	// стало
+	/*if (GD.TuneClimate.CriteryLevel != 0)
+	{
+		int CritP, CritM;
+		CritP = GD.TuneClimate.CriteryLevel * 100;
+		CritM = -1 * GD.TuneClimate.CriteryLevel * 100;
+		if (pGD_Hot_Tepl->NextTCalc.Critery > 0)
+		{
+		  if (pGD_Hot_Tepl->NextTCalc.Critery >= CritP)
+			  pGD_Hot_Tepl->NextTCalc.Critery = CritP;
+	    }
+		if (pGD_Hot_Tepl->NextTCalc.Critery < 0)
+		{
+		  if ( pGD_Hot_Tepl->NextTCalc.Critery <= CritM )
+			  pGD_Hot_Tepl->NextTCalc.Critery = CritM;
+		}
+	}*/
+
 
 /******************************************************************
 		Далее расчет критерия для фрамуг
@@ -954,9 +999,19 @@ void __cNextTCalc(char fnTepl)
 	}
 	//Проверка на мминимум расчета пока константа 14 градусов
 	// 41 изменение ставим т рукава как тепмпература для отопления. Было так:
-	int minMinPipeTemp = GD.Timer[fnTepl].MinTPipe3 * 100;
+	//int minMinPipeTemp = GD.Timer[fnTepl].MinTPipe3 * 100;
 	// стало так
-	//int minMinPipeTemp = GD.Hot.Tepl[fnTepl].AllTask.DoTVent;
+	int minMinPipeTemp;
+	if (startFlag)
+	{
+		pGD_TControl_Tepl->TVentCritery = GD.Hot.Tepl[fnTepl].AllTask.DoTHeat;
+		(*pGD_TControl_Tepl).TVentCritery = GD.Hot.Tepl[fnTepl].AllTask.DoTHeat;
+		minMinPipeTemp = GD.Hot.Tepl[fnTepl].AllTask.DoTHeat;
+		startFlag--;
+	}
+	else
+		minMinPipeTemp = GD.Timer[fnTepl].MinTPipe3 * 100;
+
 	if (minMinPipeTemp < 1400) minMinPipeTemp = MINPIPETEMPER;
 	// стало так
 	if (minMinPipeTemp > IntX)
@@ -973,11 +1028,19 @@ void __cNextTCalc(char fnTepl)
 	// стало так:
 	//(*pGD_Hot_Tepl).NextTCalc.TVentCritery = ( (*pGD_Hot_Tepl).AllTask.DoTHeat * 4 ) - (getTempHeat(fnTepl) * 3);
 	//Расчет влажности рукава по заданию влажности воздуха- пока запишем в интегральную поправку
+	// 54 изменение
+	// было
 	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent,pGD_Hot_Tepl->AllTask.DoRHAir);
 	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=RelHum(pGD_TControl_Tepl->TVentCritery,(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent);
 	if ((*pGD_Hot_Tepl).NextTCalc.ICorrectionVent>9500)
 		(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=9500;
 
+	// стало
+	// держатьRH= 2RHзад - RH1
+	//(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent= 2*pGD_Hot_Tepl->AllTask.DoRHAir - pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
+	//if ((*pGD_Hot_Tepl).NextTCalc.ICorrectionVent>9500)
+	//  (*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=9500;
+	// стало
 }
 
 
@@ -1843,6 +1906,30 @@ void	TransferWaterToBoil(void)
         Создана от 14.04.04
 --------------------------------------------------*/
 
+int volatile settingsArray[7];
+
+void saveSettings(char tCTepl)
+{
+	settingsArray[0] = GD.Hot.Tepl[tCTepl].tempParamHeat;
+	settingsArray[1] = GD.Hot.Tepl[tCTepl].tempParamVent;
+	settingsArray[2] = GD.Hot.Tepl[tCTepl].tempHeat;
+	settingsArray[3] = GD.Hot.Tepl[tCTepl].tempVent;
+	settingsArray[4] = GD.Hot.Tepl[tCTepl].Light50;
+	settingsArray[5] = GD.Hot.Tepl[tCTepl].Light100;
+	settingsArray[6] = GD.Hot.Tepl[tCTepl].CurrentStratSys;
+}
+
+void loadSettings(char tCTepl)
+{
+	GD.Hot.Tepl[tCTepl].tempParamHeat = settingsArray[0];
+	GD.Hot.Tepl[tCTepl].tempParamVent = settingsArray[1];
+	GD.Hot.Tepl[tCTepl].tempHeat = settingsArray[2];
+	GD.Hot.Tepl[tCTepl].tempVent = settingsArray[3];
+	GD.Hot.Tepl[tCTepl].Light50 = settingsArray[4];
+	GD.Hot.Tepl[tCTepl].Light100 = settingsArray[5];
+	GD.Hot.Tepl[tCTepl].CurrentStratSys = settingsArray[6];
+}
+
 void Control(void) 
 	{
 char tCTepl,ttTepl;
@@ -1938,6 +2025,7 @@ char tCTepl,ttTepl;
 				GD.TControl.Delay=0;
 				for (tCTepl=0;tCTepl<cSTepl;tCTepl++)
 				{
+					saveSettings(tCTepl);
 					MemClr(&GD.Hot.Tepl[tCTepl].ExtRCS,(
 						sizeof(char)*2+sizeof(eClimTask)+sizeof(eOtherCalc)+
 						sizeof(eNextTCalc)+sizeof(eKontur)*cSKontur+20));
@@ -1950,6 +2038,7 @@ char tCTepl,ttTepl;
 					}
 					IntZ=GD.Hot.Time;
 					ClrDog;
+					loadSettings(tCTepl);
 					TaskTimer(0,ttTepl,tCTepl);
 					SetPointersOnTepl(tCTepl);
 					SetTepl(tCTepl);

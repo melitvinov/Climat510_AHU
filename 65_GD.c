@@ -1,5 +1,8 @@
 #pragma pack(1)
 
+int volatile startFlag;
+int volatile LightArray[8];
+int volatile LightArrayCount[8];
 
 typedef struct eeCalSensor {
 	uint8_t		Type;
@@ -158,7 +161,7 @@ typedef struct eeNextTCalc {
 				int16_t		PCorrection;//Коррекция управляющей функции по 1 разности	18
 
 				int16_t		Critery;//Цель-изменить теплоноситель на	20
-				int16_t		ICorrectionVent;//Прогноз температуры (для приоритетов)	22
+				int16_t		ICorrectionVent; // RH рукава ДЕРЖАТЬ
 				
 				int16_t		dSumCalc;//Приращение внешних влияний	24
 				
@@ -530,12 +533,12 @@ typedef struct eeTuneClimate
 		uchar		vAHU_MinTempr;
 		uchar		vAHU_MaxTempr;
 
-		char       CriteryLevel;
+		char        CriteryLevel;
 
-		//uchar		countVent;
-		//int16_t	greenhouseArea;
+		//uchar		LightLowersHeatTemp;
+		//uchar		LightLowersHeatTime;
 
-		int8_t     Rez[8];  // 9
+		int8_t      Rez[8];  // 8
 //		int16_t     Rez[9];  // было 14
 //280		
        }
@@ -755,7 +758,7 @@ typedef struct eeTControlTepl
 		eSystems		Systems[cSUCSystems];
 		int32_t 		SaveIntegralVent;
 		int32_t 		Integral;
-		int16_t			TVentCritery;//Critery;
+		int16_t			TVentCritery; // Т рукава ДЕРЖАТЬ;
 		int16_t			Critery;
 		int32_t			IntegralVent;
 		int32_t			SaveIntegral;

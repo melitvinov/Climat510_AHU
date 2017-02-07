@@ -513,11 +513,10 @@ void WriteToFRAM()
 {
 	char i;
 	uint16_t fsizeSend;
+	int tTepl;
 	ClrDog;
     InitBlockEEP();  /*подпрограмма в GD */
-
 	SendBlockFRAM((uint32_t)(&GD.TControl)-(uint32_t)(BlockEEP[0].AdrCopyRAM),(uchar*)(&GD.Hot),sizeof(GD.Hot));
-
 	ClrDog;
 	SendBlockFRAM((uint32_t)(&GD.TControl)-(uint32_t)(BlockEEP[0].AdrCopyRAM)+sizeof(GD.Hot),(uchar*)(&GD.TControl),sizeof(eTControl));
 //	SendBlockFRAM(0,(uchar*)(&GD),sizeof(GD));
@@ -871,23 +870,26 @@ void  CalibrNew(char nSArea,char nTepl, char nSens,int16_t Mes){
 	}
 }
 
+//int volatile LightArray[8];
+//int volatile LightArrayCount[8];
+
 void Measure()
 {
 	char tTepl,nSens;
-	uint16_t	tSensVal;
+	volatile uint16_t	tSensVal;
 	int nModule;
 	int8_t ErrModule = 0;
 
 	for (tTepl=0;tTepl<cSTepl;tTepl++)
 	{
 		tSensVal=GetInIPC(GD.MechConfig[tTepl].RNum[48],&ErrModule);
-		if ((ErrModule>=0) && (tSensVal > 3500))
+		if ((ErrModule>=0) && (tSensVal > 4600))
 			GD.Hot.Tepl[tTepl].Light50 = 10;
 		else
 			GD.Hot.Tepl[tTepl].Light50 = 0;
 
 		tSensVal=GetInIPC(GD.MechConfig[tTepl].RNum[49],&ErrModule);
-		if ((ErrModule>=0) && (tSensVal > 3500))
+		if ((ErrModule>=0) && (tSensVal > 4600))
 			GD.Hot.Tepl[tTepl].Light100 = 10;
 		else
 			GD.Hot.Tepl[tTepl].Light100 = 0;
@@ -959,12 +961,43 @@ void CheckInputConfig()
 void SetDiskrSens(void)
 {
 	char fnTepl,nSens,nErr;
+	nErr = 0;
+	int res = 0;
 	for (fnTepl=0;fnTepl<cSTepl;fnTepl++)
 	{
 		SetPointersOnTepl(fnTepl);
 		for (nSens=0;nSens<cConfSInputs;nSens++)
-			if (GetDiskrIPC(GetInputConfig(fnTepl,nSens),&nErr))
-				pGD_Hot_Tepl->DiskrSens[0]|=1<<nSens;
+		{
+//			if (GetDiskrIPC(GetInputConfig(fnTepl,nSens),&nErr))
+//				pGD_Hot_Tepl->DiskrSens[0]|=1<<nSens;
+
+			/*res = GetDiskrIPC(GD.MechConfig[fnTepl].RNum[48],&nErr);
+			if (res == 1)
+				GD.Hot.Tepl[fnTepl].Light50 = 10;
+			else
+				GD.Hot.Tepl[fnTepl].Light50 = 0;
+
+			res = GetDiskrIPC(GD.MechConfig[fnTepl].RNum[49],&nErr);
+			if (res == 1)
+				GD.Hot.Tepl[fnTepl].Light100 = 10;
+			else
+				GD.Hot.Tepl[fnTepl].Light100 = 0;*/
+
+
+			/*if (pGD_Hot_Tepl->DiskrSens[0] == 4)
+				if (pGD_Hot_Tepl->DiskrSens[1] == 1)
+					GD.Hot.Tepl[fnTepl].Light50 = 10;
+				else
+					GD.Hot.Tepl[fnTepl].Light50 = 0;*/
+		}
+		/*tSensVal=GetInIPC(GD.MechConfig[tTepl].RNum[49],&ErrModule);
+		if ((ErrModule>=0) && (tSensVal > 3500))
+			GD.Hot.Tepl[tTepl].Light100 = 10;
+		else
+			GD.Hot.Tepl[tTepl].Light100 = 0;
+*/
+
+
 /*		if (YesBit(RegLEV,(cSmLightLev1<<fnTepl)))
 			SetBit(pGD_Hot_Tepl->DiskrSens[0],cSmLightDiskr);
 */

@@ -2008,10 +2008,13 @@ void __sCalcKonturs(void)
 			ClrDog;
 			//__sPotentialPosibilityKontur(0);//Приоритет в случае охлаждения   // NEW strat
 			//SetPriorityHeating(-1,DefRH(),&pGD_TControl_Tepl_Kontur->RealPower[0], ByteX);
-			pGD_TControl_Tepl_Kontur->RealPower[0] = SetPriorityHeating(-1,DefRH(),ByteX);
+			// 46 именение было 0 и 1 стало 1 и 0
+			pGD_TControl_Tepl_Kontur->RealPower[1] = SetPriorityHeating(-1,DefRH(),ByteX);
+
 			//__sPotentialPosibilityKontur(1);//Приоритет в случае нагрева
 			//SetPriorityHeating(1,DefRH(),&pGD_TControl_Tepl_Kontur->RealPower[1], ByteX);
-			pGD_TControl_Tepl_Kontur->RealPower[1] = SetPriorityHeating(1,DefRH(),ByteX);
+
+			pGD_TControl_Tepl_Kontur->RealPower[0] = SetPriorityHeating(1,DefRH(),ByteX);
 			ClrDog;
 
 			__WorkableKontur(ByteX,fnTepl);
@@ -2195,8 +2198,26 @@ void __sCalcKonturs(void)
 			ClrDog;
 
 			OldCrit=pGD_TControl_Tepl->Critery;
-			if (pGD_TControl_Tepl->NOwnKonturs)
-				pGD_TControl_Tepl->Critery=pGD_TControl_Tepl->Critery-__sThisToFirst((int)((LngY)));
+			// 52 изменеие
+			// было
+		    //if (pGD_TControl_Tepl->NOwnKonturs)
+			//  pGD_TControl_Tepl->Critery=pGD_TControl_Tepl->Critery-__sThisToFirst((int)((LngY)));
+			// стало
+			if (GD.TuneClimate.CriteryLevel != 0)
+			{
+			  int CritM;
+			  CritM = -1 * GD.TuneClimate.CriteryLevel * 100;
+			  if ( pGD_TControl_Tepl->Critery-__sThisToFirst((int)((LngY)) ) <= CritM )
+			  {
+			    (*pGD_TControl_Tepl).Critery = CritM;
+			  }
+			  else
+			  {
+			    if (pGD_TControl_Tepl->NOwnKonturs)
+				  pGD_TControl_Tepl->Critery=pGD_TControl_Tepl->Critery-__sThisToFirst((int)((LngY)));
+			  }
+			}
+			// стало
 			if (!SameSign(OldCrit,pGD_TControl_Tepl->Critery))
 				pGD_TControl_Tepl->Critery=0;
 			pGD_TControl_Tepl_Kontur->CalcT=LngY;
