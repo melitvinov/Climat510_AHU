@@ -90,7 +90,11 @@ start:
    if (not) {
         if(!ton_t--) { ton_t=ton; not--; Sound;}
         }
-   if(!not && nReset) {ton=(nReset--)+2;not=80;}
+   if(!not && nReset)
+   	   {
+	   	   ton=(nReset--)+2;
+	   	   not=80;
+   	   }
    if (!timeDog--) { timeDog=7;ClrDog; }
 
    if(GD.SostRS == (uchar)IN_UNIT) {  /*Если приняли блок с ПК */

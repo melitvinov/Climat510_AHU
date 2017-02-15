@@ -537,16 +537,89 @@ int KeepFanSystem(char fnTepl)
 	maxT = GD.TuneClimate.vAHU_MaxTempr * 100;
 	miT = getTempOutAHU(fnTepl);
 	maT = getTempOutEndAHU(fnTepl);
-	//delta = getTempOutAHU(fnTepl);
-	//delta = delta - getTempOutEndAHU(fnTepl);
-	delta = miT - maT;
-	if (delta < 0) delta = delta * -1;
-	tempKeep = delta * maxSpeed / maxT;
-	if (tempKeep > maxSpeed) tempKeep = maxSpeed;
-	if (tempKeep < minSpeed) tempKeep = minSpeed;
-	return tempKeep;
+	if ((minT != 0) && (maxT != 0))	// если работает коррекци€ по двум датчикам в рукаве
+	{
+		delta = miT - maT;
+		if (delta < 0) delta = delta * -1;
+		tempKeep = delta * maxSpeed / maxT;
+		if (tempKeep > maxSpeed) tempKeep = maxSpeed;
+		if (tempKeep < minSpeed) tempKeep = minSpeed;
+	}
+	else // расчет как был
+	{
+		volatile int16_t Tout = 0;
+		volatile int16_t ToutTask = 0;
+		Tout = getTempOutAHU(fnTepl) / 100 ;
+		ToutTask = GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery / 100;
+		if (Tout > ToutTask)
+			tempKeep = Tout * (minSpeed * 1.5) / ToutTask;
+		else
+			tempKeep = minSpeed;
+		// было так
+		//tempKeep = pGD_TControl_Tepl->Systems[cSysAHUSpeed].Keep + pGD_Hot_Tepl->AllTask.AHUVent;
+	}
 
-	//return pGD_TControl_Tepl->Systems[cSysAHUSpeed].Keep+pGD_Hot_Tepl->AllTask.AHUVent;
+
+
+	volatile int16_t windSpeed = 0;
+	volatile int16_t PosFluger = 0;
+	volatile int16_t MaxSpeedAHUwind = 0;
+	volatile int16_t MinWindSpeed = 0;
+	volatile int16_t MaxWindSpeed = 0;
+	volatile int16_t deltaSpeedWind = 0;
+	volatile float windSpeedCalc = 0;
+	volatile int16_t zone = 10;
+	volatile int16_t deltaW = 0;
+
+	MinWindSpeed = GD.TuneClimate.f_WindStart;
+	MaxSpeedAHUwind = GD.TuneClimate.MaxAHUspeed;
+	MaxWindSpeed = GD.TuneClimate.MaxAHUwindSpeed;
+	windSpeed = GD.TControl.MeteoSensing[cSmVWindSens] / 100;
+	PosFluger = GD.Hot.PozFluger;
+
+	//PosFluger = 270;
+	//windSpeed = 30;
+
+	if (GD.Hot.MidlWind<GD.TuneClimate.f_WindStart) return;
+
+	if ((windSpeed > 0) && (MaxSpeedAHUwind > 0))
+	{
+		tempKeep = 0;
+		if (PosFluger <= 180)
+		{
+			zone = 1;
+			if (PosFluger > 90)
+				PosFluger = 90 - (PosFluger - 90);
+			tempKeep = delta * maxSpeed / maxT;
+		} else
+		{
+			zone = 0;
+			PosFluger = PosFluger - 180;
+			if (PosFluger > 90)
+				PosFluger = 90 - (PosFluger - 90);
+		}
+		deltaSpeedWind = MaxWindSpeed - MinWindSpeed;
+		if ((windSpeed >=MinWindSpeed) && (windSpeed <= MaxWindSpeed))
+		{
+			windSpeedCalc = PosFluger * windSpeed / 90;   // скорость ветра от текущей позиции флугера и скорости ветра
+			tempKeep = windSpeedCalc * MaxSpeedAHUwind / MaxWindSpeed;   // увеличение скорости на вычесленный процент
+			deltaW = tempKeep;
+			tempKeep = minSpeed + tempKeep;
+		}
+		if (windSpeed < MinWindSpeed)
+			tempKeep = minSpeed;
+		if (windSpeed > MaxWindSpeed)
+			tempKeep = MaxSpeedAHUwind + minSpeed;
+		if (zone != fnTepl)
+			tempKeep = minSpeed - deltaW; // теперь уменьшаем скорость
+			//tempKeep = minSpeed;    // было так
+	}
+
+	// итогова€ проверка на мин и мак скорость
+	if (tempKeep > maxSpeed) tempKeep = maxSpeed;
+	if (MaxSpeedAHUwind == 0)   // если усл коррекции скорости по ветру выкл то мин скорость как в задании
+		if (tempKeep < minSpeed) tempKeep = minSpeed;
+	return tempKeep;
 }
 
 int KeepScreenSystem(void)
@@ -731,8 +804,8 @@ int8_t GetOffSet(int8_t fnSys)
 */
 }
 
-int8_t fnMSysOut[8];
-int8_t fnMPriorOut[8];
+uint8_t fnMSysOut[8];
+uint8_t fnMPriorOut[8];
 int8_t fnMKeepOut[8][8];
 int16_t fnMKeepParamOut[8][5];
 int8_t fnMKeepErrorOut[8];
@@ -755,22 +828,22 @@ int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 	{
 		pGD_TControl_Tepl->StopVentI++;
 		if (pGD_TControl_Tepl->StopVentI>cMaxStopI) pGD_TControl_Tepl->StopVentI=cMaxStopI;
-		fnMKeepErrorOut[fnTepl] = 1;
-		fnMSysOut[fnTepl] = 0;
-		fnMPriorOut[fnTepl] = 0;
+		//fnMKeepErrorOut[fnTepl] = 1;  // вывод стратегии
+		//fnMSysOut[fnTepl] = 0;     // вывод стратегии
+		//fnMPriorOut[fnTepl] = 0;	 // вывод стратегии
 		pGD_Hot_Tepl->CurrentStratSys = 0;
 		GD.Hot.Tepl[fnTepl].CurrentStratSys = 0;
 		return -1;
 	}
 	//pGD_TControl_Tepl->Systems[fnMSys].Keep+=((int32_t)CriterNew)*pGD_TControl_Tepl->Systems[fnMSys].Power/10000; // так было
-	fnMKeepErrorOut[fnTepl] = 0;  // есть активна€ система
+	//fnMKeepErrorOut[fnTepl] = 0;  // есть активна€ система   // вывод стратегии
 	pGD_TControl_Tepl->StopVentI=0;
 	if (pGD_TControl_Tepl->Systems[fnMSys].Power/1000 == 0)
 		pGD_TControl_Tepl->Systems[fnMSys].Power = 1000;
 
 	pGD_TControl_Tepl->Systems[fnMSys].Keep = SetPID(((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
 
-	if (fnMSys == cSysUCValve)
+	/*if (fnMSys == cSysUCValve)     // вывод стратегии
 	{
 		fnMKeepParamOut[fnTepl][0] = (int32_t)fnCritery;
 		fnMKeepParamOut[fnTepl][1] = 1;//pGD_TControl_Tepl->Systems[fnMSys].Power/1000;
@@ -778,8 +851,9 @@ int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 		fnMKeepParamOut[fnTepl][3] = pGD_TControl_Tepl->Systems[fnMSys].Max;
 		fnMKeepParamOut[fnTepl][4] = pGD_TControl_Tepl->Systems[fnMSys].Min;
 	}
+	*/
 	GD.Hot.Tepl[fnTepl].CurrentStratSys = fnMSys * 10;   // вывод в hot блок текущей системы
-	fnMKeepOut[fnTepl][fnMSys] = pGD_TControl_Tepl->Systems[fnMSys].Keep;
+	//fnMKeepOut[fnTepl][fnMSys] = pGD_TControl_Tepl->Systems[fnMSys].Keep;    // вывод стратегии
 	for (fnSys=0;fnSys<cSUCSystems;fnSys++)
 	{
 		if ((fnSys==cSysRailPipe)||(fnSys==cSysHeadPipe))
@@ -788,8 +862,8 @@ int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 			KeepPID(pGD_TControl_Tepl->Systems[fnSys].Keep,((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnSys].Power/1000, GetOffSet(fnSys));
 	}
 	pGD_Hot_Tepl->Kontur[cSmWindowUnW].SError=pGD_TControl_Tepl->Systems[cSysUCValve].Power/1000;  // NEW
-	fnMSysOut[fnTepl] = fnMSys;
-	fnMPriorOut[fnTepl] = fnMPrior;
+	//fnMSysOut[fnTepl] = fnMSys;        // вывод стратегии
+	//fnMPriorOut[fnTepl] = fnMPrior;    // вывод стратегии
 }
 
 //ƒл€ расчета критери€ на базе текущих положений увлажнени€, скорости вентил€торов, фрамуг
@@ -937,7 +1011,7 @@ void __sMinMaxWindows(void)
 //	if (YesBit(GD.Hot.MeteoSens[cSmOutTSens].RCS,cbMinMaxVSens))
 //		IntX=100;
 //--------------------------------------------------------------------------------
-//» по ветру
+//   оррекци€ работы фраму по ветру
 //--------------------------------------------------------------------------------
 	IntY=GD.Hot.MidlWind;
 	CorrectionRule(GD.TuneClimate.f_StormWind-f_StartWind,GD.TuneClimate.f_StormWind,100,0);
@@ -1928,9 +2002,9 @@ void __SendCritery(int16_t *Crit)
 #endif
 
 // вывод значений критери€
-int16_t	CriterT1Out[8];
-int16_t CriterT2Out[8];
-int16_t CriterT3Out[8];
+uint16_t	CriterT1Out[8];
+uint16_t CriterT2Out[8];
+uint16_t CriterT3Out[8];
 
 void TakeCriterForOut(int16_t Criter1, int16_t Criter2, int16_t Criter3, char fnTepl)
 {
@@ -2200,10 +2274,10 @@ void __sCalcKonturs(void)
 			OldCrit=pGD_TControl_Tepl->Critery;
 			// 52 изменеие
 			// было
-		    //if (pGD_TControl_Tepl->NOwnKonturs)
-			//  pGD_TControl_Tepl->Critery=pGD_TControl_Tepl->Critery-__sThisToFirst((int)((LngY)));
+		    if (pGD_TControl_Tepl->NOwnKonturs)
+			  pGD_TControl_Tepl->Critery=pGD_TControl_Tepl->Critery-__sThisToFirst((int)((LngY)));
 			// стало
-			if (GD.TuneClimate.CriteryLevel != 0)
+			/*if (GD.TuneClimate.CriteryLevel != 0)
 			{
 			  int CritM;
 			  CritM = -1 * GD.TuneClimate.CriteryLevel * 100;
@@ -2216,7 +2290,7 @@ void __sCalcKonturs(void)
 			    if (pGD_TControl_Tepl->NOwnKonturs)
 				  pGD_TControl_Tepl->Critery=pGD_TControl_Tepl->Critery-__sThisToFirst((int)((LngY)));
 			  }
-			}
+			}*/
 			// стало
 			if (!SameSign(OldCrit,pGD_TControl_Tepl->Critery))
 				pGD_TControl_Tepl->Critery=0;
@@ -2357,6 +2431,7 @@ void __sMechWindows(void)
 		//if (pGD_Strategy_Tepl[cSmKontur3].TempPower==22)
 		pGD_Hot_Tepl->Kontur[cSmKontur3].Do=KeepAHUPipeSystem();
 		pGD_TControl_Tepl->Kontur[cSmKontur3].DoT=pGD_Hot_Tepl->Kontur[cSmKontur3].Do*10;
+
 
 		if (!(YesBit((*(pGD_Hot_Hand+cHSmAHUSpeed1)).RCS,(/*cbNoMech+*/cbManMech))))
 			(*(pGD_Hot_Hand+cHSmAHUSpeed1)).Position=KeepFanSystem(fnTepl);//(*pGD_Hot_Tepl).AllTask.AHUVent;//pGD_Hot_Tepl->Kontur[cSmAHUSpd].Do;

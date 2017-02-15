@@ -239,8 +239,6 @@ void	pmStrategy(void)
     w_txt(Mes7); //-Zone-
 	w_int(&x_menu,SS);
 
-
-
 							BlkW=1;
 							buf[Ad_Buf++]='(';
 							w_int(&fnMSysOut[ByteZ],SS);
@@ -251,7 +249,7 @@ void	pmStrategy(void)
 	                  	  	buf[Ad_Buf++]=',';												//
 	                  	  	w_int(&CriterT1Out[ByteZ],SSSS);
 
-	                  	  	buf[Ad_Buf++]='-';												//
+	                  	  	buf[Ad_Buf++]=',';												//
 	                  	  	w_int(&CriterT2Out[ByteZ],SSSS);
 
 	                  	  	buf[Ad_Buf++]=',';
