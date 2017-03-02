@@ -925,25 +925,38 @@ void __cNextTCalc(char fnTepl)
 	}
 //	IntY=(*pGD_Hot_Tepl).NextTCalc.DifTAirTDo;
 	(*pGD_TControl_Tepl).SaveIntegral=(*pGD_TControl_Tepl).Integral;
-	if ((pGD_TControl_Tepl->StopI>3)&&(abs(IntY)<cResetDifTDo))
+
+	// изменеие 60
+	//if ((pGD_TControl_Tepl->StopI>3)&&(abs(IntY)<cResetDifTDo))  // было
+	if ((pGD_TControl_Tepl->StopI>3)&&(abs(IntY)>cResetDifTDo))
 	{
+		// изменеие 60
+		int16_t CriterO;
+		if (GD.TuneClimate.CriteryLevel == 0)
+			CriterO = cResetCritery;
+		else
+			CriterO = GD.TuneClimate.CriteryLevel;
+
+
 
 //		CorrectionRule(0,200,1000,0);
 //		IntZ--;
-		if ((*pGD_TControl_Tepl).Critery>cResetCritery)
+
+		// 60 изменеие вместо CriterO везде было cResetCritery
+		if ((*pGD_TControl_Tepl).Critery>CriterO)
 		{
 			(*pGD_TControl_Tepl).SaveIntegral
-				=cResetCritery+CalcAllKontur
+				=CriterO+CalcAllKontur
 				-(*pGD_Hot_Tepl).NextTCalc.PCorrection+(*pGD_Hot_Tepl).NextTCalc.dSumCalc;
 		    (*pGD_TControl_Tepl).SaveIntegral*=100;
 		}
 //		IntY=-IntY;
 //		CorrectionRule(0,200,1000,0);
 //		IntZ--;
-		if ((*pGD_TControl_Tepl).Critery<-cResetCritery)
+		if ((*pGD_TControl_Tepl).Critery<-CriterO)
 		{
 			(*pGD_TControl_Tepl).SaveIntegral
-				=-cResetCritery+CalcAllKontur
+				=-CriterO+CalcAllKontur
 				-(*pGD_Hot_Tepl).NextTCalc.PCorrection+(*pGD_Hot_Tepl).NextTCalc.dSumCalc;
 		    (*pGD_TControl_Tepl).SaveIntegral*=100;
 		}

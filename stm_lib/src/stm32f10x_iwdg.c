@@ -147,7 +147,7 @@ void IWDG_ReloadCounter(void)
   */
 void IWDG_Enable(void)
 {
-  IWDG->KR = KR_KEY_Enable;
+	IWDG->KR = KR_KEY_Enable;
 }
 
 /**

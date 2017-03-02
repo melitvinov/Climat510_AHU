@@ -35,7 +35,7 @@ char    timeDog;
 
 #ifndef STM32_UNIT
         init8051();
-#else
+#elseö
         ClrAllOutIPCDigit();
 		Init_STM32();
 #endif
@@ -83,7 +83,7 @@ char    timeDog;
         UDPSendDataInit();
         AHUPadInit();
         InRHInit();
-        startFlag = 3;
+        startFlag = 5;
 start:
 
 

@@ -533,7 +533,7 @@ typedef struct eeTuneClimate
 		uchar		vAHU_MinTempr;
 		uchar		vAHU_MaxTempr;
 
-		char        CriteryLevel;
+		int16_t     CriteryLevel;
 
 		uchar		MaxAHUspeed;   		// коррекция скорости по ветру
 		uchar		MaxAHUwindSpeed;    // максимальный ветер для коррекции скорости по ветру

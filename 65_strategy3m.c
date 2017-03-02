@@ -156,7 +156,7 @@ void CheckInRHSystem(void)
 }
 
 //Изменения от 26.04.2015
-//установить минимумы, максимумы, возможность вверх, возможность вниз
+//Экран. установить минимумы, максимумы, возможность вверх, возможность вниз
 void CheckScreenSystem(void)
 {
 #warning temporary constants later from params
@@ -562,6 +562,8 @@ int KeepFanSystem(char fnTepl)
 
 
 	volatile int16_t windSpeed = 0;
+	volatile int16_t windDirect = 0;
+	volatile int16_t greenHousePos = 0;
 	volatile int16_t PosFluger = 0;
 	volatile int16_t MaxSpeedAHUwind = 0;
 	volatile int16_t MinWindSpeed = 0;
@@ -575,22 +577,34 @@ int KeepFanSystem(char fnTepl)
 	MaxSpeedAHUwind = GD.TuneClimate.MaxAHUspeed;
 	MaxWindSpeed = GD.TuneClimate.MaxAHUwindSpeed;
 	windSpeed = GD.TControl.MeteoSensing[cSmVWindSens] / 100;
-	PosFluger = GD.Hot.PozFluger;
+	windDirect = GD.TControl.MeteoSensing[cSmDWindSens];
+	greenHousePos = GD.TuneClimate.o_TeplPosition;
+	//PosFluger = GD.Hot.PozFluger;
 
-	//PosFluger = 270;
+	//PosFluger = 90;
 	//windSpeed = 30;
 
 	if (GD.Hot.MidlWind<GD.TuneClimate.f_WindStart) return;
 
 	if ((windSpeed > 0) && (MaxSpeedAHUwind > 0))
 	{
+		if (greenHousePos != windDirect)
+		{
+			if (greenHousePos > windDirect)
+				PosFluger = greenHousePos - windDirect;
+			else
+				PosFluger = windDirect - greenHousePos;
+		}
+		else
+			PosFluger = windDirect;
+
+
 		tempKeep = 0;
 		if (PosFluger <= 180)
 		{
 			zone = 1;
 			if (PosFluger > 90)
 				PosFluger = 90 - (PosFluger - 90);
-			tempKeep = delta * maxSpeed / maxT;
 		} else
 		{
 			zone = 0;
@@ -598,9 +612,15 @@ int KeepFanSystem(char fnTepl)
 			if (PosFluger > 90)
 				PosFluger = 90 - (PosFluger - 90);
 		}
-		deltaSpeedWind = MaxWindSpeed - MinWindSpeed;
-		if ((windSpeed >=MinWindSpeed) && (windSpeed <= MaxWindSpeed))
+		//if (MaxWindSpeed > windSpeed)
+		//	deltaSpeedWind = MaxWindSpeed - MinWindSpeed;
+		//else
+		//	deltaSpeedWind = windSpeed - MinWindSpeed;
+		if (windSpeed >=MinWindSpeed)// && (windSpeed <= MaxWindSpeed))
 		{
+			if (MaxWindSpeed < windSpeed)
+				MaxWindSpeed = 	windSpeed;
+
 			windSpeedCalc = PosFluger * windSpeed / 90;   // скорость ветра от текущей позиции флугера и скорости ветра
 			tempKeep = windSpeedCalc * MaxSpeedAHUwind / MaxWindSpeed;   // увеличение скорости на вычесленный процент
 			deltaW = tempKeep;
@@ -2343,6 +2363,8 @@ void __sMechScreen(void)
 		{
 			pGD_Hot_Tepl->OtherCalc.CorrScreen=pGD_Hot_Tepl->Kontur[cSmScreen].Do;//IntZ
 		}
+
+		// расчеты экранов
 		SetPosScreen(cTermHorzScr);
 		SetPosScreen(cSunHorzScr);
 		SetPosScreen(cTermVertScr1);
