@@ -877,12 +877,22 @@ void __cNextTCalc(char fnTepl)
 
 	(*pGD_Hot_Tepl).NextTCalc.ICorrection=(int)(pGD_TControl_Tepl->Integral/100);			
 
+	// вывод параметров
 	(*pGD_TControl_Tepl).Critery=(*pGD_Hot_Tepl).NextTCalc.PCorrection+(*pGD_Hot_Tepl).NextTCalc.ICorrection-(*pGD_Hot_Tepl).NextTCalc.dSumCalc;
-	CalcAllKontur=__sCalcTempKonturs();
-	// 45 изменение-*=-4
 
+	fnMSysOut[fnTepl] = (*pGD_Hot_Tepl).NextTCalc.PCorrection;  // вывод
+	fnMPriorOut[fnTepl] = (*pGD_Hot_Tepl).NextTCalc.ICorrection;   // вывод
+	CriterT1Out[fnTepl] = (*pGD_Hot_Tepl).NextTCalc.dSumCalc;   // вывод
+
+	CalcAllKontur=__sCalcTempKonturs();
+	CriterT2Out[fnTepl] = CalcAllKontur;   // вывод
+	// вывод параметров
+
+	// 45 изменение-*=-4
 	// было
 	(*pGD_TControl_Tepl).Critery-=CalcAllKontur;
+	CriterT3Out[fnTepl] = (*pGD_TControl_Tepl).Critery;   // вывод
+
 	// стало
 	/*if (GD.TuneClimate.CriteryLevel != 0)
 	{
@@ -959,19 +969,46 @@ void __cNextTCalc(char fnTepl)
 // было
 	/*
 	(*pGD_TControl_Tepl).SaveIntegral=(*pGD_TControl_Tepl).Integral;
-	if ((pGD_TControl_Tepl->StopI>3)&&(abs(IntY)<cResetDifTDo))
+
+	// изменеие 60
+	//if ((pGD_TControl_Tepl->StopI>3)&&(abs(IntY)<cResetDifTDo))  // было
+	if ((pGD_TControl_Tepl->StopI>3)&&(abs(IntY)>cResetDifTDo))
 	{
+<<<<<<< HEAD
 		if ((*pGD_TControl_Tepl).Critery>cResetCritery)
+=======
+		// изменеие 60
+		int16_t CriterO;
+		if (GD.TuneClimate.CriteryLevel == 0)
+			CriterO = cResetCritery;
+		else
+			CriterO = GD.TuneClimate.CriteryLevel;
+
+
+
+//		CorrectionRule(0,200,1000,0);
+//		IntZ--;
+
+		// 60 изменеие вместо CriterO везде было cResetCritery
+		if ((*pGD_TControl_Tepl).Critery>CriterO)
+>>>>>>> c94f40d9df5cc1c12caf50d8af8a24b3f094d399
 		{
 			(*pGD_TControl_Tepl).SaveIntegral
-				=cResetCritery+CalcAllKontur
+				=CriterO+CalcAllKontur
 				-(*pGD_Hot_Tepl).NextTCalc.PCorrection+(*pGD_Hot_Tepl).NextTCalc.dSumCalc;
 		    (*pGD_TControl_Tepl).SaveIntegral*=100;
 		}
+<<<<<<< HEAD
 		if ((*pGD_TControl_Tepl).Critery<-cResetCritery)
+=======
+//		IntY=-IntY;
+//		CorrectionRule(0,200,1000,0);
+//		IntZ--;
+		if ((*pGD_TControl_Tepl).Critery<-CriterO)
+>>>>>>> c94f40d9df5cc1c12caf50d8af8a24b3f094d399
 		{
 			(*pGD_TControl_Tepl).SaveIntegral
-				=-cResetCritery+CalcAllKontur
+				=-CriterO+CalcAllKontur
 				-(*pGD_Hot_Tepl).NextTCalc.PCorrection+(*pGD_Hot_Tepl).NextTCalc.dSumCalc;
 		    (*pGD_TControl_Tepl).SaveIntegral*=100;
 		}
@@ -1035,50 +1072,33 @@ void __cNextTCalc(char fnTepl)
 
 	//if (pGD_Hot_Tepl->AllTask.DoTVent+300<IntX)  // old
 
-
 	if (pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3<IntX)
 	{
-		//pGD_TControl_Tepl->IntegralVent=pGD_Hot_Tepl->AllTask.DoTVent+300-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF; 		// old
 		pGD_TControl_Tepl->IntegralVent=pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
 		pGD_TControl_Tepl->IntegralVent*=100;
-		//IntX=pGD_Hot_Tepl->AllTask.DoTVent+300;	// old
 		IntX=pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3;
 	}
-
-	//ѕроверка на мминимум расчета пока константа 14 градусов
 	// 41 изменение ставим т рукава как тепмпература дл€ отоплени€. Ѕыло так:
-	//int minMinPipeTemp = GD.Timer[fnTepl].MinTPipe3 * 100;
-	// стало так
-	int minMinPipeTemp;
+	int minMinPipeTemp = GD.Timer[fnTepl].MinTPipe3 * 100;
 	if (startFlag)
 	{
 		//pGD_TControl_Tepl->TVentCritery = GD.Hot.Tepl[fnTepl].AllTask.DoTHeat;
 		//(*pGD_TControl_Tepl).TVentCritery = GD.Hot.Tepl[fnTepl].AllTask.DoTHeat;
 		//minMinPipeTemp = GD.Hot.Tepl[fnTepl].AllTask.DoTHeat;
+
+		// изменеие 59
 		pGD_TControl_Tepl->IntegralVent= GD.Hot.Tepl[fnTepl].AllTask.DoTHeat * 100;
 		startFlag--;
 	}
-	else
-		minMinPipeTemp = GD.Timer[fnTepl].MinTPipe3 * 100;
-
 	if (minMinPipeTemp < 1400) minMinPipeTemp = MINPIPETEMPER;
-	// стало так
 	if (minMinPipeTemp > IntX)
 	{
-		//pGD_TControl_Tepl->IntegralVent=1400-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;  old
 		pGD_TControl_Tepl->IntegralVent=minMinPipeTemp-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
 		pGD_TControl_Tepl->IntegralVent*=100;
-		//IntX=1400; // old
 		IntX=minMinPipeTemp;
 	}
 	pGD_TControl_Tepl->TVentCritery=IntX;
-	// 41 правка было так:
 	(*pGD_Hot_Tepl).NextTCalc.TVentCritery=(*pGD_TControl_Tepl).TVentCritery;
-	// стало так:
-	//(*pGD_Hot_Tepl).NextTCalc.TVentCritery = ( (*pGD_Hot_Tepl).AllTask.DoTHeat * 4 ) - (getTempHeat(fnTepl) * 3);
-	//–асчет влажности рукава по заданию влажности воздуха- пока запишем в интегральную поправку
-
-
 	// 54 изменение
 	// было
 	//(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent,pGD_Hot_Tepl->AllTask.DoRHAir);

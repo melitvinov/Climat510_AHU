@@ -155,7 +155,7 @@ typedef struct eeNextTCalc {
 				int16_t		dSumCalcF;//Понижают осадки	12
 
 				int16_t		DiffCO2;//Корректирующий коэффициент в зависимости от колебательных процессов	14
-				int16_t		TVentCritery;//Изменяет экран	16
+				int16_t		TVentCritery;//
 				int16_t		PCorrection;//Коррекция управляющей функции по 1 разности	18
 
 				int16_t		Critery;//Цель-изменить теплоноситель на	20
@@ -533,10 +533,11 @@ typedef struct eeTuneClimate
 
 		int16_t     CriteryLevel;
 
-		uchar       MaxAHUspeed;   		// коррекция скорости по ветру
-	 	uchar		MaxAHUwindSpeed;    // максимальный ветер для коррекции скорости по ветру
+		uchar		MaxAHUspeed;   		// коррекция скорости по ветру
+		uchar		MaxAHUwindSpeed;    // максимальный ветер для коррекции скорости по ветру
 
-		int8_t      Rez[5];  // 6
+		int8_t      Rez[6];  // 8
+
 //280		
        }
         eTuneClimate;
@@ -564,7 +565,6 @@ typedef struct eeTeplControl
 		uint16_t	tempPipe3;
 		uint16_t	InRHMax;
 		uint16_t	InRHMin;
-
 
 		int16_t		Rez[16];
 //+42 байта

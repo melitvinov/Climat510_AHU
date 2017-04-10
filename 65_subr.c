@@ -1108,7 +1108,7 @@ int16_t	SetPID(uint16_t fDelta,uint8_t fNMech,int16_t fMax, int16_t fMin)
 	return LngX;
 }
 
-
+// Напровление верта относительно положения теплицы
 void WindDirect(void)
 {
 	GD.Hot.PozFluger&=1;

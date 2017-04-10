@@ -17,7 +17,7 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 		bZad=1;
 	}
 	IntY=getTempHeat(fnTepl)-pGD_Hot_Tepl->AllTask.DoTHeat;
-	CorrectionRule(GD.TuneClimate.sc_dTStart,GD.TuneClimate.sc_dTEnd,GD.TuneClimate.sc_dTSunFactor,0);  // начинает влиять на солнце при
+	CorrectionRule(GD.TuneClimate.sc_dTStart,GD.TuneClimate.sc_dTEnd,GD.TuneClimate.sc_dTSunFactor,0);   // начинает влиять на солнце при, начинает влиять на солнце до, уменьшает солнце на
 	SunZClose=GD.TuneClimate.sc_ZSRClose-IntZ;
 	IntZ=pGD_Hot_Tepl->AllTask.DoTHeat-GD.TControl.MeteoSensing[cSmOutTSens];
 	switch(chType) 
@@ -34,8 +34,8 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			}
 			else
 				if (!bNight) pScr->Mode=0;
-
 			// зачем это вообще нужно ?
+			// изменеие 61
 			//if (YesBit(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS,cbDownAlarmSens))
 			//	pScr->Mode=1;
 			if((GD.TuneClimate.sc_ZSRClose)&&(GD.Hot.MidlSR>SunZClose)) pScr->Mode=1;
