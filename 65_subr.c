@@ -46,7 +46,22 @@
 #define	DS18B20_FILL_EEPROM	0x48
 #define	DS18B20_SKIP_ROM	0xCC
 
-int16_t teplTmes[8][6];
+int16_t teplTmes[8][30];
+
+int16_t getRH1AHUSensor(void)
+{
+	return pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
+}
+
+int16_t getRH2AHUSensor(void)
+{
+	return pGD_Hot_Tepl->InTeplSens[cSmRHSens1].Value;
+}
+
+int16_t getRHoutAHUSensor(void)
+{
+	return pGD_Hot_Tepl->InTeplSens[cSmRHSens2].Value;
+}
 
 int16_t getTempSensor(char fnTepl, char sensor)
 {
@@ -61,6 +76,36 @@ int16_t getTempSensor(char fnTepl, char sensor)
 			return 0;
 		return teplTmes[fnTepl][sensor];
 	}
+}
+
+/*!
+\brief Температура воздуха на выходе AHU
+@return int16_t Температура
+*/
+int16_t getTempOutAHU(char fnTepl)
+{
+	int16_t error = 0;
+	int16_t temp = 0;
+	temp = getTempSensor(fnTepl, cSmTAHUOutSens);
+//	if ( temp != 0 )
+//		error = 1;
+//	if (error)
+//		return GD.Hot.Tepl[fnTepl].tempVent;
+}
+
+/*!
+\brief Температура воздуха на выходе в конце AHU
+@return int16_t Температура
+*/
+int16_t getTempOutEndAHU(char fnTepl)
+{
+	int16_t error = 0;
+	int16_t temp = 0;
+	temp = getTempSensor(fnTepl, cSmT1AHUOutSens);
+//	if ( temp != 0 )
+//		error = 1;
+//	if (error)
+//		return GD.Hot.Tepl[fnTepl].tempVent;
 }
 
 /*!
@@ -371,6 +416,11 @@ void SetPointersOnKontur(char fnKontur)
 }
 void MidlWindAndSr(void)
 {
+	if (startFlag)
+	{
+		if (startFlag < 0) startFlag = 0;
+		return;
+	}
 	GD.TControl.SumSun+=((long int)GD.TControl.MeteoSensing[cSmFARSens]);
 	GD.TControl.MidlSR=((((long int)GD.TControl.MidlSR)*(1000-o_MidlSRFactor))/1000
 		+((long int)GD.TControl.MeteoSensing[cSmFARSens])*o_MidlSRFactor);
@@ -854,13 +904,15 @@ void InitGD(char fTipReset) {
         ClrDog;
         SIM=100;
 		NDat=0;
-		if (fTipReset>2) MemClr(&GD.Hot,(sizeof(eHot)));
+		if (fTipReset>2)
+			MemClr(&GD.Hot,(sizeof(eHot)));
         MemClr(&GD.Control,sizeof(eControl)
                 +sizeof(eFullCal)
                 +sizeof(eLevel)
                 +sizeof(eTimer)*cSTimer);
 ClrDog; 
-        MemClr(&GD.ConstMechanic[0],sizeof(eTuneClimate)+sizeof(eTControl)+sizeof(eStrategy)*cSStrategy*cSTepl+sizeof(eConstMech)*cSTepl+sizeof(eMechConfig)*cSTepl);
+        //MemClr(&GD.ConstMechanic[0],sizeof(eTuneClimate)+sizeof(eTControl)+sizeof(eStrategy)*cSStrategy*cSTepl+sizeof(eConstMech)*cSTepl+sizeof(eMechConfig)*cSTepl);   // NEW strat
+		MemClr(&GD.ConstMechanic[0],sizeof(eTuneClimate)+sizeof(eTControl)+sizeof(eStrategy)*cSTepl+sizeof(eConstMech)*cSTepl+sizeof(eMechConfig)*cSTepl);
         MemClr(&GD.uInTeplSens[0][0],sizeof(uint16_t)*(cConfSMetSens+cSTepl*cConfSSens));
 ClrDog;
         /* Установка данных по умолчанию */
@@ -900,6 +952,7 @@ ClrDog;
 		GD.Control.Language=cDefLanguage;
 		GD.Control.Cod=111;
 		GD.Control.Screener=40;
+		GD.Control.TimeCorrection = 1;
 
         GD.Control.NFCtr=NumCtr;
 
@@ -914,19 +967,16 @@ ClrDog;
 			//eCS->Input=OutPortsAndInputs[ByteX][0];
 			//eCS->nInput=OutPortsAndInputs[ByteX][1];
 			}
-		for (ByteX=0;ByteX<cSTepl;ByteX++)
+
+        for (ByteX=0;ByteX<cSTepl;ByteX++)
 		{
 			SetPointersOnTepl(ByteX);
-			for (IntX=0;IntX<cSStrategy;IntX++)
-			{
-				for (ByteY=0;ByteY<sizeof(eStrategy);ByteY++)
-					(*((&(pGD_Strategy_Tepl[IntX].TempPower))+ByteY))=(*((&DefStrategy[IntX].TempPower)+ByteY));
-			}
+			for (IntX=0;IntX<sizeof(eStrategy);IntX++)
+				(*((&(pGD_Strategy_Tepl[0].StratAHUvalve1[0]))+IntX)) = DefStrategy[IntX];
 
 			bWaterReset[ByteX]=1;
 			for (IntX=0;IntX<SUM_NAME_CONF;IntX++)
 				pGD_MechConfig->RNum[IntX]=MechC[ByteX][IntX];
-
 			for (IntX=0;IntX<cConfSSystem;IntX++)
 				pGD_MechConfig->Systems[IntX]=InitSystems[ByteX][IntX];
 
@@ -946,7 +996,7 @@ ClrDog;
 				pGD_ConstMechanic->ConstMixVal[IntX].v_IFactor=DefMechanic[2];
 				//pGD_ConstMechanic->ConstMixVal[IntX].Power=(char)DefMechanic[3];
 			}
-/* Первоначальна настройка калибровок */
+// Первоначальна настройка калибровок
 	        for(ByteY=0;ByteY<cConfSSens;ByteY++)
 			{
 				eCS=&GD.Cal.InTeplSens[ByteX][ByteY];
@@ -983,17 +1033,47 @@ int CorrectionRule(int fStartCorr,int fEndCorr, int fCorrectOnEnd, int fbSet)
 
 uint16_t AbsHum(uint16_t fTemp, uint16_t fRH)
 {
-	float tT,tRH, tRez;
+	volatile float tT,tRH, tRez;
 	tT=fTemp/100;
 	tRH=fRH/100;
 	tRez=((0.000002*tT*tT*tT*tT)+(0.0002*tT*tT*tT)+(0.0095*tT*tT)+( 0.337*tT)+4.9034)*tRH;
 	return tRez;
 }
 
-
-int8_t	SetPID(uint16_t fDelta,uint8_t fNMech,int8_t fMax, int8_t fMin)
+uint16_t RelHum(uint16_t fTemp, uint16_t AbsRH)
 {
-	int16_t	*IntVal;
+	volatile float tT,tRH, tRez;
+	//tT=(fTemp/100) + (fTemp%100);
+	tT = fTemp;
+	tT /= 100;
+	tRH=AbsRH*100;
+	tRez=tRH/((0.000002*tT*tT*tT*tT)+(0.0002*tT*tT*tT)+(0.0095*tT*tT)+( 0.337*tT)+4.9034);
+	return tRez;
+}
+
+void KeepPID(uint16_t fKeep,uint16_t fDelta,uint8_t fNMech)
+{
+	int32_t	*IntVal;
+	ClrDog;
+
+	IntVal=&(pGD_TControl_Tepl->IntVal[fNMech]);
+
+	IntX=fDelta;
+
+	LngY=pGD_ConstMechanic->ConstMixVal[fNMech].v_PFactor;
+
+	LngY=LngY*IntX;//(*IntVal);
+
+	IntY=(int16_t)(LngY/10000);
+
+	(*IntVal)=(fKeep-IntY)*100;
+
+}
+
+
+int16_t	SetPID(uint16_t fDelta,uint8_t fNMech,int16_t fMax, int16_t fMin)
+{
+	int32_t	*IntVal;
 	ClrDog;
 
 //	if (YesBit(pGD_Hot_Hand[fNMech].RCS,(/*cbNoMech+*/cbManMech))) continue;
@@ -1005,30 +1085,30 @@ int8_t	SetPID(uint16_t fDelta,uint8_t fNMech,int8_t fMax, int8_t fMin)
 	LngY=LngY*IntX;//(*IntVal);
 	IntY=(int16_t)(LngY/10000);
 		//if (!IntY) continue;
-	IntZ=(*IntVal)/100;
+	LngX=(*IntVal)/100;
 		//IntZ=(*(pGD_Hot_Hand_Kontur+cHSmMixVal)).Position;
-	IntZ+=IntY;
-	if (IntZ>fMax)
+	LngX+=IntY;
+	if (LngX>fMax)
 	{
 		(*IntVal)=(fMax-IntY)*100;
-		IntZ=fMax;
+		LngX=fMax;
 	}
 	else
-		if (IntZ<fMin)
+		if (LngX<fMin)
 		{
 			(*IntVal)=(fMin-IntY)*100;
-			IntZ=fMin;
+			LngX=fMin;
 		}
 		else
-			(*IntVal)+=(int16_t)((((long)IntX)*pGD_ConstMechanic->ConstMixVal[fNMech].v_IFactor)/100);
+			(*IntVal)+=(int32_t)((((long)IntX)*pGD_ConstMechanic->ConstMixVal[fNMech].v_IFactor)/100);
 
 	if (!pGD_ConstMechanic->ConstMixVal[fNMech].v_IFactor)
 		*IntVal=0;
 
-	return IntZ;
+	return LngX;
 }
 
-
+// Напровление верта относительно положения теплицы
 void WindDirect(void)
 {
 	GD.Hot.PozFluger&=1;
@@ -1117,7 +1197,9 @@ char bRelay;
 
 
 void __SetBitOutReg(char fnTepl,char fnMech,char fnclr,char fnSm)
-{	uint16_t nBit,nByte,Mask;
+{
+	uint16_t nBit,nByte,Mask;
+
 	if (fnTepl==-1) 
 	  nBit=fnMech;
 	else

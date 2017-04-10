@@ -17,7 +17,7 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 		bZad=1;
 	}
 	IntY=getTempHeat(fnTepl)-pGD_Hot_Tepl->AllTask.DoTHeat;
-	CorrectionRule(GD.TuneClimate.sc_dTStart,GD.TuneClimate.sc_dTEnd,GD.TuneClimate.sc_dTSunFactor,0);
+	CorrectionRule(GD.TuneClimate.sc_dTStart,GD.TuneClimate.sc_dTEnd,GD.TuneClimate.sc_dTSunFactor,0);   // начинает влиять на солнце при, начинает влиять на солнце до, уменьшает солнце на
 	SunZClose=GD.TuneClimate.sc_ZSRClose-IntZ;
 	IntZ=pGD_Hot_Tepl->AllTask.DoTHeat-GD.TControl.MeteoSensing[cSmOutTSens];
 	switch(chType) 
@@ -34,8 +34,10 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			}
 			else
 				if (!bNight) pScr->Mode=0;
-			if (YesBit(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS,cbDownAlarmSens))
-				pScr->Mode=1;
+			// зачем это вообще нужно ?
+			// изменеие 61
+			//if (YesBit(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS,cbDownAlarmSens))
+			//	pScr->Mode=1;
 			if((GD.TuneClimate.sc_ZSRClose)&&(GD.Hot.MidlSR>SunZClose)) pScr->Mode=1;
 		}
 		if 	(pScr->Mode!=pScr->OldMode)
@@ -56,11 +58,11 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 		CorrectionRule(GD.TuneClimate.sc_GlassStart,GD.TuneClimate.sc_GlassEnd,GD.TuneClimate.sc_GlassMax,0);
 		if ((YesBit(pGD_Hot_Tepl->InTeplSens[cSmGlassSens].RCS,cbMinMaxVSens))) IntZ=GD.TuneClimate.sc_GlassMax;
 		pScr->Value=pScr->Mode*(pGD_Control_Tepl->sc_TMaxOpen-(GD.TuneClimate.sc_GlassMax-IntZ));		
-/*Влияние разницы влажности на открытие экрана*/
+/*Влияние разницы влажности на открытие экрана
 		IntY=pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value-pGD_Hot_Tepl->AllTask.DoRHAir;
 		CorrectionRule(GD.TuneClimate.sc_RHStart,GD.TuneClimate.sc_RHEnd,GD.TuneClimate.sc_RHMax,0);
 		if (!pGD_Hot_Tepl->AllTask.DoRHAir) IntZ=0;
-		pScr->Value-=IntZ;
+		pScr->Value-=IntZ;*/
 
 	break;
 	case 1:
@@ -127,7 +129,7 @@ void SetPosScreen(char typScr)
 	if(pScr->Pause) {pScr->Pause--;return;}
 	
 	ByteX=(*pMech);
-	IntZ=pScr->Value;	
+	IntZ=pScr->Value-pGD_TControl_Tepl->Systems[cSysScreen].Keep;
 
 	if (!typScr) // Только если термический, то произвести коррекцию
 	{
@@ -279,9 +281,6 @@ void    SetReg(char fHSmReg,int DoValue,int MeasValue)
 
 	}
 
-	
-	
-	
 	IntX=(((long)DoValue-MeasValue)*pGD_ConstMechanic->ConstMixVal[fHSmReg].v_PFactor/*GD.TuneClimate.reg_PFactor[fHSmReg-cHSmCO2]*/)/1000;
 	IntY=(fReg->IntVal/100);
 	IntZ=100;

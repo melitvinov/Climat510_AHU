@@ -35,7 +35,7 @@ char    timeDog;
 
 #ifndef STM32_UNIT
         init8051();
-#else
+#elseц
         ClrAllOutIPCDigit();
 		Init_STM32();
 #endif
@@ -62,7 +62,8 @@ char    timeDog;
         Menu=0;
 		EndInput=0;
         nReset=3;
-        w_txt("\252\245TO F405 (c)APL&DAL");
+        //w_txt("\252\245TO F405 (c)APL&DAL");
+        w_txt("ФИТО F405 (c)APL&DAL");	// NEW disp
         ClrDog;
         Video();
         ClrDog;
@@ -79,21 +80,31 @@ char    timeDog;
         ClrDog;
         ClrDog;  /* разрешение прерываний RS и T0 из init8051()*/
         ClearAllAlarms();
-        defaultSettings();
+        UDPSendDataInit();
+        AHUPadInit();
+        InRHInit();
+        startFlag = 5;
 start:
+
 
    if (not) {
         if(!ton_t--) { ton_t=ton; not--; Sound;}
         }
-   if(!not && nReset) {ton=(nReset--)+2;not=80;}
+   if(!not && nReset)
+   	   {
+	   	   ton=(nReset--)+2;
+	   	   not=80;
+   	   }
    if (!timeDog--) { timeDog=7;ClrDog; }
+
    if(GD.SostRS == (uchar)IN_UNIT) {  /*Если приняли блок с ПК */
             /*--Если запись 0бл и признак времени то установить время */
 //            if(PlaceBuf()) {
 #ifdef STM32_UNIT
 	   	   	   NMinPCOut=0;
 #endif
-				if(!NumBlock && (GD.Hot.News&0x80)) SetRTC();
+	   	   	if(!NumBlock && (GD.Hot.News&bInClock)) SetRTC();	// NEW
+	   	   	    //if(!NumBlock && (GD.Hot.News&0x80)) SetRTC();
             	ClrDog;
             /*-- Была запись с ПК в блок NumBlock, переписать в EEPROM ------*/
             	if (NumBlock) ReWriteFRAM();
@@ -102,12 +113,15 @@ start:
             SIM=105;
             }
    if(bSec) {
+
 #ifdef STM32_UNIT
 	   if (Second==58)
 	   {
+		   UDPStartSend();
 		   CheckWithoutPC();
 	   	   CheckInputConfig();
 	   }
+
 		CheckRSTime();
 #endif
 #ifndef NOTESTMEM
@@ -122,6 +136,7 @@ start:
         if (!(Second%9))
         {
         	Measure();
+   	      	UDPSend();
         }
        // IMOD_WriteOutput(0,1,0xf0f0f0f0);
 

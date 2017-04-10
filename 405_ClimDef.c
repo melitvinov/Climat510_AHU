@@ -67,3 +67,4 @@ int8_t		ToHiTime;
 int8_t		ToLowTime;
 char	fLightOn;
 int16_t		fLightPause;
+

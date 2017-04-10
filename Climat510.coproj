@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Project version="2G - 1.7.7" name="Climat510">
+<Project version="2G - 2.0.3" name="Climat510">
   <Target name="Climat510" isCurrent="1">
     <Device manufacturerId="9" manufacturerName="ST" chipId="334" chipName="STM32F105RC" boardId="" boardName=""/>
     <BuildOption>
@@ -8,14 +8,17 @@
         <Option name="UseFPU" value="0"/>
         <Option name="UserEditCompiler" value=""/>
         <Option name="SupportCPlusplus" value="0"/>
+        <Option name="DEBUG" value="2"/>
+        <Option name="WARNING" value="1"/>
         <Includepaths>
           <Includepath path="."/>
         </Includepaths>
         <DefinedSymbols>
-          <Define name="STM32F105RC"/>
+          <Define name="STM32F105RCT6"/>
           <Define name="STM32F10X_CL"/>
           <Define name="USE_STDPERIPH_DRIVER"/>
           <Define name="__ASSEMBLY__"/>
+          <Define name="STM32F105RC"/>
         </DefinedSymbols>
       </Compile>
       <Link useDefault="0">
@@ -36,7 +39,7 @@
       </Link>
       <Output>
         <Option name="OutputFileType" value="0"/>
-        <Option name="Path" value="C:/CooCox/CoIDE/workspace/Climat510_AHU/"/>
+        <Option name="Path" value="c:/coocox/coide/workspace/"/>
         <Option name="Name" value="Climat510"/>
         <Option name="HEX" value="1"/>
         <Option name="BIN" value="1"/>
@@ -63,7 +66,7 @@
       <Option name="org.coocox.codebugger.gdbjtag.core.autoDownload" value="1"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.verify" value="1"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.downloadFuction" value="Erase Effected"/>
-      <Option name="org.coocox.codebugger.gdbjtag.core.defaultAlgorithm" value="C:/CooCox/CoIDE/flash/STM32F10x_CL_256.elf"/>
+      <Option name="org.coocox.codebugger.gdbjtag.core.defaultAlgorithm" value="STM32F10x_CL_256.elf"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.jflashtool" value=""/>
       <Option name="org.coocox.codebugger.gdbjtag.coredebugInRam" value="0"/>
       <Option name="org.coocox.codebugger.gdbjtag.core.jflashscript" value=""/>
@@ -134,8 +137,8 @@
     <File name="cmsis_boot" path="" type="2"/>
     <File name="405_Memory.c" path="405_Memory.c" type="1"/>
     <File name="65_main.c" path="65_main.c" type="1"/>
-    <File name="stm_lib/src/stm32f10x_tim.c" path="stm_lib/src/stm32f10x_tim.c" type="1"/>
     <File name="stm_lib/inc/stm32f10x_pwr.h" path="stm_lib/inc/stm32f10x_pwr.h" type="1"/>
+    <File name="stm_lib/src/stm32f10x_tim.c" path="stm_lib/src/stm32f10x_tim.c" type="1"/>
     <File name="cmsis_boot/startup" path="" type="2"/>
     <File name="stm_lib/src/misc.c" path="stm_lib/src/misc.c" type="1"/>
     <File name="stm_lib/src/stm32f10x_iwdg.c" path="stm_lib/src/stm32f10x_iwdg.c" type="1"/>

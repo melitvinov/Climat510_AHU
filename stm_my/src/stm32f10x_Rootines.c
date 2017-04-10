@@ -18,7 +18,6 @@ static unsigned char myip[4] = {192,168,1,231};
 uint16_t* IWDG_Reset;
 uint8_t KeyDelay;
 
-
 void CheckWithoutPC(void)
 {
 	if (NMinPCOut>3)
@@ -26,6 +25,7 @@ void CheckWithoutPC(void)
 		NMinPCOut=0;
 		USART_PC_Configuration(&GD.Control.NFCtr,AdrGD,&GD.SostRS,&NumBlock,9600);
 		simple_server(AdrGD,&GD.SostRS,&NumBlock,GD.Control.IPAddr,mymac,&PORTNUM);
+		//simple_client(AdrGD,&GD.SostRS,&NumBlock,GD.Control.cIPAddr,mymac,&PORTNUM);
 		GD.TControl.Tepl[0].WithoutPC++;
 	}
 	NMinPCOut++;
@@ -178,7 +178,6 @@ void InitMainTimer(void)
 
     RCC->APB1ENR |= RCC_APB1Periph_TIM2;
 
-
     TIM2->PSC = 8000-1; // Clock prescaler;
 
     TIM2->ARR = 100; // Auto reload value
@@ -279,7 +278,8 @@ void InitRTC(void)
 		/* Wait until last write operation on RTC registers has finished */
 		RTC_WaitForLastTask();
 		/* Set RTC prescaler: set RTC period to 1sec */
-		RTC_SetPrescaler(40000); /* RTC period = RTCCLK/RTC_PR = (32.768 KHz)/(32767+1) */
+		//RTC_SetPrescaler(40000); /* RTC period = RTCCLK/RTC_PR = (32.768 KHz)/(32767+1) */   // было так !!!
+		RTC_SetPrescaler(32000); /* RTC period = RTCCLK/RTC_PR = (32.768 KHz)/(32767+1) */   // вернул 32767 как более понятное
 		/* Wait until last write operation on RTC registers has finished */
 		RTC_WaitForLastTask();
 		/* Set initial value */
@@ -315,8 +315,6 @@ void RTC_IRQHandler(void)
 		//IntCount=0;
 	}
 }
-
-
 
 #define PORT1WIRE	GPIOB
 #define PIN1WIRE	GPIO_Pin_12
@@ -515,11 +513,10 @@ void WriteToFRAM()
 {
 	char i;
 	uint16_t fsizeSend;
+	int tTepl;
 	ClrDog;
     InitBlockEEP();  /*подпрограмма в GD */
-
 	SendBlockFRAM((uint32_t)(&GD.TControl)-(uint32_t)(BlockEEP[0].AdrCopyRAM),(uchar*)(&GD.Hot),sizeof(GD.Hot));
-
 	ClrDog;
 	SendBlockFRAM((uint32_t)(&GD.TControl)-(uint32_t)(BlockEEP[0].AdrCopyRAM)+sizeof(GD.Hot),(uchar*)(&GD.TControl),sizeof(eTControl));
 //	SendBlockFRAM(0,(uchar*)(&GD),sizeof(GD));
@@ -543,7 +540,6 @@ void ReadFromFRAM()
 
 }
 
-
 void SetRTC(void) {
 		eDateTime	fDateTime;
         fDateTime.sec=Second;
@@ -555,7 +551,9 @@ void SetRTC(void) {
         ClrDog;
         WriteDateTime(&fDateTime);
 }
+
 void GetRTC(void) {
+
 		eDateTime	fDateTime;
         ReadDateTime(&fDateTime); //CtrTime=0;
 
@@ -872,16 +870,27 @@ void  CalibrNew(char nSArea,char nTepl, char nSens,int16_t Mes){
 	}
 }
 
-
-
 void Measure()
 {
 	char tTepl,nSens;
-	uint16_t	tSensVal;
+	volatile uint16_t	tSensVal;
 	int nModule;
-	int8_t ErrModule;
+	int8_t ErrModule = 0;
+
 	for (tTepl=0;tTepl<cSTepl;tTepl++)
 	{
+		tSensVal=GetInIPC(GD.MechConfig[tTepl].RNum[48],&ErrModule);
+		if ((ErrModule>=0) && (tSensVal > 4600))
+			GD.Hot.Tepl[tTepl].Light50 = 10;
+		else
+			GD.Hot.Tepl[tTepl].Light50 = 0;
+
+		tSensVal=GetInIPC(GD.MechConfig[tTepl].RNum[49],&ErrModule);
+		if ((ErrModule>=0) && (tSensVal > 4600))
+			GD.Hot.Tepl[tTepl].Light100 = 10;
+		else
+			GD.Hot.Tepl[tTepl].Light100 = 0;
+
         for(nSens=0;nSens<cConfSSens;nSens++)
 		{
         	tSensVal=GetInIPC(GetSensConfig(tTepl,nSens),&ErrModule);
@@ -897,11 +906,14 @@ void Measure()
         		GD.Hot.Tepl[tTepl].InTeplSens[nSens].RCS=cbNoWorkSens;
         		GD.Hot.Tepl[tTepl].InTeplSens[nSens].Value=0;
         		GD.uInTeplSens[tTepl][nSens]=0;
+        		NVIC_SystemReset();   // помогло при пропадании датчиков по причине потери связи
         		continue;
         		//        		tSensVal=0;
         	}
         	CalibrNew(1,tTepl,nSens,tSensVal);
+        	saveAHUOutTemp[tTepl] = GD.Hot.Tepl[tTepl].InTeplSens[cSmTAHUOutSens].Value;
 		}
+
 	}
     for(nSens=0;nSens<cConfSMetSens;nSens++)
     {
@@ -946,12 +958,43 @@ void CheckInputConfig()
 void SetDiskrSens(void)
 {
 	char fnTepl,nSens,nErr;
+	nErr = 0;
+	int res = 0;
 	for (fnTepl=0;fnTepl<cSTepl;fnTepl++)
 	{
 		SetPointersOnTepl(fnTepl);
 		for (nSens=0;nSens<cConfSInputs;nSens++)
-			if (GetDiskrIPC(GetInputConfig(fnTepl,nSens),&nErr))
-				pGD_Hot_Tepl->DiskrSens[0]|=1<<nSens;
+		{
+//			if (GetDiskrIPC(GetInputConfig(fnTepl,nSens),&nErr))
+//				pGD_Hot_Tepl->DiskrSens[0]|=1<<nSens;
+
+			/*res = GetDiskrIPC(GD.MechConfig[fnTepl].RNum[48],&nErr);
+			if (res == 1)
+				GD.Hot.Tepl[fnTepl].Light50 = 10;
+			else
+				GD.Hot.Tepl[fnTepl].Light50 = 0;
+
+			res = GetDiskrIPC(GD.MechConfig[fnTepl].RNum[49],&nErr);
+			if (res == 1)
+				GD.Hot.Tepl[fnTepl].Light100 = 10;
+			else
+				GD.Hot.Tepl[fnTepl].Light100 = 0;*/
+
+
+			/*if (pGD_Hot_Tepl->DiskrSens[0] == 4)
+				if (pGD_Hot_Tepl->DiskrSens[1] == 1)
+					GD.Hot.Tepl[fnTepl].Light50 = 10;
+				else
+					GD.Hot.Tepl[fnTepl].Light50 = 0;*/
+		}
+		/*tSensVal=GetInIPC(GD.MechConfig[tTepl].RNum[49],&ErrModule);
+		if ((ErrModule>=0) && (tSensVal > 3500))
+			GD.Hot.Tepl[tTepl].Light100 = 10;
+		else
+			GD.Hot.Tepl[tTepl].Light100 = 0;
+*/
+
+
 /*		if (YesBit(RegLEV,(cSmLightLev1<<fnTepl)))
 			SetBit(pGD_Hot_Tepl->DiskrSens[0],cSmLightDiskr);
 */

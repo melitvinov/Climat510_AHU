@@ -203,7 +203,7 @@ void pmDate(void) {
         }
 }
 
-void pmStrategy(void) {
+/*void pmStrategy(void) {
                 w_txt(Mes72); //Irrigation archive
 				if (x_menu>cSWaterKontur) x_menu=0;
                 if(!x_menu)	return;
@@ -213,16 +213,83 @@ void pmStrategy(void) {
 				w_int(&x_menu,SS);
 				Ad_Buf=Str3;
 				w_txt(Mes73);
-				w_int(&GD.Strategy[0][x_menu-1].TempPower,SS);
+				//w_int(&GD.Strategy[0][x_menu-1].TempPower,SS);  // NEW strat
 				if (!Y_menu2) BlkW=1;
 				Ad_Buf=Str4;
 				w_txt(Mes74);
-				w_int(&GD.Strategy[0][x_menu-1].RHPower,SS);
+				//w_int(&GD.Strategy[0][x_menu-1].RHPower,SS);
 				if (Y_menu2==1) BlkW=1;
 				Ad_Buf=Str5;
 				w_txt(Mes75);
-				w_int(&GD.Strategy[0][x_menu-1].OptimalPower,SS);
+				//w_int(&GD.Strategy[0][x_menu-1].OptimalPower,SS);
 				return;
+} */
+
+void	pmStrategy(void)
+{
+    w_txt(Mes72);
+	if (x_menu > cSStrat) x_menu=0;
+	if (!x_menu) {
+		return;
+		}
+    Ad_Buf=Str2;
+    ByteZ=x_menu-1;
+	if(Y_menu2 > SUM_NAME_STRAT) Y_menu2=0;
+	if(Y_menu2 >=SUM_NAME_STRAT) Y_menu2=SUM_NAME_STRAT-1;
+    w_txt(Mes7); //-Zone-
+	w_int(&x_menu,SS);
+
+							BlkW=1;
+							buf[Ad_Buf++]='(';
+							w_int(&fnMSysOut[ByteZ],SS);
+
+	                  	  	buf[Ad_Buf++]=',';												//
+	                  	  	w_int(&fnMPriorOut[ByteZ],SS);
+
+	                  	  	buf[Ad_Buf++]=',';												//
+	                  	  	w_int(&CriterT1Out[ByteZ],SSSS);
+
+	                  	  	buf[Ad_Buf++]=',';												//
+	                  	  	w_int(&CriterT2Out[ByteZ],SSSS);
+
+	                  	  	buf[Ad_Buf++]=',';
+	                  	    w_int(&CriterT3Out[ByteZ], SSSS);
+
+	                  	  	buf[Ad_Buf++]=',';
+	                  	    w_int(&saveAHUOutTemp[ByteZ], SSSS);
+
+	                  	    buf[Ad_Buf++]=')';
+
+					  	  	//w_txt("s) #c) ");
+					  	  	//if  (pGD_TControl_Tepl->MechBusy[ByteW].Sens)
+					  	  	//{
+		                    //    buf[Ad_Buf++]='(';
+		                  	//  	w_int(&pGD_TControl_Tepl->MechBusy[ByteW].Sens->Value,SSSpS);
+		                    //    buf[Ad_Buf++]=')';
+					  	  	//}
+					  	  	//Ad_Buf=Str5;
+
+
+
+
+
+
+    Ad_Buf=Str3;
+	if(Y_menu2 < StartY_menu2) StartY_menu2 = Y_menu2;
+	if(Y_menu2 > (StartY_menu2+2)) StartY_menu2 = Y_menu2-2;	// Y_menu2-2;
+    for (ByteY=StartY_menu2;ByteY < (StartY_menu2+3);ByteY++)  //(StartY_menu2+3);B
+	{
+		ByteX=ByteY % SUM_NAME_STRAT;
+		//w_txt_new(&NameStrat[ByteX].Name);
+		w_txt(&NameStrat[ByteX].Name);
+		Ad_Buf=(Ad_Buf / DisplCols)*DisplCols+20;
+		buf[Ad_Buf++]='=';
+	   	//w_int(&GD.Timer[ByteZ].Zone[NameStrat[ByteX].Index],eNameStrat[ByteX].Frm);
+		w_int(&GD.Strategy[ByteZ].StratAHUvalve1[0]+ByteY,NameStrat[ByteX].Frm);
+		if(Y_menu2 == ByteY) BlkW=1;
+		Ad_Buf=((Ad_Buf / DisplCols)+1)*DisplCols;
+	}
+	return;
 }
 
 void pmParam() {
@@ -338,7 +405,8 @@ void pmParam() {
 				ByteZ--;  //if (!GD.Config[cfReturn1Val] && !GD.Config[cfRegulRetEC]) 
                 if(!ByteZ)
 				{
-		                Y_menu2%=8;
+		                //Y_menu2%=8;
+                		Y_menu2%=12;
                         w_txt(Mes126); //Controller num~
                         w_int(&GD.Control.NFCtr,SS);
                         if(!Y_menu2) BlkW=1;
@@ -356,12 +424,37 @@ void pmParam() {
 						if (!Menu) SaveChar=0;
                         if(Y_menu2==2) BlkW=1;
                        	Ad_Buf=Str5;
-						if (Y_menu2<=3) 
+
+                       	if (Y_menu2<=3)
 						{
                         	w_txt(Mes5);
                         	w_int(&GD.Control.ConfSTepl,oS);
 						}
-						else
+
+                       	if ( (Y_menu2>=4) && (Y_menu2<=7) )
+                       	{
+                        	w_txt("IP:");
+                        	w_int(&GD.Control.IPAddr[0],SSS);
+                            if(Y_menu2==4) BlkW=1;
+                        	w_txt(".");
+                        	w_int(&GD.Control.IPAddr[1],SSS);
+                            if(Y_menu2==5) BlkW=1;
+                        	w_txt(".");
+                        	w_int(&GD.Control.IPAddr[2],SSS);
+                            if(Y_menu2==6) BlkW=1;
+                        	w_txt(".");
+                        	w_int(&GD.Control.IPAddr[3],SSS);
+                       	}
+
+                       	if (Y_menu2>=8)
+                       	{
+                        	w_txt("Time correction:");
+                        	w_int(&GD.Control.TimeCorrection,SSS);
+                       	}
+
+                       	/*
+                       	if (Y_menu2==3)
+                       	else
 						{
                         	w_txt("IP:");
                         	w_int(&GD.Control.IPAddr[0],SSS);
@@ -375,14 +468,24 @@ void pmParam() {
                         	w_txt(".");
                         	w_int(&GD.Control.IPAddr[3],SSS);
 
-							//w_txt(Mes206);
-                        	//w_int(&GD.Control.Screener,SSS);
 						}
+                       	/*
+						if (Y_menu2==3)
+						{
+							BlkW=1;
+							w_txt("IP:");
+							w_int(&GD.Control.IPAddr[0],SSS);
+							//if(Y_menu2==9) BlkW=1;
+							//if(Y_menu2==6) BlkW=1;
+						}
+						*/
+
                        return;
 				}
                 if(ByteZ > 1)	x_menu=0;
 				pmReset();                
 }
+
 void AutoMan(char RCS,int fint) 
 {
 	if (YesBit(RCS,fint)) 
@@ -414,11 +517,24 @@ void pmHand(void) {
 						w_int(&ByteX,SS);
 						Ad_Buf++;
                         w_txt(NameOutputConfig[ByteW].Name); /* Клап бойлера*/ //Boiler val \310ost~
+
+                        if (ByteW == cHSmUCValve)
+                        {
+                        	buf[Ad_Buf++]='(';
+                        	w_int(&fnMKeepOut[ByteZ][cSysUCValve] ,SSS);
+                   	  		buf[Ad_Buf++]=',';
+                   	  		w_int(&fnMKeepErrorOut[ByteZ] ,SSS);
+                   	  		buf[Ad_Buf++]=')';
+                        }
+
                         Ad_Buf=Str3;
                         w_txt(Mes134); /* Ход клап */ //Boiler val time~~
 						ByteX=0x01;
                         w_int(&pGD_Hot_Hand_Kontur->RCS,bS);
 						AutoMan(pGD_Hot_Hand_Kontur->RCS,ByteX);
+
+						//BlkW=1;
+
                         if (!(Y_menu2%2)) BlkW=1;
                         Ad_Buf=Str4;
                         w_txt(Mes133); /* Ход клап */ //Boiler val time~~
@@ -427,6 +543,12 @@ void pmHand(void) {
                         BlkW=1;
 						buf[Ad_Buf++]='(';
                   	  	w_int(&pGD_TControl_Tepl->MechBusy[ByteW].TimeRealMech,SSSi);
+
+                  	  	buf[Ad_Buf++]=',';												//
+                  	  	w_int(&pGD_TControl_Tepl->MechBusy[ByteW].TimeSetMech,SSSi);	//
+                  	    buf[Ad_Buf++]=',';												//
+                  	    w_int(&pGD_Hot_Hand_Kontur->Position,SSS);						//
+
 				  	  	w_txt("s) #c) ");
 				  	  	if  (pGD_TControl_Tepl->MechBusy[ByteW].Sens)
 				  	  	{
@@ -438,7 +560,23 @@ void pmHand(void) {
 						w_txt(Mes136); Ad_Buf++;
                         IntX=(*pGD_MechConfig_Kontur);
                         w_int(&IntX,SpSSpSS);
-						return;
+
+                        if (ByteW == cHSmUCValve)
+                        {
+                        buf[Ad_Buf++]='(';
+                  	  	w_int(&fnMKeepParamOut[ByteZ][0],SSSS);							//
+                  	    buf[Ad_Buf++]=',';												//
+                  	    w_int(&fnMKeepParamOut[ByteZ][1],SSS);
+                  	    buf[Ad_Buf++]=',';												//
+                  	    w_int(&fnMKeepParamOut[ByteZ][2],SSS);
+                  	    buf[Ad_Buf++]=',';												//
+                  	    w_int(&fnMKeepParamOut[ByteZ][3],SSS);
+                  	    buf[Ad_Buf++]=',';												//
+                  	    w_int(&fnMKeepParamOut[ByteZ][4],SSS);
+                  	    buf[Ad_Buf++]=')';												//
+                        }
+
+                        return;
                 		}
 				ByteZ-=SumTeplZones;
                 if(ByteZ<SumTeplZones){
@@ -855,8 +993,10 @@ void	pmProgClimate(void)
 		Ad_Buf=((Ad_Buf / DisplCols)+1)*DisplCols;
 	}
 	return;
-	
 }
+
+//#define K1 "Kontur1: #Kontur1: "
+//#define K2 "Kontur2: #Kontur2: "
 
 void pmVersion(void)
 {
@@ -870,10 +1010,199 @@ void pmVersion(void)
     ByteZ=x_menu-1;
 	if(Y_menu2 > SUM_NAME_TIMER) Y_menu2=0;
 	if(Y_menu2 >=SUM_NAME_TIMER) Y_menu2=SUM_NAME_TIMER-1;
-
 	w_txt(FWVersion);
-    Ad_Buf=Str3;
-	return;
+	Ad_Buf=Str3;
+    return;
+}
+
+void pmEtherConnect(void)
+{
+                char* OutStr;
+				w_txt(Mes225); //Parameters
+                if(!x_menu) return;
+                ByteZ=x_menu-1;
+                Ad_Buf=Str2;
+                if (Y_menu2 == 0) Y_menu2=1;
+                if (Y_menu2 > 5) Y_menu2=1;
+                if (Y_menu2 >= 5) Y_menu2=5-1;
+/*                if(!ByteZ){pmDate(); return;}
+				ByteZ--;
+                if(ByteZ<SumTeplZones){
+                        if (Y_menu2 > SUM_NAME_CONF) Y_menu2=0;
+                        if (Y_menu2 >= SUM_NAME_CONF) Y_menu2=SUM_NAME_CONF-1;
+                        w_txt(Mes86); //-Configuration-
+						Ad_Buf++;
+						w_txt(Mes7);
+						Ad_Buf++;
+						ByteX=ByteZ+1;
+						w_int(&ByteX,SS);
+                        Ad_Buf=Str3;
+						if(Y_menu2 < StartY_menu2) StartY_menu2 = Y_menu2;
+						if(Y_menu2 > (StartY_menu2+2)) StartY_menu2 = Y_menu2-2;
+                        for (ByteY=StartY_menu2;ByteY < (StartY_menu2+3);ByteY++) {
+							ByteX=ByteY % SUM_NAME_CONF;
+							OutStr=NameOutputConfig[ByteX].Name;
+							ByteW=ByteX;
+							if (ByteX>=SUM_NAME_INPUTS)
+								OutStr=NameInputConfig[ByteX-SUM_NAME_INPUTS].Name;
+							if (ByteX>=SUM_NAME_INSENS)
+								OutStr=NameSensConfig[ByteX-SUM_NAME_INSENS].Name;
+                        	w_txt(OutStr);
+							Ad_Buf=(Ad_Buf / DisplCols)*DisplCols+20;
+                        	buf[Ad_Buf++]=':';
+	                        w_int(&GD.MechConfig[ByteZ].RNum[ByteW],SpSSpSS);
+							if(Y_menu2 == ByteY) BlkW=1;
+ 							//w_txt(Mes87); //-rela\321
+							Ad_Buf=((Ad_Buf / DisplCols)+1)*DisplCols;
+							}
+						if (!GD.TControl.NowCod) Form=0;
+                        return;}
+				ByteZ-=SumTeplZones;
+                if(ByteZ<SumTeplZones){
+                        if (Y_menu2 > cConfSSystem) Y_menu2=0;
+                        if (Y_menu2 >= cConfSSystem) Y_menu2=cConfSSystem-1;
+                        w_txt(Mes86); //-Configuration-
+						Ad_Buf++;
+						w_txt(Mes7);
+						Ad_Buf++;
+						ByteX=ByteZ+1;
+						w_int(&ByteX,SS);
+                        Ad_Buf=Str3;
+						if(Y_menu2 < StartY_menu2) StartY_menu2 = Y_menu2;
+						if(Y_menu2 > (StartY_menu2+2)) StartY_menu2 = Y_menu2-2;
+                        for (ByteY=StartY_menu2;ByteY < (StartY_menu2+3);ByteY++) {
+							ByteX=ByteY % SUM_NAME_CONF;
+							OutStr=NameSystemConfig[ByteX].Name;
+							ByteW=ByteX;
+                        	w_txt(OutStr);
+							Ad_Buf=(Ad_Buf / DisplCols)*DisplCols+20;
+                        	buf[Ad_Buf++]=':';
+	                        w_int(&GD.MechConfig[ByteZ].Systems[ByteW],SSSi);
+							if(Y_menu2 == ByteY) BlkW=1;
+ 							//w_txt(Mes87); //-rela\321
+							Ad_Buf=((Ad_Buf / DisplCols)+1)*DisplCols;
+							}
+						if (!GD.TControl.NowCod) Form=0;
+                        return;}
+				ByteZ-=SumTeplZones;
+				if(ByteZ<SumTeplZones){
+		                if(Y_menu2 > SUM_NAME_PARS) Y_menu2=0;
+		                if(Y_menu2 >=SUM_NAME_PARS) Y_menu2=SUM_NAME_PARS-1;
+                        w_txt(Mes90); //-Correction-
+						Ad_Buf++;
+						w_txt(Mes7);
+						Ad_Buf++;
+						ByteX=ByteZ+1;
+						w_int(&ByteX,SS);
+                        Ad_Buf=Str3;
+						if(Y_menu2 < StartY_menu2) StartY_menu2 = Y_menu2;
+						if(Y_menu2 > (StartY_menu2+2)) StartY_menu2 = Y_menu2-2;
+                        for (ByteY=StartY_menu2;ByteY < (StartY_menu2+3);ByteY++) {
+							ByteX=ByteY % SUM_NAME_PARS;
+                			w_txt(NameParUpr[ByteX].Name);
+							Ad_Buf=(Ad_Buf / DisplCols)*DisplCols+20;
+							buf[Ad_Buf++]='=';
+	                        w_int(&GD.Control.Tepl[ByteZ].c_MaxTPipe[ByteY],NameParUpr[ByteX].Ed);
+							if(Y_menu2 == ByteY) BlkW=1;
+							Ad_Buf=((Ad_Buf / DisplCols)+1)*DisplCols;
+
+							}
+						return;}
+				ByteZ-=SumTeplZones;
+                if(!ByteZ){
+		                if(Y_menu2 > SUM_NAME_TUNE) Y_menu2=0;
+		                if(Y_menu2 >= SUM_NAME_TUNE) Y_menu2=SUM_NAME_TUNE-1;
+						w_txt(Mes91);
+						Ad_Buf=Str3;
+						if(Y_menu2 < StartY_menu2) StartY_menu2 = Y_menu2;
+						if(Y_menu2 > (StartY_menu2+2)) StartY_menu2 = Y_menu2-2;
+                        for (ByteY=StartY_menu2;ByteY < (StartY_menu2+3);ByteY++) {
+							ByteX=ByteY % SUM_NAME_TUNE;
+                			ByteW=ByteX+1;
+							w_txt(Mes92);
+							w_int(&ByteW,SS);
+							Ad_Buf=((Ad_Buf / DisplCols))*DisplCols+20;
+							buf[Ad_Buf++]='=';
+	                        w_int(&GD.TuneClimate.s_TStart[ByteY],NameConst[ByteX].Frm);
+							if(Y_menu2 == ByteY) BlkW=1;
+							Ad_Buf=((Ad_Buf / DisplCols)+1)*DisplCols;
+
+							}
+                        return; }
+				ByteZ--;  //if (!GD.Config[cfReturn1Val] && !GD.Config[cfRegulRetEC])
+                if(!ByteZ)
+				{*/
+//                		if(!Y_menu2) BlkW=1;
+//                		Y_menu2%=8;
+//                        w_txt(Mes126); //Controller num~
+//                        w_int(&GD.Control.NFCtr,SS);
+//                        if(!Y_menu2) BlkW=1;
+//						if(!GD.Hot.News) w_txt(" on line");
+//                        Ad_Buf=Str3;
+//                        w_txt(Mes127); //Language~
+//                        w_int(&GD.Control.Language,oS);
+                       // w_int(&PowerOfLineRS,SSSS);
+
+            //            if(Y_menu2==1) BlkW=1;
+//                        Ad_Buf=Str4;
+                        //w_txt(Mes65); //Access code~
+                        //w_int(&GD.Control.Cod,SSS);
+						//SaveChar=127;
+						//if (!Menu) SaveChar=0;
+//                        if(Y_menu2==2) BlkW=1;
+//                       	Ad_Buf=Str5;
+//						if (Y_menu2<=3)
+//						{
+//                        	w_txt(Mes5);
+//                        	w_int(&GD.Control.ConfSTepl,oS);
+//						}
+//						else
+						//{
+                			//Y_menu2%=8;
+                			if(Y_menu2==0) BlkW=1;
+                			w_txt("IP:");
+                        	w_int(&dis_ip[0],SSS);
+                            if(Y_menu2==1) BlkW=1;
+                        	w_txt(".");
+                        	w_int(&dis_ip[1],SSS);
+                            if(Y_menu2==2) BlkW=1;
+                        	w_txt(".");
+                        	w_int(&dis_ip[2],SSS);
+                            if(Y_menu2==3) BlkW=1;
+                        	w_txt(".");
+                        	w_int(&dis_ip[3],SSS);
+
+
+							//w_txt(Mes206);
+                        	//w_int(&GD.Control.Screener,SSS);
+//						}
+                       return;
+//				}
+//                if(ByteZ > 1)	x_menu=0;
+//				pmReset();
+
+
+/*	if ((Y_menu2%4)==2) BlkW=1;
+	w_txt(Mes224);
+	if (x_menu > cSTimer) x_menu=0;
+	if (!x_menu) {
+		return;
+		}
+    Ad_Buf=Str2;
+    ByteZ=x_menu-1;
+	if(Y_menu2 > SUM_NAME_TIMER) Y_menu2=0;
+	if(Y_menu2 >=SUM_NAME_TIMER) Y_menu2=SUM_NAME_TIMER-1;
+	w_txt(FWVersion);
+	Ad_Buf=Str3;
+	buf[Ad_Buf++]='(';
+	w_int(&UDPout1,SSS);
+	buf[Ad_Buf++]=',';
+	w_int(&UDPout2,SSS);
+	buf[Ad_Buf++]=',';
+	w_int(&UDPout3,SSSS);
+	buf[Ad_Buf++]=')';
+
+	return;*/
 }
 
 void YMenu(char vPozY) {
@@ -889,6 +1218,7 @@ char pozY;
 	if(!(--pozY))	{ pmParMechanic();	return; }
 	// NEW
 	if(!(--pozY))	{ pmVersion();	return; }
+	if(!(--pozY))	{ pmEtherConnect();	return; }
 	SumYMenu=vPozY-pozY;
 	if(Y_menu > SumYMenu) Y_menu=SumYMenu;
 }

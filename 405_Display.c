@@ -88,7 +88,8 @@ void KeyBoard(void) {
                 }
           }
 }
-/*---------------------------------------------------
+
+/*--------------------------------------------------
         Вывод текста в буфер
 ----------------------------------------------------*/
 void w_txt(char code *bu)
@@ -99,13 +100,33 @@ if(GD.Control.Language)
 	vu=bu;
 	while((*vu)) if((*(vu++))=='#') {bu=vu;break;}
 	}
-while((*bu)&&((*bu)!='#')) {buf[Ad_Buf++]=(*(bu++));};
+    while((*bu)&&((*bu)!='#')) {buf[Ad_Buf++]=(*(bu++));};
+	//while((*bu)&&((*bu)!='#')) {buf[Ad_Buf++]=charTable[(int)*bu++];};
 }
+
 /*void w_txt(char code *bu)
         {
         while((*bu)) {buf[Ad_Buf++]=(*(bu++));};
         }
 */
+
+/*--------------------------------------------------
+        Вывод текста в буфер
+----------------------------------------------------*/
+/*void w_txt_new(char *bu)
+{
+char code *vu;
+if(GD.Control.Language)
+	{
+	vu=bu;
+	while((*vu)) if((*(vu++))=='#') {bu=vu;break;}
+	}
+//while((*bu)&&((*bu)!='#')) {buf[Ad_Buf++]=(*(bu++));};
+	while((*bu)&&((*bu)!='#'))
+	{
+		buf[Ad_Buf++]=charTable[(int)*bu++];
+	};
+}*/
 
 
 

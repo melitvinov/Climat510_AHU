@@ -1,5 +1,7 @@
 #pragma pack(1)
 
+int volatile startFlag;
+
 typedef struct eeCalSensor {
 	uint8_t		Type;
 	uint8_t		nInput;
@@ -153,11 +155,11 @@ typedef struct eeNextTCalc {
 				int16_t		dSumCalcF;//Понижают осадки	12
 
 				int16_t		DiffCO2;//Корректирующий коэффициент в зависимости от колебательных процессов	14
-				int16_t		TVentCritery;//Изменяет экран	16
+				int16_t		TVentCritery;//
 				int16_t		PCorrection;//Коррекция управляющей функции по 1 разности	18
 
 				int16_t		Critery;//Цель-изменить теплоноситель на	20
-				int16_t		ICorrectionVent;//Прогноз температуры (для приоритетов)	22
+				int16_t		ICorrectionVent; // RH рукава ДЕРЖАТЬ
 				
 				int16_t		dSumCalc;//Приращение внешних влияний	24
 				
@@ -216,11 +218,14 @@ typedef struct eeTepl	{
 
 				uchar		tempParamHeat;  // new
 				uchar		tempParamVent;  // new
-				uint16_t 	tempHeat;  // new
-				uint16_t 	tempVent;  // new
+				uint16_t 	tempHeat;  		// new
+				uint16_t 	tempVent;  		// new
 
-				int16_t		Rez1[29];
-				//int16_t		Rez1[32];
+				uint16_t	Light50;
+				uint16_t	Light100;
+				uint16_t	CurrentStratSys;
+
+				int16_t		Rez1[26];  // 27
 
 				int16_t		MaxReqWater;
 				int16_t		Rez[9];
@@ -247,6 +252,7 @@ typedef struct eeHot {
 //50
 				uchar		isLight;
 				uchar		blockCO2;
+
 				uchar		Rez[4];
 				int16_t		MidlSR;
 				int16_t		MidlWind;
@@ -258,7 +264,8 @@ typedef struct eeHot {
 				uchar 		Demo;
 /***************************************/				
 				eTepl 		Tepl[cSTepl];
-				int16_t		Rez2[10];
+
+				int16_t		Rez2[10];     // 10
 /***************************************/
 				} eHot;
 
@@ -334,7 +341,7 @@ typedef struct eeTuneClimate
                 Параметры-влияния на Тводы
 ------------------------------------*/
 
-		int8_t		f_MaxAngle;  /*Контур 1 - (Тзад-Тизм)начинает влиять при*/
+		int8_t		f_MaxAngle;  // Клапан AHU допустимое отклонение от датчика
 		int8_t		c_MullDown;  /*Контур 1 - (Тзад-Тизм)начинает влиять при*/
 		int8_t		f_DefOnUn;  /*Контур 1 - (Тзад-Тизм)влияет до*/
 
@@ -521,8 +528,16 @@ typedef struct eeTuneClimate
 		uchar		fUC_S3Level;
 		uchar		fUC_Offset4;
 
-		int8_t     Rez[11];
-//		int16_t     Rez[9];  // было 14
+		uchar		vAHU_MinTempr;
+		uchar		vAHU_MaxTempr;
+
+		int16_t     CriteryLevel;
+
+		uchar		MaxAHUspeed;   		// коррекция скорости по ветру
+		uchar		MaxAHUwindSpeed;    // максимальный ветер для коррекции скорости по ветру
+
+		int8_t      Rez[6];  // 8
+
 //280		
        }
         eTuneClimate;
@@ -547,8 +562,11 @@ typedef struct eeTeplControl
 		uint16_t	sLight;
 		int8_t		sensT_heat;
 		int8_t		sensT_vent;
+		uint16_t	tempPipe3;
+		uint16_t	InRHMax;
+		uint16_t	InRHMin;
 
-		int16_t		Rez[19];
+		int16_t		Rez[16];
 //+42 байта
 		} eTeplControl;
 
@@ -570,7 +588,10 @@ typedef struct eeControl
 		uint8_t			Screener;
 		uint8_t			Cod;
 	//	uint8_t			Saverez;
-        int16_t     		Rez[5];
+
+		uint8_t			TimeCorrection;
+		int8_t     		Rez[9];
+		//int16_t     		Rez[5];
 	
 	} eControl;
 
@@ -592,48 +613,53 @@ typedef struct eeControl
 
 typedef struct eeStrategy
 	{
-//	int8_t StratAHUvalve1;  	// T>Tset, RH>RHset. Клапан AHU
-//	int8_t StratAHUvalve2;		// T>Tset, RH<RHset. Клапан AHU
-//	int8_t StratAHUvalve3;		// T<Tset, RH>RHset. Клапан AHU
-//	int8_t StratAHUvalve4;		// T<Tset, RH<RHset. Клапан AHU
+	int8_t StratAHUvalve1[2];  		// T>Tset, RH>RHset. Клапан AHU
+	int8_t StratAHUvalve2[2];		// T>Tset, RH<RHset. Клапан AHU
+	int8_t StratAHUvalve3[2];		// T<Tset, RH>RHset. Клапан AHU
+	int8_t StratAHUvalve4[2];		// T<Tset, RH<RHset. Клапан AHU
 
-//	int8_t StratKontur1_1; 		// T>Tset, RH>RHset. Контур 1
-//	int8_t StratKontur1_2;		// T>Tset, RH<RHset. Контур 1
-//	int8_t StratKontur1_3;		// T<Tset, RH>RHset. Контур 1
-//	int8_t StratKontur1_4;		// T<Tset, RH<RHset. Контур 1
+	int8_t StratKontur1_1[2]; 		// T>Tset, RH>RHset. Контур 1		RailPipe
+	int8_t StratKontur1_2[2];		// T>Tset, RH<RHset. Контур 1
+	int8_t StratKontur1_3[2];		// T<Tset, RH>RHset. Контур 1
+	int8_t StratKontur1_4[2];		// T<Tset, RH<RHset. Контур 1
 
-//	int8_t StratKontur2_1;		// T>Tset, RH>RHset. Контур 2
-//	int8_t StratKontur2_2;		// T>Tset, RH<RHset. Контур 2
-//	int8_t StratKontur2_3;		// T<Tset, RH>RHset. Контур 2
-//	int8_t StratKontur2_4;		// T<Tset, RH<RHset. Контур 2
+	int8_t StratKontur2_1[2];		// T>Tset, RH>RHset. Контур 2		HeadPipe
+	int8_t StratKontur2_2[2];		// T>Tset, RH<RHset. Контур 2
+	int8_t StratKontur2_3[2];		// T<Tset, RH>RHset. Контур 2
+	int8_t StratKontur2_4[2];		// T<Tset, RH<RHset. Контур 2
 
-//	int8_t StratKontur3_1;		// T>Tset, RH>RHset. Контур 3
-//	int8_t StratKontur3_2;		// T>Tset, RH<RHset. Контур 3
-//	int8_t StratKontur3_3;		// T<Tset, RH>RHset. Контур 3
-//	int8_t StratKontur3_4;		// T<Tset, RH<RHset. Контур 3
+	int8_t StratKontur3_1[2];		// T>Tset, RH>RHset. Контур 3		AHUPipe
+	int8_t StratKontur3_2[2];		// T>Tset, RH<RHset. Контур 3
+	int8_t StratKontur3_3[2];		// T<Tset, RH>RHset. Контур 3
+	int8_t StratKontur3_4[2];		// T<Tset, RH<RHset. Контур 3
 
-//	int8_t StratTermoScreen1;	// T>Tset, RH>RHset. Экран термический
-//	int8_t StratTermoScreen2;	// T>Tset, RH<RHset. Экран термический
-//	int8_t StratTermoScreen3;	// T<Tset, RH>RHset. Экран термический
-//	int8_t StratTermoScreen4;	// T<Tset, RH<RHset. Экран термический
+	int8_t StratTermoScreen1[2];	// T>Tset, RH>RHset. Экран термический
+	int8_t StratTermoScreen2[2];	// T>Tset, RH<RHset. Экран термический
+	int8_t StratTermoScreen3[2];	// T<Tset, RH>RHset. Экран термический
+	int8_t StratTermoScreen4[2];	// T<Tset, RH<RHset. Экран термический
 
-//	int8_t StratAHUspeed1;		// T>Tset, RH>RHset. Скорость AHU
-//	int8_t StratAHUspeed2;		// T>Tset, RH<RHset. Скорость AHU
-//	int8_t StratAHUspeed3;		// T<Tset, RH>RHset. Скорость AHU
-//	int8_t StratAHUspeed4;		// T<Tset, RH<RHset. Скорость AHU
+	int8_t StratAHUspeed1[2];		// T>Tset, RH>RHset. Скорость AHU
+	int8_t StratAHUspeed2[2];		// T>Tset, RH<RHset. Скорость AHU
+	int8_t StratAHUspeed3[2];		// T<Tset, RH>RHset. Скорость AHU
+	int8_t StratAHUspeed4[2];		// T<Tset, RH<RHset. Скорость AHU
 
-//	int8_t StratPressReg1;		// T>Tset, RH>RHset. Регулятор давления
-//	int8_t StratPressReg2;		// T>Tset, RH<RHset. Регулятор давления
-//	int8_t StratPressReg3;		// T<Tset, RH>RHset. Регулятор давления
-//	int8_t StratPressReg4;		// T<Tset, RH<RHset. Регулятор давления
+	int8_t StratPressReg1[2];		// T>Tset, RH>RHset. Регулятор давления  // увлажнение		Mist
+	int8_t StratPressReg2[2];		// T>Tset, RH<RHset. Регулятор давления
+	int8_t StratPressReg3[2];		// T<Tset, RH>RHset. Регулятор давления
+	int8_t StratPressReg4[2];		// T<Tset, RH<RHset. Регулятор давления
 
-	int8_t TempPower;
-	int8_t RHPower;
-	int8_t OptimalPower;
-	int8_t Economic;
-	int8_t Powers;
-	int8_t Separate;
-	int8_t KonturHelp;
+	int8_t StratInRH1[2];			// T>Tset, RH>RHset. Внутренние увлажнение
+	int8_t StratInRH2[2];			// T>Tset, RH<RHset. Внутренние увлажнение
+	int8_t StratInRH3[2];			// T<Tset, RH>RHset. Внутренние увлажнение
+	int8_t StratInRH4[2];			// T<Tset, RH<RHset. Внутренние увлажнение
+
+//	int8_t TempPower;
+//	int8_t RHPower;
+//	int8_t OptimalPower;
+//	int8_t Economic;
+//	int8_t Powers;
+//	int8_t Separate;
+//	int8_t KonturHelp;
 
 	} eStrategy;
 #endif
@@ -729,7 +755,7 @@ typedef struct eeTControlTepl
 		eSystems		Systems[cSUCSystems];
 		int32_t 		SaveIntegralVent;
 		int32_t 		Integral;
-		int16_t			TVentCritery;//Critery;
+		int16_t			TVentCritery; // Т рукава ДЕРЖАТЬ;
 		int16_t			Critery;
 		int32_t			IntegralVent;
 		int32_t			SaveIntegral;
@@ -739,7 +765,7 @@ typedef struct eeTControlTepl
 		int16_t				AbsMaxVent;
 		int16_t				LastTVentCritery;
 		int16_t				LastCritery;
-		int16_t				IntVal[cSRegCtrl];
+		int32_t				IntVal[cSRegCtrl];
 //36
 //		int16_t				PrevSig[cSWaterKontur];
 //46
@@ -765,7 +791,12 @@ typedef struct eeTControlTepl
 		int16_t			nReset;
 		int16_t			COPosition;
 		
-		int32_t			Rez3[2];
+		int16_t			InRHMode;
+		int16_t			InRHStatus;
+
+
+		int32_t			Rez3[1];	// 2
+
 //141
 
 //143
@@ -884,7 +915,8 @@ struct  eGData{
         eFullCal        Cal;
         eTimer          Timer[cSTimer];
 		eConstMech		ConstMechanic[cSTepl];
-		eStrategy		Strategy[cSTepl][cSStrategy];
+		//eStrategy		Strategy[cSTepl][cSStrategy]; // NEW strat
+		eStrategy		Strategy[cSTepl];
 		eMechConfig		MechConfig[cSTepl];
 		eTuneClimate	TuneClimate;		
         eTControl       TControl;
@@ -934,8 +966,10 @@ void InitBlockEEP(void){
         BlockEEP[2].AdrCopyRAM=&GD.TuneClimate;
         BlockEEP[2].Size=(sizeof(eTuneClimate));
 
-        BlockEEP[3].AdrCopyRAM=&GD.Strategy[0][0];
-        BlockEEP[3].Size=(sizeof(eStrategy)*cSStrategy*cSTepl);
+        //BlockEEP[3].AdrCopyRAM=&GD.Strategy[0][0];	// NEW strat
+        //BlockEEP[3].Size=(sizeof(eStrategy)*cSStrategy*cSTepl);   // NEW strat
+        BlockEEP[3].AdrCopyRAM=&GD.Strategy[0];
+        BlockEEP[3].Size=(sizeof(eStrategy)*cSTepl);
 
         BlockEEP[4].AdrCopyRAM=&GD.MechConfig[0];
         BlockEEP[4].Size=(sizeof(eMechConfig)*cSTepl);
@@ -960,7 +994,8 @@ void ButtonReset(void) {
         AdrGD[3/*cblTuneClimate*/].Adr=&GD.TuneClimate;
         AdrGD[3].MaxSize=sizeof(eTuneClimate);
         AdrGD[4/*cblStrategy*/].Adr=&GD.Strategy[0];
-        AdrGD[4].MaxSize=sizeof(eStrategy)*cSTepl*cSStrategy;
+        //AdrGD[4].MaxSize=sizeof(eStrategy)*cSTepl*cSStrategy;   // NEW strat
+        AdrGD[4].MaxSize=sizeof(eStrategy)*cSTepl;
         AdrGD[5/*cblMechConfig*/].Adr=&GD.MechConfig[0];
         AdrGD[5].MaxSize=sizeof(eMechConfig)*cSTepl;
         AdrGD[6/*cblCal*/].Adr=&GD.Cal;
@@ -984,23 +1019,4 @@ void ButtonReset(void) {
         ClrDog;
         GD.Control.rSTepl=GD.Control.ConfSTepl;//cNowSTepl;		
         GD.Control.rVersion=cVersion;
-}
-
-// дефолтные установки параметров
-void defaultSettings(void)
-{
-	if (GD.TuneClimate.fUC_Offset1 == 0)
-		GD.TuneClimate.fUC_Offset1 = 2;
-	if (GD.TuneClimate.fUC_S1Level == 0)
-		GD.TuneClimate.fUC_S1Level = 20;
-	if (GD.TuneClimate.fUC_Offset2 == 0)
-		GD.TuneClimate.fUC_Offset2 = 2;
-	if (GD.TuneClimate.fUC_S2Level == 0)
-		GD.TuneClimate.fUC_S2Level = 50;
-	if (GD.TuneClimate.fUC_Offset3 == 0)
-		GD.TuneClimate.fUC_Offset3 = 4;
-	if (GD.TuneClimate.fUC_S3Level == 0)
-		GD.TuneClimate.fUC_S3Level = 80;
-	if (GD.TuneClimate.fUC_Offset4 == 0)
-		GD.TuneClimate.fUC_Offset4 = 6;
 }

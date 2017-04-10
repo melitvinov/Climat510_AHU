@@ -532,10 +532,10 @@ int16_t RS485_Master_ReadType(uint8_t fNCtr, uint8_t*  fIdent)
 
 
 uint16_t GetIPCComMod(uint16_t nAddress) {
-	return nAddress/100;
+	return nAddress/100;						// номер модуля 0-15
 	}
 uint16_t GetIPCNum(uint16_t nAddress) {
-	return nAddress%100;
+	return nAddress%100;						// номер входа модуля
 	}
 
 
@@ -561,12 +561,16 @@ void SetOutIPCDigit(char How, uint16_t nAddress,char* nErr)
 {
 uint32_t vCpM,bOut,i;
 //TODO
-	vCpM=GetIPCComMod(nAddress);
+	volatile adr = 0;
+	adr = nAddress;
+	//vCpM=GetIPCComMod(nAddress);
+	vCpM=GetIPCComMod(adr);
 	if(!vCpM) return;
 	if(vCpM/100==6) return;
 
 	for (i=0; i< OUT_MODUL_SUM; i++) {
-		if(!ModulData[i].CpM) ModulData[i].CpM=vCpM;
+		if(!ModulData[i].CpM)
+			ModulData[i].CpM=vCpM;
 		if(vCpM == ModulData[i].CpM)	{
 			bOut=1;
 			bOut <<= GetIPCNum(nAddress)-1;
@@ -589,7 +593,8 @@ uint32_t vCpM,bOut,i;
 	if(vCpM/100==6) return;
 
 	for (i=0; i< OUT_MODUL_SUM; i++) {
-		if(!ModulData[i].CpM) ModulData[i].CpM=vCpM;
+		if(!ModulData[i].CpM)
+			ModulData[i].CpM=vCpM;
 		if(vCpM == ModulData[i].CpM)	{
 			bOut=GetIPCNum(nAddress)-1;
 			if (bOut>=MAX_OUT_REG)
@@ -637,10 +642,11 @@ uint16_t vCpM,bOut,i,j,vInput;
 	vInput=GetIPCNum(nAddress);
 	if (!vInput) {*nErr=-1; return 0;}
 	for (i=0; i< OUT_MODUL_SUM; i++) {
-		if(!ModulData[i].CpM) ModulData[i].CpM=vCpM;
+		if(!ModulData[i].CpM)
+			ModulData[i].CpM=vCpM;
 		if(vCpM == ModulData[i].CpM)	{
 			*nErr=ModulData[i].Err;
-			return ModulData[i].InValues[vInput-1];
+			return ModulData[i].InValues[vInput-1];	 // измерение с датчика
 			}
 		}
 	*nErr=0;
@@ -658,10 +664,11 @@ uint16_t vCpM,bOut,i,j,vInput;
 	vInput=GetIPCNum(nAddress);
 	if (!vInput) {*nErr=-1; return 0;}
 	for (i=0; i< OUT_MODUL_SUM; i++) {
-		if(!ModulData[i].CpM) ModulData[i].CpM=vCpM;
+		if(!ModulData[i].CpM)
+			ModulData[i].CpM=vCpM;
 		if(vCpM == ModulData[i].CpM)	{
 			*nErr=ModulData[i].Err;
-			if ((ModulData[i].InValues[vInput-1]>2500)&&(ModulData[i].Err<iMODULE_MAX_ERR))
+			if ((ModulData[i].InValues[vInput-1]>4000)&&(ModulData[i].Err<iMODULE_MAX_ERR))
 				return 1;
 			else
 				return 0;
@@ -682,7 +689,8 @@ uint16_t UpdateInIPC(uint16_t nAddress,TIModulConf* ModulConf)
 	vInput=GetIPCNum(nAddress);
 	if (!vInput) return 0;
 	for (i=0; i< OUT_MODUL_SUM; i++) {
-		if(!ModulData[i].CpM) ModulData[i].CpM=vCpM;
+		if(!ModulData[i].CpM)
+			ModulData[i].CpM=vCpM;
 		if(vCpM == ModulData[i].CpM)	{
 //			if ((NoSameBuf(((char*)(&ModulData[i].InConfig[vInput-1]))+2,((char*)ModulConf)+2,2/*sizeof(TIModulConf)-2*/)) //без калибровок
 //				||(ModulData[i].InConfig[vInput-1].Type!=ModulConf->Type))
@@ -697,7 +705,7 @@ uint16_t UpdateInIPC(uint16_t nAddress,TIModulConf* ModulConf)
 					((char*)(&ModulData[i].InConfig[vInput-1]))[j]=((char*)(ModulConf))[j];
 				}
 			}*/
-			//********************** НАДО УБРАТЬ *****************************
+			//********************** НАДО УБРАТЬ *****************************   // оставляем пока
 						for(k=0;k<32;k++)
 						{
 
@@ -792,6 +800,8 @@ void SendIPC(uint8_t *fErrModule)
 		ModulData[0].OutValues=0x0f0f1f;
 	RS485_Master_WriteDataIRQ(122,0,4,&ModulData[0].OutValues,3,&ModulData[0].Cond,0);
 	return;*/
+	//if (ModulData[cModule].InConfig[] )
+
 	if 	(bOutIPCBlock) return;
 	if (PHASE_RS_OUT!=RSOUT_INIT)
 	{

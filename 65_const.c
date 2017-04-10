@@ -4,7 +4,45 @@
 ********************************
 ------------------------------*/
 
-#define FWVersion		"ver.09/15.2.00.11" // изменения в работе клапана UC
+#define FWVersion		"ver.09/15.2.00.65"
+											// 65 - другой расчет влажности рукава
+											// 61 Итоговое направление ветра с учетом расроложения теплицы переписал
+											// 60 очередная попытка ограничить Critery, убран учет датчики темп 2 из расчета экрана
+											// 59 T рукава стартует с Е воздухо ДЕРЖАТЬ, при этом просто устанавливается IntegralVent
+											// 58 коррекция скорости AHU, вторая зона уменьшает скорость и новый расчет по стратегии
+											// 57 коррекция скорости AHU в зависимости от ветра
+											// 56 - вернул прежний расчет влажности рукава
+											// 55 - убрал Criter
+											// 54 - другой расчет RH рукава
+											// 53 огранич Critery
+											// 52 Старт Т ркава держать, огранич Critery
+											// 51 Critery ограничение
+											// 50 при измерении входов нужно сделать порог более 4500
+											// 49 рукав, досветка, 45 измен Critery, Control - saveSettings
+											// 48 досветка, стратегия, рукав
+											// 47 нет
+											// 46 компенсация досветки по входам от досветки 50 и 100
+											// 45 ограничение расчета Critery
+											// убрал 41 изменения
+											// 43 поменял код в части выбора приоритета нижнего и верхнего контура
+											// 42 Верхний и нижний контур по другому считаются
+											// 41 тестовое сделали минимум рукава как температура для отопления, изменен расчет для рукава
+											// Досветка по заданию вкл - 50 или 100 теперь работает
+											// проблема в измерении входов досветки 50 и 100
+											// при измерении досветки 50 и 100 нужно смотреть пороги
+											// Ошибка в кол-ве мех было cSRegCtrl 24, надо 25
+											// Досветка 50 и 100
+											// поправил сброс
+											// источники отопления и вент при сбросе параметров устан в 257
+											// Внутренее увлажнение и исправленный ШИМ увлажнения панели
+											// Поправил свет как в обычном климате
+											// Тестовая выгрузка данных с контроллера
+											// TakeForSys сделал проверку если при делении на 1000 = 0 то pGD_TControl_Tepl->Systems[fnMSys].Power = 1000
+											// добавил вывод состояния для разбора ситуации с клапаном
+											// работа вентил рукава по двум датчикам
+											// проверка адекватности датчика температуры выхода AHU
+											// испрвлен сброс конфигурации, вывод стратегии, вернул ресет если нет ответов от модуля
+											// подругому считываю датчик темп рукава
 
 #define NameProg        "\310\252\245TO-K\247\245MAT\311"
 #define Proect          "FC325-K-II-"
@@ -16,7 +54,7 @@
 #define	cMaxStopI		20	 
 
 #define cResetCritery	150
-#define cResetDifTDo	100
+#define cResetDifTDo	100  	// new 100
 
 
 #define cMinRain		5
@@ -36,6 +74,9 @@
 #define cSTimer			40
 /*Количество программ для задания*/			
 
+#define cSStrat			8
+/*Количество параметров стратегий*/
+
 #define cSTimerSave		20
 /*Количество программ для задания*/			
 
@@ -45,21 +86,24 @@
 
 /*Количество контуров 1-5 - вода,6 - подветренная сторона, 7 - наветренная сторона*/
 
-
-#define cSUCSystems		8
+#warning NEW INRH
+//#define cSUCSystems		8
+#define cSUCSystems		9
 #ifdef AHU
-#define cSStrategy		cSUCSystems
+//#define cSStrategy		cSUCSystems     // NEW Strat
 #define cSPipeSystems	4
 
 
 #define cSysAHUPipe			0
 #define cSysRailPipe		1
 #define cSysHeadPipe		2
-#define cSysSidePipe		3
+#define cSysTHose			3
 #define cSysUCValve			4
 #define cSysScreen			5
 #define cSysAHUSpeed		6
 #define cSysMist			7
+#define cSysInRH			8
+
 
 #define SYS_GO_UP			1
 #define SYS_GO_DOWN			0
@@ -71,7 +115,7 @@
 
 
 #else
-#define cSStrategy		8
+//#define cSStrategy		8
 #endif
 /*Количество контуров 1-5 - фрамуги,экран,СИО*/
 //#define cSMechanic		10
@@ -106,6 +150,8 @@
 #define f_MaxTFreeze		500
 #define f_StartWind			500
 #define f_StormPause		60
+
+#define MINPIPETEMPER		1400
 
 #define c_MaxWaterOff		5000
 
@@ -477,7 +523,7 @@ char NowDayOfWeek;
 
 
 /*-----------------------------*/
-typedef struct eeDefStrategy {
+/*typedef struct eeDefStrategy {
 		char TempPower;
 		char RHPower;
 		char OptimalPower;
@@ -486,7 +532,7 @@ typedef struct eeDefStrategy {
 		char Separate;	
 		char KonturHelp;
 		} eDefStrategy;
-
+*/
 
 /*typedef struct eeNameLev {
         char Name[12];
@@ -517,7 +563,7 @@ typedef struct  eeNameConst {
         } eNameConst;
 
 
-eDefStrategy code DefStrategy[]={
+/*eDefStrategy code DefStrategy[]={
 {40,	0,	20,	0,	50,	0,	0},
 {60,	0,	20,	0,	30,	0,	0},
 {30,	0,	20,	0,	15,	0,	0},
@@ -526,7 +572,18 @@ eDefStrategy code DefStrategy[]={
 {80,	0,	1,	0,	25,	0,	0},
 {0,		0,	0,	0,	0,	0,	0},
 {0,		0,	0,	0,	0,	0,	0}
-};
+};*/
+
+int code DefStrategy[]= {
+        //st   way
+          10,	1, 	8, 	1,	8, 	0, 	10,	0,      // AHU valve
+          9, 	0, 	10,	0,	10,	1, 	9, 	1,		// RailPipe
+          10, 	0, 	9,	0,	9,	1, 	10,	1,		// HeadPipe
+          8,	0, 	10,	0,	9,	1, 	8,	1,		// AHUPipe
+          9,	1, 	7,	1,	7,	0, 	9,	0,		// Screen
+          6,	1, 	6,	1,	6,	0, 	6,	0,		// AHUSpeed
+          7,	1, 	9,	1,	10,	0, 	7,	0,	    // Mist
+		  5,	1, 	9,	1,	10,	0, 	7,	0,};	// Internal RH
 
 int code DefMechanic[]={
 60,
@@ -765,7 +822,24 @@ eNameConst code NameConst[]={
 {60,SSSi},
 
 {5,SSSpS},
-{0,SSSi}
+{0,SSSi},
+
+
+{4,SSSS},
+{4,SSSS},
+{4,SSSS},
+{4,SSSS},
+{4,SSSS},
+{4,SSSS},
+{4,SSSS},
+{4,SSSS},
+{4,SSSS},
+{4,SSSS},
+{4,SSSS},
+{4,SSSS},
+{4,SSSS}
+
+
 };
 
 
@@ -795,7 +869,8 @@ uint16_t code DefControl[]={
 100,
 1,
 4,
-1
+1,
+257
 };
 
 

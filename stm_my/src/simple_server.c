@@ -90,7 +90,7 @@ void BufCpy(char *pp1, char *pp2, int n) { //dest,source,number
 unsigned char analyse_get_url(char *str)
 	{
 	unsigned char i=0;
-	if (verify_password(str)==0)
+	//if (verify_password(str)==0)
 		{
 		return(-1);
 		}
@@ -315,3 +315,259 @@ int simple_server(eAdrGD* fADRGD,uint8_t* fSostEth,uint8_t* nBlock, uint8_t* fIP
 	//init the ethernet/ip layer:
 //        return (0);
 	}
+
+static uint8_t dis_mac[6] = {0xff,0xff,0xff,0xff,0xff,0xff};
+//static uint8_t dis_ip[4] = {192,168,1,106};
+
+static uint8_t ipnetmask[4]={255,255,255,0};
+
+static uint8_t ipid=0x2; // IP-identification, it works as well if you do not change it but it is better to fill the field, we count this number up and wrap.
+const uint8_t iphdr[] ={0x45,0,0,0x82,0,0,0x40,0,0x20}; // 0x82 is the total len on ip, 0x20 is ttl (time to live), the second 0,0 is IP-identification and may be changed.
+const char ntpreqhdr[] ={0xe3,0,4,0xfa,0,1,0,0,0,1};
+
+#define ETH_HEADER_LEN	14
+// values of certain bytes:
+#define ETHTYPE_ARP_H_V 0x08
+#define ETHTYPE_ARP_L_V 0x06
+#define ETHTYPE_IP_H_V  0x08
+#define ETHTYPE_IP_L_V  0x00
+
+// ******* IP *******
+#define IP_HEADER_LEN	20
+// ip.src
+#define IP_SRC_P 0x1a
+#define IP_DST_P 0x1e
+#define IP_HEADER_LEN_VER_P 0xe
+#define IP_CHECKSUM_P 0x18
+#define IP_TTL_P 0x16
+#define IP_FLAGS_P 0x14
+#define IP_P 0xe
+#define IP_TOTLEN_H_P 0x10
+#define IP_TOTLEN_L_P 0x11
+#define IP_ID_H_P 0x12
+#define IP_ID_L_P 0x13
+
+#define IP_PROTO_P 0x17
+
+#define IP_PROTO_ICMP_V 1
+#define IP_PROTO_TCP_V 6
+// 17=0x11
+#define IP_PROTO_UDP_V 17
+
+void fill_buf_p(uint8_t *buf,uint16_t len, const uint8_t *progmem_s)
+{
+        while (len){
+                *buf= pgm_read_byte(progmem_s);
+                buf++;
+                progmem_s++;
+                len--;
+        }
+}
+
+void client_ntp_request(uint8_t *buf,uint8_t *ntpip,uint8_t srcport,uint8_t *dstmac)
+{
+        uint8_t i=0;
+        uint16_t ck;
+        //
+        while(i<6){
+                buf[ETH_DST_MAC +i]=dstmac[i]; // gw mac in local lan or host mac
+                buf[ETH_SRC_MAC +i]=macaddr[i];
+                i++;
+        }
+        buf[ETH_TYPE_H_P] = ETHTYPE_IP_H_V;
+        buf[ETH_TYPE_L_P] = ETHTYPE_IP_L_V;
+        fill_buf_p(&buf[IP_P],9,iphdr);
+        buf[IP_ID_L_P]=ipid; ipid++;
+        buf[IP_TOTLEN_L_P]=0x4c;
+        buf[IP_PROTO_P]=IP_PROTO_UDP_V;
+        i=0;
+        while(i<4){
+                buf[IP_DST_P+i]=ntpip[i];
+                buf[IP_SRC_P+i]=ipaddr[i];
+                i++;
+        }
+        fill_ip_hdr_checksum(buf);
+        buf[UDP_DST_PORT_H_P]=0;
+        buf[UDP_DST_PORT_L_P]=0x7b; // ntp=123
+        buf[UDP_SRC_PORT_H_P]=10;
+        buf[UDP_SRC_PORT_L_P]=srcport; // lower 8 bit of src port
+        buf[UDP_LEN_H_P]=0;
+        buf[UDP_LEN_L_P]=56; // fixed len
+        // zero the checksum
+        buf[UDP_CHECKSUM_H_P]=0;
+        buf[UDP_CHECKSUM_L_P]=0;
+        // copy the data:
+        i=0;
+        // most fields are zero, here we zero everything and fill later
+        while(i<48){
+                buf[UDP_DATA_P+i]=0;
+                i++;
+        }
+        fill_buf_p(&buf[UDP_DATA_P],10,ntpreqhdr);
+        //
+        ck=checksum(&buf[IP_SRC_P], 16 + 48,1);
+        buf[UDP_CHECKSUM_H_P]=ck>>8;
+        buf[UDP_CHECKSUM_L_P]=ck& 0xff;
+        enc28j60PacketSend(90,buf);
+}
+
+void send_udp_prepare(uint8_t *buf,uint16_t sport, const uint8_t *dip, uint16_t dport,const uint8_t *dstmac)
+{
+        uint8_t i=0;
+        //
+        while(i<6){
+                buf[ETH_DST_MAC +i]=dstmac[i]; // gw mac in local lan or host mac  //fc-75-16-4e-59-43
+                buf[ETH_SRC_MAC +i]=macaddr[i];
+                i++;
+        }
+        buf[ETH_TYPE_H_P] = ETHTYPE_IP_H_V;
+        buf[ETH_TYPE_L_P] = ETHTYPE_IP_L_V;
+        fill_buf_p(&buf[IP_P],9,iphdr);
+        buf[IP_ID_L_P]=ipid; ipid++;
+        // total length field in the IP header must be set:
+        buf[IP_TOTLEN_H_P]=0;
+        // done in transmit: buf[IP_TOTLEN_L_P]=IP_HEADER_LEN+UDP_HEADER_LEN+datalen;
+        buf[IP_PROTO_P]=IP_PROTO_UDP_V;
+        i=0;
+        while(i<4){
+                buf[IP_DST_P+i]=dip[i];
+                buf[IP_SRC_P+i]=ipaddr[i];
+                i++;
+        }
+        // done in transmit: fill_ip_hdr_checksum(buf);
+        buf[UDP_DST_PORT_H_P]=(dport>>8);
+        buf[UDP_DST_PORT_L_P]=0xff&dport;
+        buf[UDP_SRC_PORT_H_P]=(sport>>8);
+        buf[UDP_SRC_PORT_L_P]=sport&0xff;
+        buf[UDP_LEN_H_P]=0;
+        // done in transmit: buf[UDP_LEN_L_P]=UDP_HEADER_LEN+datalen;
+        // zero the checksum
+        buf[UDP_CHECKSUM_H_P]=0;
+        buf[UDP_CHECKSUM_L_P]=0;
+        // copy the data:
+        // now starting with the first byte at buf[UDP_DATA_P]
+        //
+}
+
+void send_udp_transmit(uint8_t *buf,uint16_t datalen)
+{
+        uint16_t tmp16;
+        tmp16=IP_HEADER_LEN+UDP_HEADER_LEN+datalen;
+        buf[IP_TOTLEN_L_P]=tmp16& 0xff;
+        buf[IP_TOTLEN_H_P]=tmp16>>8;
+        fill_ip_hdr_checksum(buf);
+        tmp16=UDP_HEADER_LEN+datalen;
+        buf[UDP_LEN_L_P]=tmp16& 0xff;
+        buf[UDP_LEN_H_P]=tmp16>>8;
+        //
+        tmp16=checksum(&buf[IP_SRC_P], 16 + datalen,1);
+        buf[UDP_CHECKSUM_L_P]=tmp16& 0xff;
+        buf[UDP_CHECKSUM_H_P]=tmp16>>8;
+        enc28j60PacketSend(UDP_HEADER_LEN+IP_HEADER_LEN+ETH_HEADER_LEN+datalen,buf);
+}
+
+int simple_client(eAdrGD* fADRGD,uint8_t* fSostEth,uint8_t* nBlock, uint8_t* fIPAddr,uint8_t* fMACAddr,uint8_t* fPORTNUMBER)
+	{
+	SPI1_Init();
+	pADRGD=fADRGD;
+	EthSost=fSostEth;
+	EthBlock=nBlock;
+	PORTNUMBER=fPORTNUMBER;
+	MACAddr=fMACAddr;
+	IPAddr=fIPAddr;
+	enc28j60Init(MACAddr);
+	enc28j60PhyWrite(PHLCON,0x476);
+	init_ip_arp_udp_tcp(MACAddr,fIPAddr,*PORTNUMBER);
+	//dat_p=packetloop_arp_icmp_tcp(buf,enc28j60PacketReceive(BUFFER_SIZE, buf));
+
+	buf[UDP_DATA_P]='H';
+	buf[UDP_DATA_P+1]='E';
+	buf[UDP_DATA_P+2]='L';
+	buf[UDP_DATA_P+3]='L';
+	buf[UDP_DATA_P+4]='O';
+	buf[UDP_DATA_P+5]=' ';
+	buf[UDP_DATA_P+6]='W';
+	buf[UDP_DATA_P+7]='O';
+	buf[UDP_DATA_P+8]='R';
+	buf[UDP_DATA_P+9]='L';
+	buf[UDP_DATA_P+10]='D';
+
+	//Sockets[0].IP_PHASE=0;
+
+    //make_tcp_ack_from_any(fbuf); // send ack for http get
+    //make_tcp_ack_with_data(fbuf,plen,0); // send data
+
+	send_udp_prepare(buf,5001,dis_ip,5001,dis_mac);
+	send_udp_transmit(buf,11);
+
+	}
+
+uint8_t UDPzoneOut = 0;
+uint8_t UDPzoneCount;
+uint8_t UDPstartSend;
+
+void UDPSendDataInit(void)
+{
+    UDPzoneCount = GD.Control.ConfSTepl;
+    UDPstartSend = 0;
+}
+
+void UDPStartSend(void)
+{
+	UDPstartSend =1;
+}
+
+void UDPSend(void)
+{
+	int countSensorInPack = 0;
+	if (UDPstartSend == 0) return;
+	int len, nSens;
+	enc28j60PhyWrite(PHLCON,0x476);
+	len = 0;
+	buf[UDP_DATA_P] = UDPzoneOut;
+	len++;
+    for(nSens=0;nSens<cConfSSens;nSens++)
+	{
+    	if (GD.Hot.Tepl[UDPzoneOut].InTeplSens[nSens].RCS == 0)
+        {
+    		UDPout3 = GD.Hot.Tepl[UDPzoneOut].InTeplSens[nSens].Value;
+        	buf[UDP_DATA_P+len] = (uint8_t)GD.Hot.Tepl[UDPzoneOut].InTeplSens[nSens].Value;
+        	if (UDPzoneOut == 0)
+        		UDPout1 = GD.Hot.Tepl[UDPzoneOut].InTeplSens[0].Value;
+        	len++;
+        	buf[UDP_DATA_P+len] = GD.Hot.Tepl[UDPzoneOut].InTeplSens[nSens].Value>>8;
+        	if (UDPzoneOut == 0)
+        		UDPout2 = GD.Hot.Tepl[UDPzoneOut].InTeplSens[0].Value>>8;
+        	len++;
+       	} else
+
+       	{
+       		buf[UDP_DATA_P+len] = 0xFF;
+       		len++;
+       		buf[UDP_DATA_P+len] = 0xFF;
+       		len++;
+       	}
+    	//buf[UDP_DATA_P+len] = ';';
+    	//len++;
+	}
+    UDPzoneOut++;
+    if (UDPzoneOut > UDPzoneCount)
+    {
+    	UDPzoneOut = 0;
+    	UDPstartSend = 0;
+    }
+
+/*	buf[UDP_DATA_P]='H';
+	buf[UDP_DATA_P+1]='E';
+	buf[UDP_DATA_P+2]='L';
+	buf[UDP_DATA_P+3]='L';
+	buf[UDP_DATA_P+4]='O';
+	buf[UDP_DATA_P+5]=' ';
+	buf[UDP_DATA_P+6]='W';
+	buf[UDP_DATA_P+7]='O';
+	buf[UDP_DATA_P+8]='R';
+	buf[UDP_DATA_P+9]='L';
+	buf[UDP_DATA_P+10]='D';  */
+	send_udp_prepare(buf,5001,dis_ip,5001,dis_mac);
+	send_udp_transmit(buf,len);
+}
