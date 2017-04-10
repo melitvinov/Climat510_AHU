@@ -537,6 +537,132 @@ int KeepFanSystem(char fnTepl)
 	maxT = GD.TuneClimate.vAHU_MaxTempr * 100;
 	miT = getTempOutAHU(fnTepl);
 	maT = getTempOutEndAHU(fnTepl);
+	if ((minT != 0) && (maxT != 0))	// если работает коррекция по двум датчикам в рукаве
+	{
+		delta = miT - maT;
+		if (delta < 0) delta = delta * -1;
+		tempKeep = delta * maxSpeed / maxT;
+		if (tempKeep > maxSpeed) tempKeep = maxSpeed;
+		if (tempKeep < minSpeed) tempKeep = minSpeed;
+	}
+	else // расчет как был
+	{
+		volatile int16_t Tout = 0;
+		volatile int16_t ToutTask = 0;
+		Tout = getTempOutAHU(fnTepl) / 100 ;
+		ToutTask = GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery / 100;
+		if (Tout > ToutTask)
+			tempKeep = Tout * (minSpeed * 1.5) / ToutTask;
+		else
+			tempKeep = minSpeed;
+		// было так
+		//tempKeep = pGD_TControl_Tepl->Systems[cSysAHUSpeed].Keep + pGD_Hot_Tepl->AllTask.AHUVent;
+	}
+
+	volatile int16_t windSpeed = 0;
+	volatile int16_t windDirect = 0;
+	volatile int16_t greenHousePos = 0;
+	volatile int16_t PosFluger = 0;
+	volatile int8_t MaxSpeedAHUwind = 0;
+	volatile int8_t MinWindSpeed = 0;
+	volatile int8_t MaxWindSpeed = 0;
+	volatile int16_t deltaSpeedWind = 0;
+	volatile float windSpeedCalc = 0;
+	volatile int16_t zone = 10;
+	volatile int16_t deltaW = 0;
+
+	MinWindSpeed = GD.TuneClimate.f_WindStart;
+	MaxSpeedAHUwind = GD.TuneClimate.MaxAHUspeed;
+	MaxWindSpeed = GD.TuneClimate.MaxAHUwindSpeed;
+	windSpeed = GD.Hot.MidlWind / 100;//GD.TControl.MeteoSensing[cSmVWindSens] / 100;
+	windDirect = GD.TControl.MeteoSensing[cSmDWindSens];
+	greenHousePos = GD.TuneClimate.o_TeplPosition;
+
+	//PosFluger = 90;
+	//windSpeed = 30;
+
+	if (GD.Hot.MidlWind<GD.TuneClimate.f_WindStart)
+	{
+		if (tempKeep > maxSpeed) tempKeep = maxSpeed;
+		if (tempKeep < minSpeed) tempKeep = minSpeed;
+		return tempKeep;
+	}
+
+	if ((MaxWindSpeed > 0) && (MaxSpeedAHUwind > 0))
+	{
+		if (greenHousePos != windDirect)
+		{
+			if (greenHousePos > windDirect)
+				PosFluger = greenHousePos - windDirect;
+			else
+				PosFluger = windDirect - greenHousePos;
+		}
+		else
+			PosFluger = windDirect;
+
+
+		tempKeep = 0;
+		if (PosFluger <= 180)
+		{
+			zone = 1;
+			if (PosFluger > 90)
+				PosFluger = 90 - (PosFluger - 90);
+		} else
+		{
+			zone = 0;
+			PosFluger = PosFluger - 180;
+			if (PosFluger > 90)
+				PosFluger = 90 - (PosFluger - 90);
+		}
+		//if (MaxWindSpeed > windSpeed)
+		//	deltaSpeedWind = MaxWindSpeed - MinWindSpeed;
+		//else
+		//	deltaSpeedWind = windSpeed - MinWindSpeed;
+		if (windSpeed >=MinWindSpeed)// && (windSpeed <= MaxWindSpeed))
+		{
+			if (MaxWindSpeed < windSpeed)
+				MaxWindSpeed = 	windSpeed;
+
+			windSpeedCalc = PosFluger * windSpeed / 90;   // скорость ветра от текущей позиции флугера и скорости ветра
+			tempKeep = windSpeedCalc * MaxSpeedAHUwind / MaxWindSpeed;   // увеличение скорости на вычесленный процент
+			deltaW = tempKeep;
+			tempKeep = minSpeed + tempKeep;
+		}
+		if (windSpeed < MinWindSpeed)
+			tempKeep = minSpeed;
+		if (windSpeed > MaxWindSpeed)
+			tempKeep = MaxSpeedAHUwind + minSpeed;
+		if (zone != fnTepl)
+			tempKeep = minSpeed - deltaW; // теперь уменьшаем скорость
+			//tempKeep = minSpeed;    // было так
+	}
+
+	// итоговая проверка на мин и мак скорость
+	if (tempKeep > maxSpeed) tempKeep = maxSpeed;
+	if (MaxSpeedAHUwind == 0)   // если усл коррекции скорости по ветру выкл то мин скорость как в задании
+		if (tempKeep < minSpeed) tempKeep = minSpeed;
+	return tempKeep;
+}
+
+
+/*int KeepFanSystem(char fnTepl)
+{
+	volatile int16_t tempKeep;
+	volatile int16_t newKeep;
+	volatile int16_t delta = 0;
+	volatile int16_t minT = 0;
+	volatile int16_t maxT = 0;
+	volatile int8_t minSpeed = 0;
+	volatile int8_t maxSpeed = 0;
+	volatile int16_t miT = 0;
+	volatile int16_t maT = 0;
+
+	minSpeed = GD.Hot.Tepl[fnTepl].AllTask.AHUVent;
+	maxSpeed = GD.Control.Tepl[fnTepl].f_MaxAHUSpd;
+	minT = GD.TuneClimate.vAHU_MinTempr * 100;
+	maxT = GD.TuneClimate.vAHU_MaxTempr * 100;
+	miT = getTempOutAHU(fnTepl);
+	maT = getTempOutEndAHU(fnTepl);
 	//delta = getTempOutAHU(fnTepl);
 	//delta = delta - getTempOutEndAHU(fnTepl);
 	delta = miT - maT;
@@ -547,7 +673,7 @@ int KeepFanSystem(char fnTepl)
 	return tempKeep;
 
 	//return pGD_TControl_Tepl->Systems[cSysAHUSpeed].Keep+pGD_Hot_Tepl->AllTask.AHUVent;
-}
+} */
 
 int KeepScreenSystem(void)
 {

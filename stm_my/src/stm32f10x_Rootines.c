@@ -870,9 +870,6 @@ void  CalibrNew(char nSArea,char nTepl, char nSens,int16_t Mes){
 	}
 }
 
-//int volatile LightArray[8];
-//int volatile LightArrayCount[8];
-
 void Measure()
 {
 	char tTepl,nSens;

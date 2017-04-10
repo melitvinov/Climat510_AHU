@@ -416,6 +416,11 @@ void SetPointersOnKontur(char fnKontur)
 }
 void MidlWindAndSr(void)
 {
+	if (startFlag)
+	{
+		if (startFlag < 0) startFlag = 0;
+		return;
+	}
 	GD.TControl.SumSun+=((long int)GD.TControl.MeteoSensing[cSmFARSens]);
 	GD.TControl.MidlSR=((((long int)GD.TControl.MidlSR)*(1000-o_MidlSRFactor))/1000
 		+((long int)GD.TControl.MeteoSensing[cSmFARSens])*o_MidlSRFactor);

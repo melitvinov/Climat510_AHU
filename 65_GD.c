@@ -1,8 +1,6 @@
 #pragma pack(1)
 
 int volatile startFlag;
-int volatile LightArray[8];
-int volatile LightArrayCount[8];
 
 typedef struct eeCalSensor {
 	uint8_t		Type;
@@ -533,13 +531,12 @@ typedef struct eeTuneClimate
 		uchar		vAHU_MinTempr;
 		uchar		vAHU_MaxTempr;
 
-		char        CriteryLevel;
+		int16_t     CriteryLevel;
 
-		//uchar		LightLowersHeatTemp;
-		//uchar		LightLowersHeatTime;
+		uchar       MaxAHUspeed;   		// коррекция скорости по ветру
+	 	uchar		MaxAHUwindSpeed;    // максимальный ветер для коррекции скорости по ветру
 
-		int8_t      Rez[8];  // 8
-//		int16_t     Rez[9];  // было 14
+		int8_t      Rez[5];  // 6
 //280		
        }
         eTuneClimate;
