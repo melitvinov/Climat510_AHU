@@ -312,7 +312,56 @@ void CheckMistSystemNew(void)
 	if ((GD.TControl.MeteoSensing[cSmOutTSens]<1200)&&(GD.TControl.MeteoSensing[cSmOutTSens]))
 		pGD_TControl_Tepl->Systems[cSysMist].Max=0;
 
+	// 66 другой расчет
+	volatile int16_t vMaxCorrAHUrh = GD.TuneClimate.MaxAHUwindSpeed*100;
+	volatile int8_t vMistMax = pGD_TControl_Tepl->Systems[cSysMist].Max;
+	volatile int16_t vTOutAHU = pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value;
+	volatile int16_t vKeepTAHU = pGD_TControl_Tepl->TVentCritery;
+	volatile int16_t vTAHUdelta = 0;
+	volatile int16_t res;
 
+	if (vTOutAHU > vKeepTAHU)
+	{
+		vTAHUdelta = vTOutAHU - vKeepTAHU;
+		if (vTAHUdelta >= vMaxCorrAHUrh)
+		{
+			res = 100;
+			pGD_TControl_Tepl->SaveMaxMist++;
+			if (pGD_TControl_Tepl->SaveMaxMist > pGD_TControl_Tepl->Systems[cSysMist].Max)
+				pGD_TControl_Tepl->SaveMaxMist = pGD_TControl_Tepl->Systems[cSysMist].Max;
+		}
+		else
+		{
+			res = (vTAHUdelta * 100) / vMaxCorrAHUrh;
+			pGD_TControl_Tepl->Systems[cSysMist].Max = res;
+			if (res > pGD_TControl_Tepl->SaveMaxMist)
+			{
+				pGD_TControl_Tepl->SaveMaxMist++;
+				if (pGD_TControl_Tepl->SaveMaxMist > res)
+					pGD_TControl_Tepl->SaveMaxMist = res;
+
+			}
+			else
+			{
+				pGD_TControl_Tepl->SaveMaxMist--;
+				if (pGD_TControl_Tepl->SaveMaxMist < res)
+					pGD_TControl_Tepl->SaveMaxMist = res;
+			}
+		}
+	}
+	else
+	{
+		pGD_TControl_Tepl->Systems[cSysMist].Max = 0;
+		res = 0;
+		if (pGD_TControl_Tepl->SaveMaxMist)
+		pGD_TControl_Tepl->SaveMaxMist--;
+		if (pGD_TControl_Tepl->SaveMaxMist < 0)
+			pGD_TControl_Tepl->SaveMaxMist = 0;
+	}
+	// ---------
+
+	// было
+	/*
 	if (getRHoutAHUSensor())
 	{
 		if (getRHoutAHUSensor() > 9500)
@@ -327,6 +376,7 @@ void CheckMistSystemNew(void)
 	}
 	else
 		pGD_TControl_Tepl->SaveMaxMist=pGD_TControl_Tepl->Systems[cSysMist].Max;
+*/
 
 	pGD_TControl_Tepl->Systems[cSysMist].Min=0;
 	if (pGD_TControl_Tepl->Systems[cSysUCValve].Value<30)	// минимальное открытие клапана для работы панели 30
@@ -338,12 +388,21 @@ void CheckMistSystemNew(void)
 	if ((YesBit(pGD_Hot_Hand[cHSmAHUPad].RCS,cbManMech))||(!pGD_MechConfig->RNum[cHSmAHUPad]))
 	{
 		SetBit(pGD_TControl_Tepl->Systems[cSysMist].RCS,cSysRHand);
-//		pGD_TControl_Tepl->Systems[cSysMist].Max=0;
+		pGD_TControl_Tepl->Systems[cSysMist].Max=0;
 	}
+
+	// было, зачем не понятно
+	/*
 	pGD_TControl_Tepl->Systems[cSysMist].Value=pGD_Hot_Hand[cHSmAHUPad].Position;
 
 	if (pGD_TControl_Tepl->Systems[cSysMist].Keep>pGD_TControl_Tepl->Systems[cSysMist].Max)
 		pGD_TControl_Tepl->Systems[cSysMist].Keep=pGD_TControl_Tepl->Systems[cSysMist].Max;
+	*/
+
+	// 66 изменение
+	pGD_TControl_Tepl->Systems[cSysMist].Value = pGD_TControl_Tepl->SaveMaxMist;
+	pGD_TControl_Tepl->Systems[cSysMist].Keep = res;
+	// ------
 
 	if	(!pGD_TControl_Tepl->Systems[cSysMist].RCS)
 	{
