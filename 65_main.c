@@ -26,6 +26,129 @@ return 1;
 */
 //;------FullCheck------------------
 
+char volatile konturMax[6];
+char volatile mecPosArray[7];
+char volatile framMaxUn;
+char volatile framMaxOn;
+char volatile coModel;
+char volatile modelLight;
+char volatile sensHeat;
+char volatile sensVent;
+
+/*
+        int16_t     f_MaxOpenUn;   //Фрамуги_Максимально допустимое открытие
+        int16_t     f_MaxAHUSpd;   //Фрамуги_Максимум при подкормке СО2
+		int16_t 	c_MinTPipe[2];
+		int16_t		c_DoPres;
+		int16_t 	c_OptimalTPipe[2];
+		int16_t		f_IFactor;
+		int16_t		c_PFactor;  //Контур 1 - Динамика(Тзад-Тизм)влияет до
+        int16_t     c_IFactor;  //Интегральная поправка контуров
+        int16_t     f_PFactor;  //Контур 1 - Динамика(Тзад-Тизм)понижает на
+		int8_t		vs_DegSt;   //Градусы для вычисления позиции экрана
+		int8_t		vs_DegEnd;  //Градусы для вычисления позиции экрана
+		int16_t		sc_TMaxOpen;
+		int16_t		sc_ZMaxOpen;
+		uint16_t	co_model;   //СО2 - исполнитель(0-регулятор,1-клапан)
+		uint16_t	sio_SVal;
+		uint16_t	sLight;
+		int8_t		sensT_heat;
+		int8_t		sensT_vent;
+		uint16_t	tempPipe3;
+		uint16_t	InRHMax;
+		uint16_t	InRHMin;
+*/
+
+void loadKontur(char tCTepl)
+{
+	GD.Control.Tepl[tCTepl].c_MaxTPipe[0] = 600;
+	GD.Control.Tepl[tCTepl].c_MaxTPipe[1] = 900;
+	GD.Control.Tepl[tCTepl].c_MaxTPipe[2] = 600;
+	GD.Control.Tepl[tCTepl].c_MaxTPipe[3] = 500;
+	GD.Control.Tepl[tCTepl].c_MaxTPipe[4] = 1100;
+	GD.Control.Tepl[tCTepl].c_MaxTPipe[5] = 600;
+
+	GD.Control.Tepl[tCTepl].f_MaxOpenUn = 100;
+	GD.Control.Tepl[tCTepl].f_MaxAHUSpd = 100;
+
+	GD.Control.Tepl[tCTepl].c_MinTPipe[0] = 0;
+	GD.Control.Tepl[tCTepl].c_MinTPipe[1] = 0;
+	GD.Control.Tepl[tCTepl].c_MinTPipe[2] = 0;
+
+	GD.Control.Tepl[tCTepl].c_DoPres = 0;
+
+	GD.Control.Tepl[tCTepl].c_OptimalTPipe[0] = 0;
+	GD.Control.Tepl[tCTepl].c_OptimalTPipe[1] = 0;
+	GD.Control.Tepl[tCTepl].c_OptimalTPipe[2] = 250;
+
+	GD.Control.Tepl[tCTepl].f_IFactor = 800;
+	GD.Control.Tepl[tCTepl].c_PFactor = 300;
+	GD.Control.Tepl[tCTepl].c_IFactor = 500;
+	GD.Control.Tepl[tCTepl].f_PFactor = 300;
+	GD.Control.Tepl[tCTepl].vs_DegSt = 90;
+	GD.Control.Tepl[tCTepl].vs_DegEnd = 100;
+	GD.Control.Tepl[tCTepl].sc_TMaxOpen = 100;
+	GD.Control.Tepl[tCTepl].sc_ZMaxOpen = 10;
+	GD.Control.Tepl[tCTepl].co_model = 1;
+	GD.Control.Tepl[tCTepl].sio_SVal = 4;
+	GD.Control.Tepl[tCTepl].sLight = 1;
+	GD.Control.Tepl[tCTepl].sensT_heat = 1;
+	GD.Control.Tepl[tCTepl].sensT_vent = 1;
+	GD.Control.Tepl[tCTepl].tempPipe3 = 0;
+	GD.Control.Tepl[tCTepl].InRHMax = 0;
+	GD.Control.Tepl[tCTepl].InRHMin = 0;
+}
+
+void checkConfig()
+{
+	char volatile tCTepl,sys;
+	char volatile checkMech, checkKontur;
+	for (tCTepl=0;tCTepl<4;tCTepl++)
+	{
+		checkMech = 0;
+		checkKontur = 0;
+		for (sys=0;sys<6;sys++)
+		{
+		  if (GD.Control.Tepl[tCTepl].c_MaxTPipe[sys] > 1300)   // темп заданная в мониторе *10
+		   	checkKontur = 1;
+		}
+		//ClrDog;
+		//for (sys=0;sys<6;sys++)
+		//{
+	    //    if (GD.Hot.Tepl[tCTepl].HandCtrl[cHSmScrTH+sys].RCS == 0)
+	    //    	checkMech = 1;
+		//}
+		//ClrDog;
+        //if (GD.Hot.Tepl[tCTepl].HandCtrl[cHSmLight].RCS == 0)
+        //	checkMech = 1;
+
+    	//if (checkMech == 1)
+    	//{
+    		//GD.Hot.Tepl[tCTepl].newsZone = 0x0A;
+    	//	loadMech(tCTepl);
+    		//repeatNews[tCTepl] = 4;
+    	//} else
+    	//{
+    	//	saveMech(tCTepl);
+    	//}
+    	ClrDog;
+    	if (checkKontur == 1)
+    	{
+    		//GD.Hot.Tepl[tCTepl].newsZone = 0x0F;
+    		loadKontur(tCTepl);
+    		//repeatNews[tCTepl] = 4;
+    	}// else
+    	//{
+    	//	saveKontur(tCTepl);
+    	//}
+    	//ClrDog;
+    	//if (repeatNews[tCTepl])
+    	//	repeatNews[tCTepl]--;
+    	//if (repeatNews[tCTepl] <= 0)
+    	//	GD.Hot.Tepl[tCTepl].newsZone = 0;
+	}
+
+}
 
 
 main()
@@ -83,6 +206,7 @@ char    timeDog;
         UDPSendDataInit();
         AHUPadInit();
         InRHInit();
+        //initCheckConfig();
         startFlag = 5;
 start:
 
@@ -107,6 +231,9 @@ start:
 	   	   	    //if(!NumBlock && (GD.Hot.News&0x80)) SetRTC();
             	ClrDog;
             /*-- Была запись с ПК в блок NumBlock, переписать в EEPROM ------*/
+
+            	checkConfig();
+
             	if (NumBlock) ReWriteFRAM();
 //				}
             GD.SostRS=OUT_UNIT;
