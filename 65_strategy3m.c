@@ -313,7 +313,7 @@ void CheckMistSystemNew(void)
 		pGD_TControl_Tepl->Systems[cSysMist].Max=0;
 
 	// 66 другой расчет
-	volatile int16_t vMaxCorrAHUrh = GD.TuneClimate.MaxAHUwindSpeed*100;
+	volatile int16_t vMaxCorrAHUrh = GD.TuneClimate.MaxCorrAHUrh*100;
 	volatile int8_t vMistMax = pGD_TControl_Tepl->Systems[cSysMist].Max;
 	volatile int16_t vTOutAHU = pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value;
 	volatile int16_t vKeepTAHU = pGD_TControl_Tepl->TVentCritery;
@@ -608,7 +608,7 @@ int KeepFanSystem(char fnTepl)
 	{
 		volatile int16_t Tout = 0;
 		volatile int16_t ToutTask = 0;
-		Tout = getTempOutAHU(fnTepl) / 100 ;
+		Tout = getTempOutAHU(fnTepl) / 100;
 		ToutTask = GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery / 100;
 		if (Tout > ToutTask)
 			tempKeep = Tout * (minSpeed * 1.5) / ToutTask;
