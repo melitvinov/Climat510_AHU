@@ -580,7 +580,7 @@ int KeepUCValve(char prevPosition)
 
 int KeepFanSystem(char fnTepl)
 {
-	volatile int16_t tempKeep;
+	volatile int16_t tempKeep = 0;
 	volatile int16_t newKeep;
 	volatile int16_t delta = 0;
 	volatile int16_t minT = 0;
@@ -643,7 +643,13 @@ int KeepFanSystem(char fnTepl)
 	//PosFluger = 90;
 	//windSpeed = 30;
 
-	if (GD.Hot.MidlWind<GD.TuneClimate.f_WindStart) return;
+	if (tempKeep > maxSpeed) tempKeep = maxSpeed;
+	if (tempKeep <= 0)
+		{
+			tempKeep = minSpeed;
+		}
+
+	if (GD.Hot.MidlWind<GD.TuneClimate.f_WindStart) return tempKeep;
 
 	if ((windSpeed > 0) && (MaxSpeedAHUwind > 0))
 	{
@@ -696,6 +702,7 @@ int KeepFanSystem(char fnTepl)
 
 	// итоговая проверка на мин и мак скорость
 	if (tempKeep > maxSpeed) tempKeep = maxSpeed;
+	if (tempKeep <= 0) tempKeep = minSpeed;
 	if (MaxSpeedAHUwind == 0)   // если усл коррекции скорости по ветру выкл то мин скорость как в задании
 		if (tempKeep < minSpeed) tempKeep = minSpeed;
 	return tempKeep;

@@ -26,14 +26,15 @@ return 1;
 */
 //;------FullCheck------------------
 
-char volatile konturMax[6];
-char volatile mecPosArray[7];
-char volatile framMaxUn;
-char volatile framMaxOn;
-char volatile coModel;
-char volatile modelLight;
-char volatile sensHeat;
-char volatile sensVent;
+
+//char volatile konturMax[6];
+//char volatile mecPosArray[7];
+//char volatile framMaxUn;
+//char volatile framMaxOn;
+//char volatile coModel;
+//char volatile modelLight;
+//char volatile sensHeat;
+//char volatile sensVent;
 
 /*
         int16_t     f_MaxOpenUn;   //Фрамуги_Максимально допустимое открытие
@@ -59,7 +60,7 @@ char volatile sensVent;
 		uint16_t	InRHMin;
 */
 
-void loadKontur(char tCTepl)
+/*void loadKontur(char tCTepl)
 {
 	GD.Control.Tepl[tCTepl].c_MaxTPipe[0] = 600;
 	GD.Control.Tepl[tCTepl].c_MaxTPipe[1] = 900;
@@ -149,7 +150,26 @@ void checkConfig()
 	}
 
 }
+*/
 
+volatile char crc;
+volatile char crc1;
+volatile char size;
+
+char CheckSumMain(void)
+{
+  int i;
+  char res = 0;
+  volatile int8_t r =0;
+  for (i=0; i<cSHandCtrl; i++)
+  {
+	  r = GD.Hot.Tepl[0].HandCtrl[i].RCS;
+	  res = res + r;
+	  r = GD.Hot.Tepl[0].HandCtrl[i].Position;
+	  res = res + r;
+  }
+  return res;
+}
 
 main()
 {
@@ -158,7 +178,7 @@ char    timeDog;
 
 #ifndef STM32_UNIT
         init8051();
-#elseц
+#else
         ClrAllOutIPCDigit();
 		Init_STM32();
 #endif
@@ -210,7 +230,6 @@ char    timeDog;
         startFlag = 5;
 start:
 
-
    if (not) {
         if(!ton_t--) { ton_t=ton; not--; Sound;}
         }
@@ -232,9 +251,24 @@ start:
             	ClrDog;
             /*-- Была запись с ПК в блок NumBlock, переписать в EEPROM ------*/
 
-            	checkConfig();
+            	//checkConfig();
 
-            	if (NumBlock) ReWriteFRAM();
+            	if ( (NumBlock == 0) && (size == 92) )
+            	{
+            		crc1 = 55-CheckSumMain();
+            		if (crc != crc1)
+            			ReadFromFRAM();
+            	}
+
+            	if ( GD.Timer[0].crc != 0xAA )
+            		ReadBlockFRAM(1);
+
+            	if ( GD.Control.Tepl[0].crc != 0xAA )
+            		ReadBlockFRAM(0);
+
+            	if (NumBlock)
+            		ReWriteFRAM();
+
 //				}
             GD.SostRS=OUT_UNIT;
             SIM=105;

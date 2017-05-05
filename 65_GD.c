@@ -70,7 +70,11 @@ typedef struct  eeTimer
 		uchar		MinTPipe3;
 		uchar		RHAir_c;
 		uint16_t	TCool;
-		uint16_t	Rez[9];
+
+		//uint16_t	Rez[9];
+
+		uint16_t	Rez[8];
+		uint16_t	crc;
         }
         eTimer;
 
@@ -264,8 +268,7 @@ typedef struct eeHot {
 				uchar 		Demo;
 /***************************************/				
 				eTepl 		Tepl[cSTepl];
-
-				int16_t		Rez2[10];     // 10
+				int16_t		Rez2[10];
 /***************************************/
 				} eHot;
 
@@ -568,7 +571,14 @@ typedef struct eeTeplControl
 		uint16_t	InRHMax;
 		uint16_t	InRHMin;
 
-		int16_t		Rez[16];
+//		uint8_t 		crc1;
+//		uint8_t 		crc2;
+
+		int16_t		Rez[15];
+
+		uint16_t 	crc;
+
+
 //+42 байта
 		} eTeplControl;
 

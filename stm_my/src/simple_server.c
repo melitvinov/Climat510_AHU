@@ -114,6 +114,16 @@ unsigned char analyse_get_url(char *str)
 	return(-2);
 	}
 
+char CheckSum(char *byte, int size)
+{
+ int i;
+ char res = 0;
+ for (i=0; i < size; i++)    // 263
+ {
+	  res = res + byte[i];
+ }
+ return res;
+}
 
 int SocketUpdate(char nSock,char* f_buf,int data_p,int* fbsize)
 {
@@ -128,9 +138,22 @@ switch (Sockets[nSock].IP_PHASE)
 			return 0;
 		}
 //		else
+
+		//volatile char crc = 55 - CheckSum(&fbuf[data_p], cSizeHead);
+	        //if ( crc != fbuf[info_data_len+48) //53] )
+	        //	crcflag = 0;
+
 		*EthSost=WORK_UNIT;
 		BufCpy((char*)&Sockets[nSock].Header,&f_buf[data_p],cSizeHead);
 		Sockets[nSock].NumBlock=Sockets[nSock].Header.NumDirect&0x0F;
+
+		//if (Sockets[nSock].NumBlock > 0)
+		//{
+		//	crcH = fbuf[59];
+		//	crcH = crcH << 8;
+		//	crcH = crcH + fbuf[60];
+		//}
+
 /*		Sockets[nSock].IP_PHASE=ETH_HEADRECEIVED;
 		*fbsize=0;
 		return 0;
@@ -163,18 +186,47 @@ switch (Sockets[nSock].IP_PHASE)
 	case(ETH_RECVBLOCK):
 		if (Sockets[nSock].Header.Size<=(plen-54))/*info_data_len/*(plen-54)*/
 		{
+			if ( (Sockets[nSock].NumBlock == 0) && (info_data_len == 93) )
+			{
+				crc = 55-CheckSum(&f_buf[data_p], info_data_len-1);
+				size = info_data_len-1;
+				//if ( crc != f_buf[info_data_len+53] )
+				//	flag = 0;
+			}
+			else {
+				size = 0;
+			}
+			//{
+				//crcP = 55 - CheckSum(&fbuf[data_p], Sockets[nSock].Header.Size);
+				//if ( crcH != crcP )
+				//{
+				//	*EthBlock = 0;
+				//	plen = 0;
+				//	Sockets[nSock].IP_PHASE=ETH_INIT;
+				//	flag = 0;
+				//	BL = 0;
+				//	return 0;
+				//}
+			//}
+
 			plen=Sockets[nSock].Header.Size;
 			*EthBlock=Sockets[nSock].NumBlock;
 			*EthSost=IN_UNIT;
 			Sockets[nSock].IP_PHASE=ETH_INIT;
 		}
 		else plen-=54;
+
 //		if ((Sockets[nSock].Header.Adr<pADRGD[Sockets[nSock].NumBlock].MaxSize-plen))/*&&(Sockets[nSock].Header.Adr>=0)
 //				&&(Sockets[nSock].Header.Size<pADRGD[Sockets[nSock].NumBlock].MaxSize))*/
 //			if ((Sockets[nSock].NumBlock<12)&&((Sockets[nSock].Header.NumDirect&0xF0)==IN_UNIT))
 			{
-				BufCpy(((char*)pADRGD[Sockets[nSock].NumBlock].Adr)+Sockets[nSock].Header.Adr,&f_buf[data_p],plen);
-				Sockets[nSock].Header.Adr+=plen;
+				//if (flag)
+				//{
+				//	BL = Sockets[nSock].NumBlock;
+					NumBlock = Sockets[nSock].NumBlock;
+					BufCpy(((char*)pADRGD[Sockets[nSock].NumBlock].Adr)+Sockets[nSock].Header.Adr,&f_buf[data_p],plen);
+					Sockets[nSock].Header.Adr+=plen;
+				//}
 			}
 		Sockets[nSock].Header.Size-=plen;
 		*fbsize=0;

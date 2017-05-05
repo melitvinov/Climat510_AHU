@@ -1958,6 +1958,7 @@ char tCTepl,ttTepl;
 		SetAlarm();
 		for (tCTepl=0;tCTepl<cSTepl;tCTepl++)
 		{
+
 			SetPointersOnTepl(tCTepl);
 			SetSensOnMech();
 			DoMechanics(tCTepl);

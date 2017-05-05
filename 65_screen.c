@@ -180,6 +180,8 @@ void SetPosScreen(char typScr)
 
 void LaunchVent(void)
 {
+
+
 /*	if ((((*(pGD_Hot_Hand+cHSmWinN)).Position+(*(pGD_Hot_Hand+cHSmWinS)).Position)>0)&&((GD.TuneClimate.cool_PFactor)))
 		pGD_TControl_Tepl->OutFan=1;
 	else
