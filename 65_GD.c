@@ -540,8 +540,7 @@ typedef struct eeTuneClimate
 		uchar		MaxAHUwindSpeed;    // максимальный ветер для коррекции скорости по ветру
 
 		uchar		MaxCorrAHUrh;		// 66 изменение. температура при которой ругулятор увлажнения откроется на 100
-
-		int8_t      Rez[5];  // 6
+		int8_t      Rez[5];
 
 //280		
        }
@@ -571,10 +570,11 @@ typedef struct eeTeplControl
 		uint16_t	InRHMax;
 		uint16_t	InRHMin;
 
+		uint16_t     MistMax;
 //		uint8_t 		crc1;
 //		uint8_t 		crc2;
 
-		int16_t		Rez[15];
+		int16_t		Rez[14];
 
 		uint16_t 	crc;
 

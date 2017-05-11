@@ -1361,7 +1361,7 @@ ClrDog;
 		if ( fPadPause > fPadWorkTime )
 			fPadPause = 1;
 		if (fPadOnPad)
-			__SetBitOutReg(fnTepl,cHSmAHUPad,0,0);	// вкл
+			__SetBitOutReg(fnTepl,cHSmAHUPad,0,0);	// вкл       0.0 вкл реле которое назначено, 0.1 - вкл следующее реле. Это было закрытие и следующее открытие
 		else
 			__SetBitOutReg(fnTepl,cHSmAHUPad,1,0);  // выкл
 	}
@@ -1373,7 +1373,8 @@ ClrDog;
 	if (( InRHPosition > 0 ) && (getTempHeat(fnTepl) > 0 ))
 	{
 		InRHPosition = (InRHPosition * pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_TimeMixVal) / 100;
-		fInRHWorkTime = (pGD_Control_Tepl->InRHMax * pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_TimeMixVal) / 100;
+		//fInRHWorkTime = (pGD_Control_Tepl->InRHMax * pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_TimeMixVal) / 100;
+		fInRHWorkTime = pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_TimeMixVal;
 		fInRHPause++;
 		if ( fInRHPause <= InRHPosition )
 			fInRHOn = 1;
@@ -1382,7 +1383,7 @@ ClrDog;
 		if ( fInRHPause > fInRHWorkTime )
 			fInRHPause = 1;
 		if (fInRHOn)
-			__SetBitOutReg(fnTepl,cHSmInRH,0,1);	// вкл
+			__SetBitOutReg(fnTepl,cHSmInRH,0,0);	// вкл
 		else
 			__SetBitOutReg(fnTepl,cHSmInRH,1,0);  // выкл
 	}
@@ -1390,11 +1391,11 @@ ClrDog;
 		__SetBitOutReg(fnTepl,cHSmInRH,1,0);  // выкл
 
 
-	InRHPosition = ((*(pGD_Hot_Hand+cHSmInRH)).Position);
-	if  (( InRHPosition > 0 ) || ( PadPosition > 0 ))
-		__SetBitOutReg(fnTepl,cHSmAHUPump,0,0);
+//	InRHPosition = ((*(pGD_Hot_Hand+cHSmInRH)).Position);
+	if  (( fInRHOn > 0 ) || ( fPadOnPad > 0 ))
+		__SetBitOutReg(fnTepl,cHSmAHUPump,0,0);   // вкл
 	else
-		__SetBitOutReg(fnTepl,cHSmAHUPump,1,0);
+		__SetBitOutReg(fnTepl,cHSmAHUPump,1,0);   // выкл
 
 
 	for (ByteX=0;ByteX<4;ByteX++)
