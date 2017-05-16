@@ -496,7 +496,8 @@ int KeepInRH(void)
 	pGD_Hot_Hand[cHSmInRH].Position = Res;
 	if (Res > pGD_TControl_Tepl->Systems[cSysInRH].Max)
 		Res = pGD_TControl_Tepl->Systems[cSysInRH].Max;
-	if (Res < pGD_TControl_Tepl->Systems[cSysInRH].Min)
+
+	if ( (Res > 0) && (Res < pGD_TControl_Tepl->Systems[cSysInRH].Min) )
 		Res = pGD_TControl_Tepl->Systems[cSysInRH].Min;
 	return Res;
 }

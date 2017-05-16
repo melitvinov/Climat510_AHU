@@ -147,6 +147,9 @@ switch (Sockets[nSock].IP_PHASE)
 		BufCpy((char*)&Sockets[nSock].Header,&f_buf[data_p],cSizeHead);
 		Sockets[nSock].NumBlock=Sockets[nSock].Header.NumDirect&0x0F;
 
+		if (Sockets[nSock].NumBlock == 0)
+			numB = fbuf[55];
+
 		//if (Sockets[nSock].NumBlock > 0)
 		//{
 		//	crcH = fbuf[59];

@@ -155,17 +155,38 @@ void checkConfig()
 volatile char crc;
 volatile char crc1;
 volatile char size;
+volatile char numB;
 
 char CheckSumMain(void)
 {
+  char Bl;
+  switch (numB)
+  {
+	  case 2:
+	  {
+		  Bl = 0;
+		  break;
+	  }
+	  case 4:
+	  {
+		  Bl = 1;
+		  break;
+	  }
+	  case 6:
+	  {
+		  Bl = 2;
+		  break;
+	  }
+  }
+
   int i;
   char res = 0;
   volatile int8_t r =0;
   for (i=0; i<cSHandCtrl; i++)
   {
-	  r = GD.Hot.Tepl[0].HandCtrl[i].RCS;
+	  r = GD.Hot.Tepl[Bl].HandCtrl[i].RCS;
 	  res = res + r;
-	  r = GD.Hot.Tepl[0].HandCtrl[i].Position;
+	  r = GD.Hot.Tepl[Bl].HandCtrl[i].Position;
 	  res = res + r;
   }
   return res;

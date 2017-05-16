@@ -44,6 +44,7 @@ void SetUpSiod(char fnTepl)
 	pGD_TControl_Tepl->PauseSIO=0;
 	pGD_TControl_Tepl->CurVal=0;
 }
+
 void DoSiod(void)
 {
 	char NSIO;
