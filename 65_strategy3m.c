@@ -499,6 +499,11 @@ int KeepInRH(void)
 
 	if ( (Res > 0) && (Res < pGD_TControl_Tepl->Systems[cSysInRH].Min) )
 		Res = pGD_TControl_Tepl->Systems[cSysInRH].Min;
+	if (GD.TuneClimate.CloseInRH_AHU > 0)
+	{
+		if (pGD_Hot_Hand[cHSmUCValve].Position >= GD.TuneClimate.CloseInRH_AHU)
+			Res = 0;
+	}
 	return Res;
 }
 
