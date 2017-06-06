@@ -16,6 +16,12 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 		pScr->Mode=pGD_Hot_Tepl->AllTask.Screen[ttyp];
 		bZad=1;
 	}
+
+	int Tz;
+	int Ti;
+	Tz = pGD_Hot_Tepl->AllTask.DoTHeat;
+	Ti = getTempHeat(fnTepl);
+
 	IntY=getTempHeat(fnTepl)-pGD_Hot_Tepl->AllTask.DoTHeat;
 	CorrectionRule(GD.TuneClimate.sc_dTStart,GD.TuneClimate.sc_dTEnd,GD.TuneClimate.sc_dTSunFactor,0);   // начинает влиять на солнце при, начинает влиять на солнце до, уменьшает солнце на
 	SunZClose=GD.TuneClimate.sc_ZSRClose-IntZ;
@@ -26,8 +32,8 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 		
 		if (!bZad)
 		{
-			if (IntZ>GD.TuneClimate.sc_TOutClose+200) pScr->Mode=1;
-			if ((IntZ<GD.TuneClimate.sc_TOutClose)||(!GD.TuneClimate.sc_TOutClose)) pScr->Mode=0;
+			//if (IntZ>GD.TuneClimate.sc_TOutClose+200) pScr->Mode=1;
+			//if ((IntZ<GD.TuneClimate.sc_TOutClose)||(!GD.TuneClimate.sc_TOutClose)) pScr->Mode=0;
 			if (GD.TuneClimate.sc_TSROpen)
 			{
 				if (GD.Hot.MidlSR>GD.TuneClimate.sc_TSROpen) pScr->Mode=0;
@@ -40,7 +46,7 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			//	pScr->Mode=1;
 			if((GD.TuneClimate.sc_ZSRClose)&&(GD.Hot.MidlSR>SunZClose)) pScr->Mode=1;
 		}
-		if 	(pScr->Mode!=pScr->OldMode)
+/*		if 	(pScr->Mode!=pScr->OldMode)
 		{
 			ClrBit(pGD_TControl_Tepl->RCS1,cbSCCorrection);
 			pScr->PauseMode=GD.TuneClimate.sc_PauseMode;
@@ -53,11 +59,81 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 		pScr->OldMode=pScr->Mode;
 		pGD_TControl_Tepl->ScrExtraHeat--;
 		if (pGD_TControl_Tepl->ScrExtraHeat>0) return;
-		pGD_TControl_Tepl->ScrExtraHeat=0;	 
+		pGD_TControl_Tepl->ScrExtraHeat=0;
+
+*/
+
+		volatile int CorrRes;
+		volatile int deltaTz;
+		volatile int deltaTi;
+		volatile int MinusSR;
+		volatile int MinSC = 0;
+		volatile int MidlSun = GD.Hot.MidlSR;
+
+		if (Tz >= Ti)
+			deltaTz = (pGD_Hot_Tepl->AllTask.DoTHeat - getTempHeat(fnTepl));
+		else
+			deltaTz = 0;
+		if (Ti > Tz)
+			deltaTi = (getTempHeat(fnTepl) - pGD_Hot_Tepl->AllTask.DoTHeat);
+		else
+			deltaTi = 0;
+
+		if (deltaTi > 0)
+		{
+			CorrRes = (deltaTi * GD.TuneClimate.sc_TSROpen) / (GD.TuneClimate.sc_dTEnd);
+			if (MidlSun > CorrRes)
+				MinusSR = MidlSun - CorrRes;
+			else
+				MinusSR = 0;
+			if (MinusSR>0)
+			{
+				CorrRes = (MinusSR * 100) / GD.TuneClimate.sc_ZSRClose;
+				pScr->Mode=0;
+				if (CorrRes > 0)
+				{
+					if (CorrRes > 100)
+						pScr->Value = 100;
+					else
+						pScr->Value = CorrRes;
+				}
+				else
+					pScr->Value = 100;
+			}
+			else
+			{
+				pScr->Mode=1;
+				pScr->Value = 0;
+			}
+		}
+
+		if ((GD.TuneClimate.sc_TPlusMinOn>0) && (GD.TuneClimate.sc_TCorrMin>0))
+		{
+		// расчет минимального открытия экрана
+			if (deltaTz > 0)
+			{
+				if (deltaTz <= (GD.TuneClimate.sc_TCorrMin*100))
+				{
+					MinSC = (deltaTz * GD.TuneClimate.sc_TPlusMinOn) / ((GD.TuneClimate.sc_TCorrMin*100));
+					pScr->Mode=0;
+					pScr->Value = MinSC;
+				}
+				else
+				{
+					pScr->Mode=0;
+					pScr->Value = GD.TuneClimate.sc_TPlusMinOn;
+				}
+
+			}
+		}
+
+
+
+/* Влияние стекла
 		IntY=pGD_Hot_Tepl->InTeplSens[cSmGlassSens].Value;
 		CorrectionRule(GD.TuneClimate.sc_GlassStart,GD.TuneClimate.sc_GlassEnd,GD.TuneClimate.sc_GlassMax,0);
 		if ((YesBit(pGD_Hot_Tepl->InTeplSens[cSmGlassSens].RCS,cbMinMaxVSens))) IntZ=GD.TuneClimate.sc_GlassMax;
-		pScr->Value=pScr->Mode*(pGD_Control_Tepl->sc_TMaxOpen-(GD.TuneClimate.sc_GlassMax-IntZ));		
+		pScr->Value=pScr->Mode*(pGD_Control_Tepl->sc_TMaxOpen-(GD.TuneClimate.sc_GlassMax-IntZ));  */
 /*Влияние разницы влажности на открытие экрана
 		IntY=pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value-pGD_Hot_Tepl->AllTask.DoRHAir;
 		CorrectionRule(GD.TuneClimate.sc_RHStart,GD.TuneClimate.sc_RHEnd,GD.TuneClimate.sc_RHMax,0);
@@ -123,7 +199,7 @@ void SetPosScreen(char typScr)
 
     pMech=&((*(pGD_Hot_Hand+cHSmScrTH+typScr)).Position);
 	
-	if (YesBit((*(pGD_Hot_Hand+cHSmScrTH+typScr)).RCS,/*(cbNoMech+*/cbManMech)) return;
+	if (YesBit((*(pGD_Hot_Hand+cHSmScrTH+typScr)).RCS, cbManMech)) return;
 
 	if(pScr->Pause<0) pScr->Pause=0;
 	if(pScr->Pause) {pScr->Pause--;return;}
@@ -175,6 +251,8 @@ void SetPosScreen(char typScr)
 		return;
 	}
 	pScr->Pause=0;
+
+
 }
 
 

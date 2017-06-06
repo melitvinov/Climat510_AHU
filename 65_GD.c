@@ -374,9 +374,9 @@ typedef struct eeTuneClimate
 		int16_t		c_WindEnd;  /*Контур 1 - ветер влияет до*/
         int16_t     c_WindFactor;  /*Контур 1 - ветер увеличивает на*/
 
-		int16_t		sc_GlassStart;  /*Контур 1 - фрамуги начинают влиять при*/
-		int16_t		sc_GlassEnd;  /*Контур 1 - фрамуги влияют до*/
-        int16_t     sc_GlassMax;  /*Контур 1 - фрамуги увеличивают на*/
+		int16_t		sc_GlassStart;  /*Контур 1 - фрамуги начинают влиять при*/              // не используется
+		int16_t		sc_GlassEnd;    /*Контур 1 - фрамуги влияют до*/						// не используется
+        int16_t     sc_GlassMax;    /*Контур 1 - фрамуги увеличивают на*/					// не используется
 
         int16_t     c_LightFactor;  /*Контур 1 - понизить при включении досветки*/
         int16_t     c_ScreenFactor;  /*Контур 1 - понизить при закрытом экране*/
@@ -423,7 +423,7 @@ typedef struct eeTuneClimate
 		int16_t		f_SunIncOutT;/*Экран затеняющий - Солнце закрывает при*/
 
 		int16_t		sc_TSROpen;/*Экран термический - Солнце открывает при*/
-		int16_t		sc_TOutClose;/*Экран термический - Твнеш днем закрывает при*/
+		int16_t		sc_TOutClose;/*Экран термический - Твнеш днем закрывает при*/         // не используется
 		int16_t		sc_TVOutClose;/*Экран термический - Твнеш ночью закрывает при*/
 
 		int16_t		sc_ZOutClose;/*Экран термический - ветер начинает влиять при*/
@@ -488,9 +488,9 @@ typedef struct eeTuneClimate
 		int16_t		co_IFactor;
 		int16_t		MinRainTime;
 		int16_t		f_BlockFan;
-		int16_t		sc_RHStart;
-		int16_t		sc_RHEnd;
-		int16_t		sc_RHMax;
+		int16_t		sc_RHStart;     // не используется
+		int16_t		sc_RHEnd;		// не используется
+		int16_t		sc_RHMax;		// не используется
 
 
 		int16_t		v_MinFreeze;
@@ -543,7 +543,12 @@ typedef struct eeTuneClimate
 
 		uchar		CloseInRH_AHU;      // 73 выключаем внутренее увлажнение если клапан открыт на указанную величину
 
-		int8_t      Rez[4];
+//  new
+		int8_t		sc_TCorrMin;		// Экран термический - (Tзад-Tизм) влияет на минимум ( до 10,типовое 2°C)
+		int8_t		sc_TPlusMinOn;		// Экран термический - (Tзад-Tизм) увеличивает минимум на ( до 100,типовое 100%)
+//  new
+
+		int8_t      Rez[2];
 
 //280		
        }

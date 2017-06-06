@@ -160,11 +160,13 @@ void CheckInRHSystem(void)
 void CheckScreenSystem(void)
 {
 #warning temporary constants later from params
-	pGD_TControl_Tepl->Systems[cSysScreen].Max=GD.TuneClimate.sc_RHMax;
-	if (pGD_TControl_Tepl->Systems[cSysScreen].Max>15)
-		pGD_TControl_Tepl->Systems[cSysScreen].Max=15;
+// влияние влажности выключили !
+	//pGD_TControl_Tepl->Systems[cSysScreen].Max=GD.TuneClimate.sc_RHMax;
+	//if (pGD_TControl_Tepl->Systems[cSysScreen].Max>15)
+	//	pGD_TControl_Tepl->Systems[cSysScreen].Max=15;
 
-//	pGD_TControl_Tepl->Systems[cSysScreen].Max=pGD_TControl_Tepl->Screen[0].Value-90;
+
+//	pGD_TControl_Tepl->Systems[cSysScreen].Max=pGD_TControl_Tepl->Screen[0].Value-90;   было убранно
 
 	if (pGD_TControl_Tepl->Systems[cSysScreen].Max<0)
 		pGD_TControl_Tepl->Systems[cSysScreen].Max=0;
