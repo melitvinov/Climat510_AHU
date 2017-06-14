@@ -21,6 +21,7 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 	int Ti;
 	Tz = pGD_Hot_Tepl->AllTask.DoTHeat;
 	Ti = getTempHeat(fnTepl);
+	volatile int MidlSun = GD.Hot.MidlSR;
 
 	IntY=getTempHeat(fnTepl)-pGD_Hot_Tepl->AllTask.DoTHeat;
 	CorrectionRule(GD.TuneClimate.sc_dTStart,GD.TuneClimate.sc_dTEnd,GD.TuneClimate.sc_dTSunFactor,0);   // начинает влиять на солнце при, начинает влиять на солнце до, уменьшает солнце на
@@ -36,7 +37,7 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			//if ((IntZ<GD.TuneClimate.sc_TOutClose)||(!GD.TuneClimate.sc_TOutClose)) pScr->Mode=0;
 			if (GD.TuneClimate.sc_TSROpen)
 			{
-				if (GD.Hot.MidlSR>GD.TuneClimate.sc_TSROpen) pScr->Mode=0;
+				if (MidlSun>GD.TuneClimate.sc_TSROpen) pScr->Mode=0;
 			}
 			else
 				if (!bNight) pScr->Mode=0;
@@ -44,7 +45,7 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			// изменеие 61
 			//if (YesBit(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS,cbDownAlarmSens))
 			//	pScr->Mode=1;
-			if((GD.TuneClimate.sc_ZSRClose)&&(GD.Hot.MidlSR>SunZClose)) pScr->Mode=1;
+			if((GD.TuneClimate.sc_ZSRClose)&&(MidlSun>SunZClose)) pScr->Mode=1;
 		}
 /*		if 	(pScr->Mode!=pScr->OldMode)
 		{
@@ -66,9 +67,16 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 		volatile int CorrRes;
 		volatile int deltaTz;
 		volatile int deltaTi;
-		volatile int MinusSR;
-		volatile int MinSC = 0;
-		volatile int MidlSun = GD.Hot.MidlSR;
+		//volatile int MinusSR;
+		//volatile int MinSC = 0;
+
+		int sc_deltaTstart = GD.TuneClimate.sc_deltaTstart;
+		int sc_deltaTend = GD.TuneClimate.sc_deltaTend;
+		int sc_MaxOpenCorrect = GD.TuneClimate.sc_MaxOpenCorrect;
+		int sc_TCorrMin = GD.TuneClimate.sc_TCorrMin*100;
+		int sc_TCorrMax = GD.TuneClimate.sc_TCorrMax*100;
+		int sc_TMinOpenCorrect = GD.TuneClimate.sc_TMinOpenCorrect;
+		int sc_StartP1Zone = GD.TuneClimate.sc_StartP2Zone;
 
 		if (Tz >= Ti)
 			deltaTz = (pGD_Hot_Tepl->AllTask.DoTHeat - getTempHeat(fnTepl));
@@ -81,6 +89,51 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 
 		if (deltaTi > 0)
 		{
+			// убрал коррекцию вт, вещь не нужная
+			/*if (MidlSun > GD.TuneClimate.sc_dTSunFactor)
+			{
+				CorrRes = (deltaTi * GD.TuneClimate.sc_TSROpen) / (GD.TuneClimate.sc_dTEnd);
+				if (MidlSun > CorrRes)
+					MinusSR = MidlSun - CorrRes;
+				else
+			 		MinusSR = 0;
+			}
+			else MinusSR = MidlSun;
+*/
+			if (MidlSun < GD.TuneClimate.sc_TSROpen)
+			{
+				pScr->Mode=0;
+				pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;  // не 100 а макс из парам
+			}
+			if ( (MidlSun > GD.TuneClimate.sc_TSROpen)&(MidlSun < GD.TuneClimate.sc_ZSRClose) )
+			{
+				pScr->Mode=1;
+				pScr->Value = 0;
+			}
+			if (MidlSun > GD.TuneClimate.sc_ZSRClose)
+			{
+				pScr->Mode=0;
+				pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;
+
+
+
+				if ( (sc_deltaTend)&&(sc_MaxOpenCorrect) )
+				{
+					if ((deltaTi > sc_deltaTstart) && (deltaTi < sc_deltaTend))
+					{
+						CorrRes = (deltaTi * sc_MaxOpenCorrect) / sc_deltaTend;
+						if (pScr->Value > CorrRes)
+							pScr->Value =	pScr->Value - CorrRes;
+					}
+					if (deltaTi > sc_deltaTend)
+					{
+						if (pScr->Value > CorrRes)
+							pScr->Value =	pScr->Value - sc_MaxOpenCorrect;
+					}
+				}
+			}
+
+/*
 			CorrRes = (deltaTi * GD.TuneClimate.sc_TSROpen) / (GD.TuneClimate.sc_dTEnd);
 			if (MidlSun > CorrRes)
 				MinusSR = MidlSun - CorrRes;
@@ -105,25 +158,35 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 				pScr->Mode=1;
 				pScr->Value = 0;
 			}
+*/
+
 		}
 
-		if ((GD.TuneClimate.sc_TPlusMinOn>0) && (GD.TuneClimate.sc_TCorrMin>0))
+		if ((sc_TMinOpenCorrect>0) && (sc_TCorrMax>0))
 		{
 		// расчет минимального открытия экрана
 			if (deltaTz > 0)
 			{
-				if (deltaTz <= (GD.TuneClimate.sc_TCorrMin*100))
+				if (deltaTz < sc_TCorrMin)
 				{
-					MinSC = (deltaTz * GD.TuneClimate.sc_TPlusMinOn) / ((GD.TuneClimate.sc_TCorrMin*100));
-					pScr->Mode=0;
-					pScr->Value = MinSC;
+					pScr->Mode=1;
+					pScr->Value = 0;
 				}
-				else
+				if ( (deltaTz > sc_TCorrMin)&&(deltaTz < sc_TCorrMax) )
+				{
+					CorrRes = (deltaTz * sc_TMinOpenCorrect) / ((sc_TCorrMax));
+					pScr->Mode=0;
+					pScr->Value = CorrRes + sc_StartP1Zone;
+					if (sc_TMinOpenCorrect + sc_StartP1Zone > pGD_Control_Tepl->sc_TMaxOpen)
+						pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;
+				}
+				if (deltaTz >= sc_TCorrMax)
 				{
 					pScr->Mode=0;
-					pScr->Value = GD.TuneClimate.sc_TPlusMinOn;
+					pScr->Value = sc_TMinOpenCorrect + sc_StartP1Zone;
+					if (sc_TMinOpenCorrect + sc_StartP1Zone > pGD_Control_Tepl->sc_TMaxOpen)
+						pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;
 				}
-
 			}
 		}
 
@@ -148,7 +211,7 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 				pScr->Mode=1;
 			if ((!pGD_TControl_Tepl->Screen[0].Mode)||(IntZ>GD.TuneClimate.sc_ZOutClose+200)||(!GD.TuneClimate.sc_ZOutClose))
 				pScr->Mode=0;
-			if((GD.TuneClimate.sc_ZSRClose)&&(GD.Hot.MidlSR>SunZClose)) pScr->Mode=1;
+			if((GD.TuneClimate.sc_ZSRClose)&&(MidlSun>SunZClose)) pScr->Mode=1;
 		}
 		if 	(pScr->Mode!=pScr->OldMode)
 			pScr->PauseMode=GD.TuneClimate.sc_PauseMode;
@@ -162,7 +225,7 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			ByteZ=0;
 			if (IntZ<GD.TuneClimate.sc_TVOutClose) pScr->Mode=1;
 			if ((IntZ>GD.TuneClimate.sc_TVOutClose+200)||(!GD.TuneClimate.sc_TVOutClose)) pScr->Mode=0;
-			if ((GD.Hot.MidlSR>GD.TuneClimate.sc_TVSRMaxOpen)&&(GD.TuneClimate.sc_TVSRMaxOpen))
+			if ((MidlSun>GD.TuneClimate.sc_TVSRMaxOpen)&&(GD.TuneClimate.sc_TVSRMaxOpen))
 				pScr->Mode=0;
 		}
 		if 	(pScr->Mode!=pScr->OldMode)
@@ -189,7 +252,7 @@ void InitScreen(char typScr, char fnTepl)
 }
 
 
-void SetPosScreen(char typScr)
+void SetPosScreen(char typScr, char fnTepl)
 {
 	char xdata *pMech;
     eScreen *pScr;
@@ -198,7 +261,8 @@ void SetPosScreen(char typScr)
 	pScr=&pGD_TControl_Tepl->Screen[typScr];
 
     pMech=&((*(pGD_Hot_Hand+cHSmScrTH+typScr)).Position);
-	
+
+
 	if (YesBit((*(pGD_Hot_Hand+cHSmScrTH+typScr)).RCS, cbManMech)) return;
 
 	if(pScr->Pause<0) pScr->Pause=0;
@@ -209,6 +273,12 @@ void SetPosScreen(char typScr)
 
 	if (!typScr) // Только если термический, то произвести коррекцию
 	{
+		//if (IntZ >= GD.Control.Tepl[fnTepl].sc_TMaxOpen)
+		//	{
+		//		pGD_TControl_Tepl->Systems[cSysScreen].Keep = IntZ;
+		//		return;
+		//	}
+
 		IntZ-=pGD_Hot_Tepl->Kontur[cSmScreen].Do;//pGD_Hot_Tepl->OtherCalc.CorrScreen;
 
 		if YesBit(pGD_TControl_Tepl->RCS1,cbSCCorrection)
@@ -219,10 +289,14 @@ void SetPosScreen(char typScr)
 			return;
 		}
 	} 
+
 	step=0;
 	if ((ByteX>=GD.TuneClimate.sc_StartP2Zone)&&(ByteX<GD.TuneClimate.sc_StartP1Zone))
 	{
-		step=GD.TuneClimate.sc_StepS2Zone;
+		if (ByteX < pGD_Control_Tepl->sc_TMaxOpen)
+			step=GD.TuneClimate.sc_StepS2Zone;
+		else
+			step = ByteX - pGD_Control_Tepl->sc_TMaxOpen;
 		pScr->Pause=GD.TuneClimate.sc_StepP2Zone;
 	}
 	if (ByteX>=GD.TuneClimate.sc_StartP1Zone)	 

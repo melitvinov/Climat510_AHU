@@ -2491,9 +2491,9 @@ void __sMechScreen(void)
 		}
 
 		// расчеты экранов
-		SetPosScreen(cTermHorzScr);
-		SetPosScreen(cSunHorzScr);
-		SetPosScreen(cTermVertScr1);
+		SetPosScreen(cTermHorzScr,fnTepl);
+		SetPosScreen(cSunHorzScr,fnTepl);
+		SetPosScreen(cTermVertScr1,fnTepl);
 	}
 }
 
