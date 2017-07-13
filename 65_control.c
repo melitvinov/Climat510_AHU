@@ -677,6 +677,7 @@ void AllTaskAndCorrection(void)
 		(*pGD_Hot_Tepl).AllTask.NextTVent+=IntZ;
 		(*pGD_Hot_Tepl).AllTask.DoTVent+=IntZ;
 
+
 //	Установка темпеатуры вентилирования
 //	(*pGD_Hot_Tepl).AllTask.DoTVent=(*pGD_Hot_Tepl).AllTask.NextTAir;//GD.TControl.Tepl[0].SensHalfHourAgo;//(*pGD_Hot_Tepl).AllTask.DoTHeat;//+GD.TuneClimate.d_TempVent;
 //	Коррекция по влажности темпеатуры задания

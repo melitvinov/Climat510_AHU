@@ -34,7 +34,7 @@
 
 #define cSmT1AHUOutSens	14
 
-#define cSmOverPSens	15
+#define cSmOverPSens	15   // датчик избыточного давления
 #define cSmRoofSens		16
 #define cSmGlassSens	18
 #define cSmCOSens		11

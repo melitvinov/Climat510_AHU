@@ -87,8 +87,8 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 		else
 			deltaTi = 0;
 
-		if (deltaTi > 0)
-		{
+		//if (deltaTi > 0)
+		//{
 			// убрал коррекцию вт, вещь не нужная
 			/*if (MidlSun > GD.TuneClimate.sc_dTSunFactor)
 			{
@@ -114,24 +114,31 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			{
 				pScr->Mode=0;
 				pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;
+			}
 
-
-
-				if ( (sc_deltaTend)&&(sc_MaxOpenCorrect) )
+			// расчет макимального открытия экрана
+			if ( (sc_deltaTend)&&(sc_MaxOpenCorrect) )
+			{
+				if (deltaTi > 0)
 				{
 					if ((deltaTi > sc_deltaTstart) && (deltaTi < sc_deltaTend))
 					{
-						CorrRes = (deltaTi * sc_MaxOpenCorrect) / sc_deltaTend;
-						if (pScr->Value > CorrRes)
-							pScr->Value =	pScr->Value - CorrRes;
+						if (sc_deltaTend > sc_deltaTstart)
+							CorrRes = ((deltaTi - sc_deltaTstart) * sc_MaxOpenCorrect) / (sc_deltaTend - sc_deltaTstart);
+						else
+							CorrRes = (deltaTi * sc_MaxOpenCorrect) / sc_deltaTend;
+						if (pGD_Control_Tepl->sc_TMaxOpen > CorrRes)
+							pScr->Value = pGD_Control_Tepl->sc_TMaxOpen - CorrRes;
 					}
 					if (deltaTi > sc_deltaTend)
 					{
-						if (pScr->Value > CorrRes)
-							pScr->Value =	pScr->Value - sc_MaxOpenCorrect;
+						if (pGD_Control_Tepl->sc_TMaxOpen > sc_MaxOpenCorrect)
+							pScr->Value = pGD_Control_Tepl->sc_TMaxOpen - sc_MaxOpenCorrect;
 					}
 				}
 			}
+
+
 
 /*
 			CorrRes = (deltaTi * GD.TuneClimate.sc_TSROpen) / (GD.TuneClimate.sc_dTEnd);
@@ -160,9 +167,9 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			}
 */
 
-		}
+//		}
 
-		if ((sc_TMinOpenCorrect>0) && (sc_TCorrMax>0))
+		if ( (sc_TMinOpenCorrect>0) && (sc_TCorrMax>0) )
 		{
 		// расчет минимального открытия экрана
 			if (deltaTz > 0)
@@ -170,22 +177,25 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 				if (deltaTz < sc_TCorrMin)
 				{
 					pScr->Mode=1;
-					pScr->Value = 0;
+					pScr->Value = sc_StartP1Zone;
 				}
 				if ( (deltaTz > sc_TCorrMin)&&(deltaTz < sc_TCorrMax) )
 				{
-					CorrRes = (deltaTz * sc_TMinOpenCorrect) / ((sc_TCorrMax));
+					if (sc_TCorrMax > sc_TCorrMin)
+						CorrRes = (deltaTz * sc_TMinOpenCorrect) / ((sc_TCorrMax - sc_TCorrMin));
+					else
+						CorrRes = (deltaTz * sc_TMinOpenCorrect) / ((sc_TCorrMax));
 					pScr->Mode=0;
-					pScr->Value = CorrRes + sc_StartP1Zone;
+					pScr->Value = CorrRes;
 					if (sc_TMinOpenCorrect + sc_StartP1Zone > pGD_Control_Tepl->sc_TMaxOpen)
-						pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;
+						pScr->Value = sc_StartP1Zone;
 				}
 				if (deltaTz >= sc_TCorrMax)
 				{
 					pScr->Mode=0;
-					pScr->Value = sc_TMinOpenCorrect + sc_StartP1Zone;
+					pScr->Value = sc_TMinOpenCorrect;
 					if (sc_TMinOpenCorrect + sc_StartP1Zone > pGD_Control_Tepl->sc_TMaxOpen)
-						pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;
+						pScr->Value = sc_StartP1Zone;
 				}
 			}
 		}
@@ -251,6 +261,8 @@ void InitScreen(char typScr, char fnTepl)
 
 }
 
+// шиги отрабатывают не верно! Не видят коррекцию по макс открытию
+
 
 void SetPosScreen(char typScr, char fnTepl)
 {
@@ -279,7 +291,7 @@ void SetPosScreen(char typScr, char fnTepl)
 		//		return;
 		//	}
 
-		IntZ-=pGD_Hot_Tepl->Kontur[cSmScreen].Do;//pGD_Hot_Tepl->OtherCalc.CorrScreen;
+		IntZ-=pGD_Hot_Tepl->Kontur[cSmScreen].Do;  //pGD_Hot_Tepl->OtherCalc.CorrScreen;
 
 		if YesBit(pGD_TControl_Tepl->RCS1,cbSCCorrection)
 		{
@@ -293,15 +305,25 @@ void SetPosScreen(char typScr, char fnTepl)
 	step=0;
 	if ((ByteX>=GD.TuneClimate.sc_StartP2Zone)&&(ByteX<GD.TuneClimate.sc_StartP1Zone))
 	{
-		if (ByteX < pGD_Control_Tepl->sc_TMaxOpen)
-			step=GD.TuneClimate.sc_StepS2Zone;
-		else
-			step = ByteX - pGD_Control_Tepl->sc_TMaxOpen;
+		step=GD.TuneClimate.sc_StepS2Zone;
+		if (step + ByteX > pScr->Value)
+			step = pGD_Control_Tepl->sc_TMaxOpen - ByteX;
 		pScr->Pause=GD.TuneClimate.sc_StepP2Zone;
 	}
 	if (ByteX>=GD.TuneClimate.sc_StartP1Zone)	 
 	{
-		step=GD.TuneClimate.sc_StepS1Zone;
+		// new
+		if (ByteX < pScr->Value)
+		{
+			if (ByteX + GD.TuneClimate.sc_StepS2Zone <= pScr->Value)//pGD_Control_Tepl->sc_TMaxOpen)
+				step=GD.TuneClimate.sc_StepS2Zone;
+			else
+				step = pScr->Value - ByteX;
+		}
+		else
+			step = ByteX - pScr->Value;
+		// new
+		//step=GD.TuneClimate.sc_StepS1Zone;   // old
 		pScr->Pause=GD.TuneClimate.sc_StepP1Zone;
 	}
 	IntX=((int)(ByteX))-IntZ;
@@ -332,7 +354,6 @@ void SetPosScreen(char typScr, char fnTepl)
 
 void LaunchVent(void)
 {
-
 
 /*	if ((((*(pGD_Hot_Hand+cHSmWinN)).Position+(*(pGD_Hot_Hand+cHSmWinS)).Position)>0)&&((GD.TuneClimate.cool_PFactor)))
 		pGD_TControl_Tepl->OutFan=1;

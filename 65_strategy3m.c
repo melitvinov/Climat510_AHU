@@ -2588,8 +2588,12 @@ void __sMechWindows(void)
 
 
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN].RCS,cbManMech)))
-			pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(2000,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
+		{
+			volatile int16_t vPresMax = pGD_Control_Tepl->PresMax * 100;
+			pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(vPresMax,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
+			//pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(2000,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
 //			pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetIntWin(GD.TuneClimate.fAHU_Sens1,cHSmWinN,GD.TuneClimate.fAHU_Offset1,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position);
+		}
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN2].RCS,cbManMech)))
 			pGD_Hot_Tepl->HandCtrl[cHSmWinN2].Position=__SetIntWin(GD.TuneClimate.fAHU_Sens2,cHSmWinN2,GD.TuneClimate.fAHU_Offset2,pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position, fnTepl);
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN3].RCS,cbManMech)))

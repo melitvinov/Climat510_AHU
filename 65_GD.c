@@ -158,9 +158,9 @@ typedef struct eeNextTCalc {
 				int16_t		ICorrection;
 				int16_t		dSumCalcF;//Понижают осадки	12
 
-				int16_t		DiffCO2;//Корректирующий коэффициент в зависимости от колебательных процессов	14
-				int16_t		TVentCritery;//
-				int16_t		PCorrection;//Коррекция управляющей функции по 1 разности	18
+				int16_t		DiffCO2;
+				int16_t		TVentCritery; //
+				int16_t		PCorrection;
 
 				int16_t		Critery;//Цель-изменить теплоноситель на	20
 				int16_t		ICorrectionVent; // RH рукава ДЕРЖАТЬ
@@ -303,17 +303,18 @@ typedef struct eeTuneClimate
         int16_t     s_TEnd;   /*Температура задана - солнце влияет до*/
         int16_t     s_TConst;  /*Температура задана - солнце увеличивает на*/
         int16_t     s_TVentConst;   /*Влажностьзадана - солнце начинает влиять при*/
-
         int16_t     cool_PFactor;   /*Влажностьзадана - солнце влияет до*/
         int16_t     s_RHConst;  /*Влажностьзадана - солнце увеличивает на*/
         int16_t     COPause;   /*Концентрация СО2 - солнце начинает влиять при*/
+
         int16_t     f_SRFactor;   /*Концентрация СО2 - солнце влияет до*/
 
         int16_t     s_CO2Const;  /*Концентрация СО2 - солнце увеличивает на*/
-        int16_t     f_OutFactor;   /*Контур 1_Минимум в прогр- солнце начинает влиять при*/
-        int16_t     f_CorrTVentUp;   /*Контур 1_Минимум в программе - солнце влияет до*/
-        int16_t     s_MinTPipeConst;/*Контур 1_Минимум в программе - солнце уменьшает на*/
 
+        int16_t     f_OutFactor;   /*Контур 1_Минимум в прогр- солнце начинает влиять при*/
+        int16_t     f_CorrTVentUp;		 // Клапан AHU - RHз - RHи увеличивает температуру вентиляции на
+
+        int16_t     s_MinTPipeConst;/*Контур 1_Минимум в программе - солнце уменьшает на*/
         int16_t     s_MinTPipe5;   /*Фрамуги_Минимум в прогр- солнце начинает влиять при*/
         int16_t     s_MinTPipe3;   /*Фрамуги_Минимум в программе - солнце влияет до*/
         int16_t     s_MinOpenWinConst; /*Фрамуги_Минимум в программе - солнце увеличивает на*/
@@ -321,20 +322,22 @@ typedef struct eeTuneClimate
 /*-----------------------------------
                 Параметры-для температуры вентиляции
 ------------------------------------*/
-        int16_t     f_min_RHStart;
-		int16_t		f_min_RHEnd;
-		int16_t		f_max_RHStart;
-        int16_t     f_max_RHEnd;
-		int8_t		f_min_Cor;
-        int8_t    	f_max_Cor;
+        int16_t     f_min_RHStart;		// Клапан AHU - RHи - RHз начинает влиять на минимум при
+		int16_t		f_min_RHEnd;		// Клапан AHU - RHи - RHз влияет на минимум до
+		int16_t		f_max_RHStart;		// Клапан AHU - RHз - RHи начинает влиять на максимум при
+        int16_t     f_max_RHEnd;		// Клапан AHU - RHз - RHи влияет на максимум до
+		int8_t		f_min_Cor;			// Клапан AHU - RHи - RHз увеличивает минимум на
+        int8_t    	f_max_Cor;			// Клапан AHU - RHз - RHи уменьшает максимум на
 //42 байта
 /*-----------------------------------
                 Параметры-обогрев
 ------------------------------------*/
 //64 байта
-		int16_t		c_DoMinIfGlass;  /*Контур 5 - вкл если осадки и Твнеш меньше*/
-		int16_t		f_CorrTVent;  /*Контур 5 - при осадках держать*/
-		int16_t		c_MinIfSnow;  /*Контур 5 - держать минимум при внешней температуре меньше*/
+		int16_t		c_DoMinIfGlass;
+
+		int16_t		f_CorrTVent;  		// Клапан AHU - RHи - RHз уменьшает температуру вентиляции на
+
+		int16_t		c_MinIfSnow;
 
 		int16_t		o_DeltaLight;
 		int8_t		f_changeWindows;
@@ -345,35 +348,31 @@ typedef struct eeTuneClimate
 ------------------------------------*/
 
 		int8_t		f_MaxAngle;  // Клапан AHU допустимое отклонение от датчика
+
 		int8_t		c_MullDown;  /*Контур 1 - (Тзад-Тизм)начинает влиять при*/
-		int8_t		f_DefOnUn;  /*Контур 1 - (Тзад-Тизм)влияет до*/
+
+		int8_t		f_DefOnUn;  // Клапан AHU
 
 		int8_t		c_5ExtrHeat;  /*Контур 1 - (Тзад-Тизм)влияет до*/
         int16_t     c_CriticalSnowOut;  /*Контур 1 - (Тзад-Тизм)увеличивает на*/
 		int16_t		c_DoMaxIfGlass;  /*Контур 1 - Динамика(Тзад-Тизм)начинает влиять при*/
-
-
 		int16_t		c_GlassStart;  /*Контур 1 - (Тзад-Тстекла)начинает влиять при*/
 		int16_t		c_GlassEnd;  /*Контур 1 - (Тзад-Тстекла)влияет до*/
         int16_t     c_GlassFactor;  /*Контур 1 - (Тзад-Тстекла)увеличивает на*/
-/*Искуственный интеллект*/
 		int16_t		c_MaxDifTDown;  /*Контур 1 - (Тзад-Тшатра)начинает влиять при*/
-		int16_t		f_MinSun;  /*Контур 1 - (Тзад-Тшатра)влияет до*/
-        int16_t     f_DeltaOut;  /*Контур 1 - (Тзад-Тшатра)увеличивает на*/
+
+		int16_t		f_MinSun;      // Клапан AHU
+        int16_t     f_DeltaOut;    // Клапан AHU
 /*______________________*/
 		int16_t		c_SRStart;  /*Контур 1 - солнце начинает влиять при*/
 		int16_t		c_SREnd;  /*Контур 1 - солнце влияет до*/
         int16_t     c_SRFactor;  /*Контур 1 - солнце уменьшает на*/
-
 		int16_t		c_OutStart;  /*Контур 1 - (Тзад-Твнеш)начинает влиять при*/
 		int16_t		c_OutEnd;  /*Контур 1 - (Тзад-Твнеш)влияет до*/
         int16_t     c_OutFactor;  /*Контур 1 - (Тзад-Твнеш)увеличивает на*/
-
 		int16_t		c_WindStart;  /*Контур 1 - ветер начинает влиять при*/
-//114 байта
 		int16_t		c_WindEnd;  /*Контур 1 - ветер влияет до*/
         int16_t     c_WindFactor;  /*Контур 1 - ветер увеличивает на*/
-
 
 		int16_t		sc_deltaTstart;  /*Экран - Tизм-Тзад влияет при*/				// вместо  sc_GlassStart
 		int16_t		sc_deltaTend;    /*Экран - Tизм-Тзад влияет до*/
@@ -392,26 +391,26 @@ typedef struct eeTuneClimate
 /*-----------------------------------
                 Параметры-вентиляция
 ------------------------------------*/
-		uchar		f_S1MinDelta; /*Фрамуги - шагать на первом уровне*/
-		uchar		f_S1Level;
-		uchar		f_S2MinDelta;
-		uchar		f_S2Level;
-		uchar		f_S3MinDelta;
-		uchar		f_S3Level;
+		uchar		f_S1MinDelta; 	// Клапан AHU
+		uchar		f_S1Level;		// Клапан AHU
+		uchar		f_S2MinDelta;	// Клапан AHU
+		uchar		f_S2Level;		// Клапан AHU
+		uchar		f_S3MinDelta;	// Клапан AHU
+		uchar		f_S3Level;		// Клапан AHU
 //+6
-        int16_t     f_MinDelta;  /*Фрамуги - исполнять если шаг больше*/
-		int16_t		c_MaxDifTUp;  /*Фрамуги - максимальная Пауза между включениями*/
-		int16_t		f_MinTime;  /*Фрамуги - минимальная Пауза между включениями*/
-        int16_t     f_StormWindOn; /*Фрамуги - Ветер закрывает Наветренную сторону при*/
-        int16_t     f_StormWind; /*Фрамуги - Ветер закрывает Подветренную сторону при*/
-        int16_t     f_WindStart;  /*Фрамуги - Ветер начинает влиять при*/
+        int16_t     f_MinDelta;  	// Клапан AHU
+		int16_t		c_MaxDifTUp;  	// Клапан AHU
+		int16_t		f_MinTime;  	// Клапан AHU минимальная пауза между включениями
+        int16_t     f_StormWindOn; 	// Клапан AHU
+        int16_t     f_StormWind; 	// Клапан AHU ветер закрывает
+        int16_t     f_WindStart;  	// Фрамуги минимальный ветер при расчете
 //154 байта
 //+18
-        int16_t     f_WindHold;  /*Фрамуги - Внешр темп допускает максимум открытия при*/
-        int16_t     f_MinTFreeze;   /*Фрамуги - Внешн темп закрывает при*/
-//+22
-        int16_t     f_MaxOpenRain;  /*Фрамуги - при Дожде допустимо открывать на*/
-        int8_t    	co_MaxTime; /*Фрамуги - Флюгер меняет наветренную сторону при*/
+        int16_t     f_WindHold;  	// Клапан AHU заблокировать максимум на
+        int16_t     f_MinTFreeze;  	// Клапан AHU внешняя температура закрыват при
+        int16_t     f_MaxOpenRain;  // Клапан AHU при дожде допустимо открывать
+
+        int8_t    	co_MaxTime;
 		int8_t		co_MinTime;
 /*-----------------------------------
                 Параметры-влияние на фрамуги
@@ -419,18 +418,18 @@ typedef struct eeTuneClimate
 
         int8_t		co_Impuls;       /*Фрамуги - (Тизм-Твентиляции)открыть на максимум при*/
 		int8_t		co_Dif;
-		int16_t		f_StartCorrPow;  /*Фрамуги - Солнце начинает влиять при*/
-		int16_t		f_EndCorrPow;  /*Фрамуги - Солнце влияет до*/
-        int16_t     f_PowFactor;        /*Фрамуги - Солнце увеличивает на*/
 
-        int16_t		f_SunStart;/*СО2 - коэф Пропорциональный*/
-        int16_t		f_SunEnd;/*СО2 - коэф Пропорциональный*/
-		int16_t		f_SunIncOutT;/*Экран затеняющий - Солнце закрывает при*/
+		int16_t		f_StartCorrPow;  	// Клапан AHU Твнещ начинает влиять при
+		int16_t		f_EndCorrPow;		// Клапан AHU Твнеш влияет до
+        int16_t     f_PowFactor;        // Клапан AHU Твнеш увеличивает открытие в
+
+        int16_t		f_SunStart;			// Клапан AHU солнце начинает влиять при
+        int16_t		f_SunEnd;			// Клапан AHU солнце влияет до
+		int16_t		f_SunIncOutT;		// Клапан AHU увеличивает Твнеш на
 
 		int16_t		sc_TSROpen;/*Экран термический - Солнце открывает при*/
 		int16_t		sc_TOutClose;/*Экран термический - Твнеш днем закрывает при*/         // не используется
 		int16_t		sc_TVOutClose;/*Экран термический - Твнеш ночью закрывает при*/
-
 		int16_t		sc_ZOutClose;/*Экран термический - ветер начинает влиять при*/
 		int16_t		sc_TWindStart;/*Экран термический - ветер влияет до*/
         int16_t     sc_TVSRMaxOpen; /*Экран термический - ветер увеличивает Т внеш на*/
@@ -585,10 +584,13 @@ typedef struct eeTeplControl
 		uint16_t	InRHMin;
 
 		uint16_t     MistMax;
+
+		uint16_t     PresMax;
+
 //		uint8_t 		crc1;
 //		uint8_t 		crc2;
 
-		int16_t		Rez[14];
+		int16_t		Rez[13];
 
 		uint16_t 	crc;
 
