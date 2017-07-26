@@ -1367,7 +1367,10 @@ ClrDog;
 			__SetBitOutReg(fnTepl,cHSmAHUPad,1,0);  // выкл
 	}
 	else
+	{
 		__SetBitOutReg(fnTepl,cHSmAHUPad,1,0);  // выкл
+		fPadOnPad = 0;
+	}
 
 // InRH
 	InRHPosition = ((*(pGD_Hot_Hand+cHSmInRH)).Position);
@@ -1389,11 +1392,14 @@ ClrDog;
 			__SetBitOutReg(fnTepl,cHSmInRH,1,0);  // выкл
 	}
 	else
+	{
 		__SetBitOutReg(fnTepl,cHSmInRH,1,0);  // выкл
+		fInRHOn = 0;
+	}
 
 
-//	InRHPosition = ((*(pGD_Hot_Hand+cHSmInRH)).Position);
-	if  (( fInRHOn > 0 ) || ( fPadOnPad > 0 ))
+	//if  (( fInRHOn > 0 ) || ( fPadOnPad > 0 ))		// было так
+	if ( (( InRHPosition > 0 ) && (getTempHeat(fnTepl) > 0 )) || (PadPosition) ) // теперь так не выкл насос если есть задание на одном из мех
 		__SetBitOutReg(fnTepl,cHSmAHUPump,0,0);   // вкл
 	else
 		__SetBitOutReg(fnTepl,cHSmAHUPump,1,0);   // выкл

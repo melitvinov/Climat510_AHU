@@ -26,7 +26,9 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 	IntY=getTempHeat(fnTepl)-pGD_Hot_Tepl->AllTask.DoTHeat;
 	CorrectionRule(GD.TuneClimate.sc_dTStart,GD.TuneClimate.sc_dTEnd,GD.TuneClimate.sc_dTSunFactor,0);   // начинает влиять на солнце при, начинает влиять на солнце до, уменьшает солнце на
 	SunZClose=GD.TuneClimate.sc_ZSRClose-IntZ;
-	IntZ=pGD_Hot_Tepl->AllTask.DoTHeat-GD.TControl.MeteoSensing[cSmOutTSens];
+	//IntZ=pGD_Hot_Tepl->AllTask.DoTHeat-GD.TControl.MeteoSensing[cSmOutTSens];
+	volatile int sc_Tout = GD.TControl.MeteoSensing[cSmOutTSens];
+
 	switch(chType) 
 	{
 	case 0:
@@ -77,6 +79,11 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 		int sc_TCorrMax = GD.TuneClimate.sc_TCorrMax*100;
 		int sc_TMinOpenCorrect = GD.TuneClimate.sc_TMinOpenCorrect;
 		int sc_StartP1Zone = GD.TuneClimate.sc_StartP2Zone;
+		int sc_TOutClose = GD.TuneClimate.sc_TOutClose;
+		volatile int sc_LineSunVol = GD.TuneClimate.sc_LineSunVol*10;
+
+		int sc_TSROpen = GD.TuneClimate.sc_TSROpen;
+		int sc_ZSRClose = GD.TuneClimate.sc_ZSRClose;
 
 		if (Tz >= Ti)
 			deltaTz = (pGD_Hot_Tepl->AllTask.DoTHeat - getTempHeat(fnTepl));
@@ -100,20 +107,43 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			}
 			else MinusSR = MidlSun;
 */
-			if (MidlSun < GD.TuneClimate.sc_TSROpen)
+			if (MidlSun < sc_TSROpen)
 			{
-				pScr->Mode=0;
-				pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;  // не 100 а макс из парам
+				if ( (bNight)&&(sc_TOutClose < sc_Tout) ) // коррекция по внешней температуре с признаком ночи, экран не надо сварачивать
+				{
+					pScr->Mode=1;
+					pScr->Value = 0;
+				}
+				else
+				{
+					pScr->Mode=0;
+					pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;  // не 100 а макс из парам
+				}
 			}
-			if ( (MidlSun > GD.TuneClimate.sc_TSROpen)&(MidlSun < GD.TuneClimate.sc_ZSRClose) )
+			if ( (MidlSun > sc_TSROpen)&(MidlSun < sc_ZSRClose) )
 			{
 				pScr->Mode=1;
 				pScr->Value = 0;
 			}
-			if (MidlSun > GD.TuneClimate.sc_ZSRClose)
+			if (MidlSun > sc_ZSRClose)
 			{
-				pScr->Mode=0;
+				pScr->Mode=0;										// разворачиваем экран на максимум
 				pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;
+
+				if ((sc_LineSunVol)&&(sc_LineSunVol>sc_ZSRClose))	// если стоит работать линейно, то от sc_ZSRClose до sc_LineSunVol линейно по солнцу разворачиваем экран
+				{
+					if ((MidlSun > sc_ZSRClose)&&(MidlSun < sc_LineSunVol))
+					{
+						CorrRes = ((MidlSun - sc_ZSRClose) * pGD_Control_Tepl->sc_TMaxOpen) / (sc_LineSunVol - sc_ZSRClose);
+						pScr->Value = CorrRes;
+					}
+					else
+					{
+						pScr->Mode=0;										// разворачиваем экран на максимум
+						pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;
+					}
+
+				}
 			}
 
 			// расчет макимального открытия экрана

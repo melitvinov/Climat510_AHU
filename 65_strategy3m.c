@@ -321,6 +321,8 @@ void CheckMistSystemNew(void)
 	volatile int16_t vTOutAHU = pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value;
 	volatile int16_t vKeepTAHU = pGD_TControl_Tepl->TVentCritery;
 	volatile int16_t vTAHUdelta = 0;
+	volatile int16_t vKeepRH = pGD_Hot_Tepl->AllTask.DoRHAir+500;				// RH теплицы Держать + 5 градус
+	volatile int16_t vRHtepl = pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
 	volatile int16_t res;
 
 	pGD_TControl_Tepl->Systems[cSysMist].Max = vMistMax;
@@ -331,31 +333,51 @@ void CheckMistSystemNew(void)
 		if (vTAHUdelta >= vMaxCorrAHUrh)
 		{
 			res = vMistMax;
-			pGD_TControl_Tepl->SaveMaxMist++;
+			if (vRHtepl > vKeepRH)
+			{
+				pGD_TControl_Tepl->SaveMaxMist--;
+				if (pGD_TControl_Tepl->SaveMaxMist < 0)
+					pGD_TControl_Tepl->SaveMaxMist = 0;
+				pGD_TControl_Tepl->Systems[cSysMist].Max=0;
+				res = 0;
+			}
+			else
+				pGD_TControl_Tepl->SaveMaxMist++;
 			if (pGD_TControl_Tepl->SaveMaxMist > pGD_TControl_Tepl->Systems[cSysMist].Max)
 				pGD_TControl_Tepl->SaveMaxMist = pGD_TControl_Tepl->Systems[cSysMist].Max;
 		}
 		else
 		{
-			res = (vTAHUdelta * 100) / vMaxCorrAHUrh;
-			pGD_TControl_Tepl->Systems[cSysMist].Max = res;
-			if (res > vMistMax)
+			if (vRHtepl > vKeepRH)
 			{
-				res = vMistMax;
-				pGD_TControl_Tepl->Systems[cSysMist].Max = vMistMax;
-			}
-			if (res > pGD_TControl_Tepl->SaveMaxMist)
-			{
-				pGD_TControl_Tepl->SaveMaxMist++;
-				if (pGD_TControl_Tepl->SaveMaxMist > res)
-					pGD_TControl_Tepl->SaveMaxMist = res;
-
+				pGD_TControl_Tepl->SaveMaxMist--;
+				if (pGD_TControl_Tepl->SaveMaxMist < 0)
+					pGD_TControl_Tepl->SaveMaxMist = 0;
+				pGD_TControl_Tepl->Systems[cSysMist].Max=0;
+				res = 0;
 			}
 			else
 			{
-				pGD_TControl_Tepl->SaveMaxMist--;
-				if (pGD_TControl_Tepl->SaveMaxMist < res)
-					pGD_TControl_Tepl->SaveMaxMist = res;
+				res = (vTAHUdelta * 100) / vMaxCorrAHUrh;
+				pGD_TControl_Tepl->Systems[cSysMist].Max = res;
+				if (res > vMistMax)
+				{
+					res = vMistMax;
+					pGD_TControl_Tepl->Systems[cSysMist].Max = vMistMax;
+				}
+				if (res > pGD_TControl_Tepl->SaveMaxMist)
+				{
+					pGD_TControl_Tepl->SaveMaxMist++;
+					if (pGD_TControl_Tepl->SaveMaxMist > res)
+						pGD_TControl_Tepl->SaveMaxMist = res;
+
+				}
+				else
+				{
+					pGD_TControl_Tepl->SaveMaxMist--;
+					if (pGD_TControl_Tepl->SaveMaxMist < res)
+						pGD_TControl_Tepl->SaveMaxMist = res;
+				}
 			}
 		}
 	}
