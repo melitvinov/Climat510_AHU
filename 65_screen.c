@@ -147,7 +147,7 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			}
 
 			// расчет макимального открытия экрана
-			if ( (sc_deltaTend)&&(sc_MaxOpenCorrect) )
+			if ( (sc_deltaTend)&&(sc_MaxOpenCorrect)&&(pScr->Value == pGD_Control_Tepl->sc_TMaxOpen) )
 			{
 				if (deltaTi > 0)
 				{
