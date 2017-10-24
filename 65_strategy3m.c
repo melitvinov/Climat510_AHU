@@ -321,8 +321,15 @@ void CheckMistSystemNew(void)
 	volatile int16_t vTOutAHU = pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value;
 	volatile int16_t vKeepTAHU = pGD_TControl_Tepl->TVentCritery;
 	volatile int16_t vTAHUdelta = 0;
-	volatile int16_t vKeepRH = pGD_Hot_Tepl->AllTask.DoRHAir+500;				// RH теплицы Держать + 5 градус
+	//volatile int16_t vKeepRH = pGD_Hot_Tepl->AllTask. DoRHAir+500;				// RH теплицы Держать + 5 градус
+
 	volatile int16_t vRHtepl = pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
+
+	// убираем это. Из задания убираем все. А точные настройки сделаем как диапазон работы дефицита водяного пара
+	volatile int16_t vKeepRHstart = (*pGD_Hot_Tepl).AllTask.RHAir + (GD.TuneClimate.f_MistRHstart*100);
+	volatile int16_t vKeepRHend = (*pGD_Hot_Tepl).AllTask.RHAir + (GD.TuneClimate.f_MistRHend*100);
+	volatile int16_t MistRHstop = (*pGD_Hot_Tepl).AllTask.MistRHstop;
+
 	volatile int16_t res;
 
 	pGD_TControl_Tepl->Systems[cSysMist].Max = vMistMax;
@@ -333,28 +340,95 @@ void CheckMistSystemNew(void)
 		if (vTAHUdelta >= vMaxCorrAHUrh)
 		{
 			res = vMistMax;
-			if (vRHtepl > vKeepRH)
+			if (MistRHstop)
 			{
-				pGD_TControl_Tepl->SaveMaxMist--;
-				if (pGD_TControl_Tepl->SaveMaxMist < 0)
-					pGD_TControl_Tepl->SaveMaxMist = 0;
-				pGD_TControl_Tepl->Systems[cSysMist].Max=0;
-				res = 0;
+				if ( (vRHtepl > vKeepRHstart)&&(vRHtepl < vKeepRHend) )
+				{
+					res = ((vRHtepl-vKeepRHstart) * MistRHstop) / (vKeepRHend - vKeepRHstart);
+					if (pGD_TControl_Tepl->Systems[cSysMist].Max > res)
+						pGD_TControl_Tepl->Systems[cSysMist].Max = pGD_TControl_Tepl->Systems[cSysMist].Max - res;
+					else
+					{
+						pGD_TControl_Tepl->SaveMaxMist--;
+						if (pGD_TControl_Tepl->SaveMaxMist < 0)
+							pGD_TControl_Tepl->SaveMaxMist = 0;
+						pGD_TControl_Tepl->Systems[cSysMist].Max=0;
+						res = 0;
+					}
+				}
+				if (vRHtepl >= vKeepRHend)
+				{
+					if (pGD_TControl_Tepl->Systems[cSysMist].Max > MistRHstop)
+						pGD_TControl_Tepl->Systems[cSysMist].Max = pGD_TControl_Tepl->Systems[cSysMist].Max - MistRHstop;
+					else
+						pGD_TControl_Tepl->Systems[cSysMist].Max = 0;
+					pGD_TControl_Tepl->SaveMaxMist = pGD_TControl_Tepl->Systems[cSysMist].Max;
+					res = pGD_TControl_Tepl->Systems[cSysMist].Max;
+				}
+				if (vRHtepl < vKeepRHstart)
+				{
+					pGD_TControl_Tepl->SaveMaxMist++;
+					if (pGD_TControl_Tepl->SaveMaxMist > pGD_TControl_Tepl->Systems[cSysMist].Max)
+						pGD_TControl_Tepl->SaveMaxMist = pGD_TControl_Tepl->Systems[cSysMist].Max;
+				}
 			}
 			else
+			{
 				pGD_TControl_Tepl->SaveMaxMist++;
-			if (pGD_TControl_Tepl->SaveMaxMist > pGD_TControl_Tepl->Systems[cSysMist].Max)
-				pGD_TControl_Tepl->SaveMaxMist = pGD_TControl_Tepl->Systems[cSysMist].Max;
+				if (pGD_TControl_Tepl->SaveMaxMist > pGD_TControl_Tepl->Systems[cSysMist].Max)
+					pGD_TControl_Tepl->SaveMaxMist = pGD_TControl_Tepl->Systems[cSysMist].Max;
+			}
 		}
 		else
 		{
-			if (vRHtepl > vKeepRH)
+			res = vMistMax;
+			if (MistRHstop)
 			{
-				pGD_TControl_Tepl->SaveMaxMist--;
-				if (pGD_TControl_Tepl->SaveMaxMist < 0)
-					pGD_TControl_Tepl->SaveMaxMist = 0;
-				pGD_TControl_Tepl->Systems[cSysMist].Max=0;
-				res = 0;
+				if ( (vRHtepl > vKeepRHstart)&&(vRHtepl < vKeepRHend) )
+				{
+					res = ((vRHtepl-vKeepRHstart) * MistRHstop) / (vKeepRHend - vKeepRHstart);
+					if (pGD_TControl_Tepl->Systems[cSysMist].Max > res)
+						pGD_TControl_Tepl->Systems[cSysMist].Max = pGD_TControl_Tepl->Systems[cSysMist].Max - res;
+					else
+					{
+						pGD_TControl_Tepl->SaveMaxMist--;
+						if (pGD_TControl_Tepl->SaveMaxMist < 0)
+							pGD_TControl_Tepl->SaveMaxMist = 0;
+						pGD_TControl_Tepl->Systems[cSysMist].Max=0;
+						res = 0;
+					}
+				}
+				if (vRHtepl >= vKeepRHend)
+				{
+					if (pGD_TControl_Tepl->Systems[cSysMist].Max > MistRHstop)
+						pGD_TControl_Tepl->Systems[cSysMist].Max = pGD_TControl_Tepl->Systems[cSysMist].Max - MistRHstop;
+					else
+						pGD_TControl_Tepl->Systems[cSysMist].Max = 0;
+					pGD_TControl_Tepl->SaveMaxMist = pGD_TControl_Tepl->Systems[cSysMist].Max;
+					res = pGD_TControl_Tepl->Systems[cSysMist].Max;
+				}
+				if (vRHtepl < vKeepRHstart)
+				{
+					res = (vTAHUdelta * 100) / vMaxCorrAHUrh;
+					pGD_TControl_Tepl->Systems[cSysMist].Max = res;
+					if (res > vMistMax)
+					{
+						res = vMistMax;
+						pGD_TControl_Tepl->Systems[cSysMist].Max = vMistMax;
+					}
+					if (res > pGD_TControl_Tepl->SaveMaxMist)
+					{
+						pGD_TControl_Tepl->SaveMaxMist++;
+						if (pGD_TControl_Tepl->SaveMaxMist > res)
+							pGD_TControl_Tepl->SaveMaxMist = res;
+					}
+					else
+					{
+						pGD_TControl_Tepl->SaveMaxMist--;
+						if (pGD_TControl_Tepl->SaveMaxMist < res)
+							pGD_TControl_Tepl->SaveMaxMist = res;
+					}
+				}
 			}
 			else
 			{
@@ -537,6 +611,13 @@ int KeepUCValve(char prevPosition)
 	int16_t newKeep;
 	int8_t delta = 0;
 	tempKeep = pGD_TControl_Tepl->Systems[cSysUCValve].Keep;
+
+	if ((tempKeep>=GD.TuneClimate.f_MaxOpenRain)&&(GD.TControl.bSnow))
+	{
+		tempKeep=GD.TuneClimate.f_MaxOpenRain;
+		return tempKeep;
+	}
+
 	if (tempKeep > prevPosition )  // клапан открывается
 	{
 		delta = tempKeep - prevPosition;
@@ -1161,9 +1242,7 @@ void __sMinMaxWindows(void)
 	t_max=pGD_Control_Tepl->f_MaxOpenUn;
 	if ((t_max>GD.TuneClimate.f_MaxOpenRain)&&(GD.TControl.bSnow))
 	{
-		//pGD_Hot_Tepl->Kontur[cSmWindowOnW].Status=cSWRain;
 		pGD_Hot_Tepl->Kontur[cSmWindowUnW].Status=cSWRain;
-
 		t_max=GD.TuneClimate.f_MaxOpenRain;
 	}
 		//--------------------------------------------------------------------------------
@@ -2566,6 +2645,7 @@ int16_t __SetWinPress(uint16_t DoPres,uint8_t fNFram,uint16_t fOffset)
 }
 
 
+/*
 int16_t __SetPad(char fnTepl)
 {
 	int16_t* IntVal;
@@ -2579,6 +2659,7 @@ int16_t __SetPad(char fnTepl)
 	return IntZ;
 
 }
+*/
 
 //Процедура устанавливает регулировку фрамуг от головного клапана
 //Изменения от 13.05.2014

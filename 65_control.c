@@ -490,6 +490,8 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 		(*pGD_Hot_Tepl).AllTask.NextTVent=JumpNext(tVal,pGD_NextTimer->TVentAir,1,1);
 		(*pGD_Hot_Tepl).AllTask.Light=pGD_CurrTimer->Light;
 		(*pGD_Hot_Tepl).AllTask.ModeLight=pGD_CurrTimer->ModeLight;
+		(*pGD_Hot_Tepl).AllTask.MistRHstop = pGD_CurrTimer->MistRHstop;
+
 //		if (pGD_Hot_Tepl->InTeplSens[cSmRHSens])
 //		(*pGD_Hot_Tepl).AllTask.NextRHAir=JumpNext(pGD_CurrTimer->RHAir,pGD_NextTimer->RHAir,1);	
 		return;
@@ -501,7 +503,7 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	tVal=pGD_CurrTimer->TVentAir;
 	if (!tVal) tVal=pGD_CurrTimer->TAir+100;
 	(*pGD_Hot_Tepl).AllTask.DoTVent=JumpNext(tVal,pGD_NextTimer->TVentAir,1,1);
-	(*pGD_Hot_Tepl).AllTask.DoTCool=JumpNext(pGD_CurrTimer->TCool,pGD_NextTimer->TCool,1,1);
+//	(*pGD_Hot_Tepl).AllTask.DoTCool=JumpNext(pGD_CurrTimer->TCool,pGD_NextTimer->TCool,1,1);
 
 	(*pGD_Hot_Tepl).AllTask.SIO=pGD_CurrTimer->SIO;
 	(*pGD_Hot_Tepl).AllTask.RHAir=JumpNext(pGD_CurrTimer->RHAir_c,pGD_NextTimer->RHAir_c,1,100);
@@ -923,9 +925,9 @@ void __cNextTCalc(char fnTepl)
 		(*pGD_TControl_Tepl).Integral=(*pGD_TControl_Tepl).SaveIntegral;	
 	}
 
-	// изменеие 60
+#warning	// изменеие 60    // работало но не понятно нужно ли. Убрано пока. Вместо нее два параметра коррекция работы Mist по влажности
 	//if ((pGD_TControl_Tepl->StopI>3)&&(abs(IntY)<cResetDifTDo))  // было
-	if ((pGD_TControl_Tepl->StopI>3)&&(abs(IntY)>cResetDifTDo))
+	/*if ((pGD_TControl_Tepl->StopI>3)&&(abs(IntY)>cResetDifTDo))
 	{
 		// изменеие 60
 		int16_t CriterO;
@@ -948,7 +950,7 @@ void __cNextTCalc(char fnTepl)
 				-(*pGD_Hot_Tepl).NextTCalc.PCorrection+(*pGD_Hot_Tepl).NextTCalc.dSumCalc;
 		    (*pGD_TControl_Tepl).SaveIntegral*=100;
 		}
-	}
+	}	*/
 	if ((pGD_TControl_Tepl->StopI>3)&&(!SameSign(IntY,(*pGD_TControl_Tepl).Critery)))
 	{
 			(*pGD_TControl_Tepl).SaveIntegral
@@ -1024,7 +1026,7 @@ void __cNextTCalc(char fnTepl)
 		pGD_TControl_Tepl->IntegralVent= GD.Hot.Tepl[fnTepl].AllTask.DoTHeat * 100;
 		startFlag--;
 	}
-	if (minMinPipeTemp < 1400) minMinPipeTemp = MINPIPETEMPER;
+	if (minMinPipeTemp < MINPIPETEMPER) minMinPipeTemp = MINPIPETEMPER;
 	if (minMinPipeTemp > IntX)
 	{
 		pGD_TControl_Tepl->IntegralVent=minMinPipeTemp-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;

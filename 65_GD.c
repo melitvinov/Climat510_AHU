@@ -69,9 +69,8 @@ typedef struct  eeTimer
 
 		uchar		MinTPipe3;
 		uchar		RHAir_c;
-		uint16_t	TCool;
-
-		//uint16_t	Rez[9];
+		//uint16_t	TCool;
+		uint16_t	MistRHstop;
 
 		uint16_t	Rez[8];
 		uint16_t	crc;
@@ -135,7 +134,8 @@ typedef struct eeClimTask {
 				int8_t		Win;
 				int16_t		SIO;
 				
-				int16_t		DoTCool;
+				//int16_t		DoTCool;
+				uint16_t	MistRHstop;
 
 				int8_t		AHUVent;
 
@@ -229,7 +229,7 @@ typedef struct eeTepl	{
 				uint16_t	Light100;
 				uint16_t	CurrentStratSys;
 
-				int16_t		Rez1[26];  // 27
+				int16_t		Rez1[26];  // 26
 
 				int16_t		MaxReqWater;
 				int16_t		Rez[9];
@@ -539,7 +539,9 @@ typedef struct eeTuneClimate
 		uchar		vAHU_MinTempr;
 		uchar		vAHU_MaxTempr;
 
-		int16_t     CriteryLevel;
+		//int16_t     CriteryLevel;
+		int8_t		f_MistRHstart;		// Увлажнение панели. Превышение влажности при
+		int8_t		f_MistRHend;		// Увлажнение панели. Превышение влажности до
 
 		uchar		MaxAHUspeed;   		// коррекция скорости по ветру
 		uchar		MaxAHUwindSpeed;    // максимальный ветер для коррекции скорости по ветру

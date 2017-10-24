@@ -93,23 +93,11 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			deltaTi = (getTempHeat(fnTepl) - pGD_Hot_Tepl->AllTask.DoTHeat);
 		else
 			deltaTi = 0;
-
-		//if (deltaTi > 0)
-		//{
-			// убрал коррекцию вт, вещь не нужная
-			/*if (MidlSun > GD.TuneClimate.sc_dTSunFactor)
-			{
-				CorrRes = (deltaTi * GD.TuneClimate.sc_TSROpen) / (GD.TuneClimate.sc_dTEnd);
-				if (MidlSun > CorrRes)
-					MinusSR = MidlSun - CorrRes;
-				else
-			 		MinusSR = 0;
-			}
-			else MinusSR = MidlSun;
-*/
+/*
 			if (MidlSun < sc_TSROpen)
 			{
-				if ( (bNight)&&(sc_TOutClose < sc_Tout) ) // коррекция по внешней температуре с признаком ночи, экран не надо сварачивать
+				//if ( (bNight)&&(sc_TOutClose < sc_Tout) ) // коррекция по внешней температуре с признаком ночи, экран не надо сварачивать
+				if ( sc_TOutClose < sc_Tout ) // коррекция по внешней температуре с признаком ночи, экран не надо сварачивать
 				{
 					pScr->Mode=1;
 					pScr->Value = 0;
@@ -120,7 +108,22 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 					pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;  // не 100 а макс из парам
 				}
 			}
-			if ( (MidlSun > sc_TSROpen)&(MidlSun < sc_ZSRClose) )
+	*/
+			if (MidlSun <= sc_TSROpen)
+			{
+				if ( sc_TOutClose < sc_Tout ) // коррекция по внешней температуре с признаком ночи, экран не надо сварачивать
+				{
+					pScr->Mode=1;
+					pScr->Value = 0;
+				}
+				else
+				{
+					pScr->Mode=0;
+					pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;  // не 100 а макс из парам
+				}
+			}
+
+			if ( (MidlSun > sc_TSROpen)&&(MidlSun < sc_ZSRClose) )
 			{
 				pScr->Mode=1;
 				pScr->Value = 0;
