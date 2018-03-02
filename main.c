@@ -164,8 +164,8 @@ uint16_t code MechC[cSTepl][SUM_NAME_CONF]={
 	21,	// лапан 5
 
 	1,	//‘рамуга —евер
-	3,	//‘рамуга ёг
-	5,	//Ёкран
+	0,	//‘рамуга ёг
+	0,	//Ёкран
 	0,	//Ёкран горизонтальный затен
 	0,	//Ёкран вертикальный термич
 	0,	//Ёкран вертикальный термич
@@ -520,5 +520,3 @@ uint16_t code MechC[cSTepl][SUM_NAME_CONF]={
 #include "src/enc28j60.c"
 #include "src/ip_arp_udp_tcp.c"
 #include "src/simple_server.c"
-
-

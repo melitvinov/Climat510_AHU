@@ -112,7 +112,7 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 {"Inside light#B\275\311\277 c\263e\277",							SSSS, 	cuBt,	cTypeAnal,	11,	0,	0,	  1500,		15,  	2250,	0,   	1000, 	0,   	5000,	c3MidlSens,		100}, /* Внутренний свет*/
 {"CO2#CO2 \311\310o\263e\275\304",									SSSS,   cuPpm,	cTypeRH,	0,	0,	100,  2000,		0,  	5000,	0,   	2000,	50,  	5000,	c3MidlSens,		80}, /*Концентрация СО2*/
 //12
-{"Tem\310 evap 1#Te\274\276 \270c\276a\310e\275 1",					SSpS0,  cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Температура вход воздуха 1*/
+{"Tem\310 panel#Te\274\276 \276a\275e\273\270",						SSpS0,  cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Температура вход воздуха 1*/
 {"Humidit AHU\311 3#B\273a\266\275oc\277\304  AHU",					SSpS0,  cuPr,	cTypeRH,	0,	0,	200,  9800,		878,	3097,	0,		7530,	800, 	5000,	cExpMidlSens,	1000}, /* Влажность воздуха AHU*/
 //14
 {"Tem\310 cool #Te\274\276 ox\273a\266\343e\275",					SSpS0,  cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Температура охлаждающей воды*/
@@ -125,7 +125,7 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 {"Tem\310 out AHU#Te\274\276 \263\303xo\343a AHU",					SSpS0,	cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /*Т выхода из AHU*/
 //21
 {"N vent \310os#\250o\273o\266 \344\310a\274\311\264\270 C",		SSSpS,	cuPr,	cTypeFram,	1,	0,	0,	  1000, 	0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,		400}, /*Сокодвижение*/
-{"S vent \310os#\250o\273o\266 \344\310a\274\311\264\270 \260",		SSSpS,	cuPr,	cTypeFram,	1,	0,	0,	  1000, 	0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,		400}, /*Размер плода*/
+{"Rezerv#He \270c\276o\273\304\267",								SSSpS,	cuPr,	cTypeFram,	1,	0,	0,	  1000, 	0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,		400}, /*Размер плода*/
 {"Screen \310os#\250o\273o\266 \305\272\310a\275",					SSSpS,	cuPr,	cTypeScreen,1,	0,	0,	  1000, 	0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,		400}, /*Сокодвижение*/
 //20
 {"Tem\310 \310i\310e1#Te\274\276 \272o\275\277\311\310a 1",			SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Т прям контура1*/
@@ -133,7 +133,8 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 {"Tem\310 \310i\310e3#Te\274\276 \272o\275\277\311\310a 3",			SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Т прям контура3*/
 {"Tem\310 \310i\310e4#Te\274\276 \272o\275\277\311\310a 4",			SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Т прям контура4*/
 {"Tem\310 \310i\310e5#Te\274\276 \272o\275\277\311\310a 5",			SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Т прям контура5*/
-{"Tem\310 \310i\310e AHU#Te\274\276 \272o\275\277 AHU",				SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Т контура AHU*/
+{"Rezerv#He \270c\276o\273\304\267",								SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Т контура AHU*/
+//{"Tem\310 \310i\310e AHU#Te\274\276 \272o\275\277 AHU",				SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Т контура AHU*/
 //26
 {"Tem\310 out#Te\274\276 \275a\310\311\266\275\307\307",			SSpS0,	cuT,	cTypeAnal,	3,	0,	-6000,9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80},  /*Температура наружняя*/
 {"FAR#\245\275\277e\275c\270\263\275oc\277\304 co\273\275\345a",	SSSS,	cuBt,	cTypeSun,	11,	0,	0,	  1500,		15,  	2250,	0,   	5000, 	0,   	5000,	c3MidlSens,		200}, /*Солнечная радиация*/
@@ -219,22 +220,23 @@ eNameConfig NameOutputConfig[cConfSOutput]={
 /*2 Клапан 3*/			{"Mixing valve 3#C\274ec \272\273a\276a\275 3",tpRELAY,0,MAX_SUM_RELAY},
 /*3 Клапан 4*/ 			{"Mixing valve 4#C\274ec \272\273a\276a\275 4",tpRELAY,0,MAX_SUM_RELAY},
 /*4 Клапан 5*/			{"Mixing valve 5#C\274ec \272\273a\276a\275 5",tpRELAY,0,MAX_SUM_RELAY},
-/*5 Клапан AHU*/		{"Mix valve AHU#C\274 \272\273a\276a\275 AHU",tpRELAY,0,MAX_SUM_RELAY},
-/*6 Фрамуга СЕВЕР*/		{"Window NORTH 1#\252\310a\274\311\264a CEB 1",tpRELAY,0,MAX_SUM_RELAY},
-/*7 Фрамуга ЮГ*/		{"Window SOUTH#\252\310a\274\311\264a \260\241",tpRELAY,0,MAX_SUM_RELAY},
-/*8 Фрамуга СЕВЕР*/		{"Window NORTH 2#\252\310a\274\311\264a CEB 2",tpRELAY,0,MAX_SUM_RELAY},
-/*9 Фрамуга СЕВЕР*/		{"Window NORTH 3#\252\310a\274\311\264a CEB 3",tpRELAY,0,MAX_SUM_RELAY},
-/*10 Фрамуга СЕВЕР*/	{"Window NORTH 4#\252\310a\274\311\264a CEB 4",tpRELAY,0,MAX_SUM_RELAY},
-/*11 Клапан UC*/		{"UC valve#UC \272\273a\276a\275",tpRELAY,0,MAX_SUM_RELAY},
+/*5 Клапан AHU*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+/*6 Фрамуга СЕВЕР*/		{"Window 1#\252\310a\274\311\264a 1",tpRELAY,0,MAX_SUM_RELAY},
+///*7 Фрамуга ЮГ*/		{"Window SOUTH#\252\310a\274\311\264a \260\241",tpRELAY,0,MAX_SUM_RELAY},
+/*7 Фрамуга ЮГ*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+/*8 Фрамуга СЕВЕР*/		{"Window 2#\252\310a\274\311\264a 2",tpRELAY,0,MAX_SUM_RELAY},
+/*9 Фрамуга СЕВЕР*/		{"Window 3#\252\310a\274\311\264a 3",tpRELAY,0,MAX_SUM_RELAY},
+/*10 Фрамуга СЕВЕР*/	{"Window 4#\252\310a\274\311\264a 4",tpRELAY,0,MAX_SUM_RELAY},
+/*11 Клапан UC*/		{"AHU valve#AHU \272\273a\276a\275",tpRELAY,0,MAX_SUM_RELAY},
 /*12 Скорость AHU*/		{"AHU speed 1#C\272o\310oc\277\304 AHU 1",tpRELAY,0,MAX_SUM_RELAY},
-/*13 Скорость AHU*/		{"AHU speed 2#C\272o\310oc\277\304 AHU 2",tpRELAY,0,MAX_SUM_RELAY},
+/*13 Скорость AHU*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
 /*14 Экран*/			{"Screen thermal#\257\272\310a\275 \277e\310\274\270\300",tpRELAY,0,MAX_SUM_RELAY},
 /*15  Экран затеняющ*/	{"Screen shade#\257\272\310a\275 \267e\277e\275",tpRELAY,0,MAX_SUM_RELAY},
 /*16  Верт. экран 1*/	{"Screen vert#\257\272\310a\275 \263e\310\277",tpRELAY,0,MAX_SUM_RELAY},
 /*17 СО2 дозатор*/		{"CO2 valve#CO2 \272\273a\276a\275",tpRELAY,0,MAX_SUM_RELAY},
 /*18 Клапан панели*/	{"AHU Pad valve#K\273a\276a\275\303 \276a\275e\273\270",tpRELAY,0,MAX_SUM_RELAY},
-/*19 Досветка */		{"Lighting#\340oc\263e\277\272a",tpRELAY,0,MAX_SUM_RELAY},
-/*20 ВнутрУвлаж*/		{"Internal RH#Internal RH",tpRELAY,0,MAX_SUM_RELAY},
+/*19 Досветка */		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+/*20 ВнутрУвлаж*/		{"Internal RH#B\275\311\277  \311\263\273a\266\275e\275\270e",tpRELAY,0,MAX_SUM_RELAY},
 /*21 Резерв*/			{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
 /*22 Резерв*/			{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
 /*23 Резерв*/			{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
@@ -244,13 +246,18 @@ eNameConfig NameOutputConfig[cConfSOutput]={
 /*26 Насос 3*/			{"Heat \310um\310 3#Hacoc 3",tpRELAY,0,MAX_SUM_RELAY},
 /*27 Насос 4*/			{"Heat \310um\310 4#Hacoc 4",tpRELAY,0,MAX_SUM_RELAY},
 /*28 Насос 5*/			{"Heat \310um\310 5#Hacoc 5",tpRELAY,0,MAX_SUM_RELAY},
-/*29 Насос 5*/			{"Pum\310 AHU#Hacoc AHU",tpRELAY,0,MAX_SUM_RELAY},
-/*30 Вентиляторы*/		{"Fans#Be\275\277\270\273\307\277o\310\303",tpRELAY,0,MAX_SUM_RELAY},
-/*31 Нагреватель*/		{"Heater#Ha\264\310e\263a\277e\273\304",tpRELAY,0,MAX_SUM_RELAY},
-/*32 Охладитель*/		{"Cooler#Ox\273a\343\270\277e\273\304",tpRELAY,0,MAX_SUM_RELAY},
-/*33 Насос СИО*/		{"Misting \310um\310#Hacoc C\245O",tpRELAY,0,MAX_SUM_RELAY},
-/*34 Клапан СИО*/		{"Mist valve start#K\273a\276a\275\303 C\245O",tpRELAY,0,MAX_SUM_RELAY},
-/*35 Клапан AHU*/		{"Mist AHU pump#Hacoc y\263\273 AHU",tpRELAY,0,MAX_SUM_RELAY},
+/*29 Насос 5*/			{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+/*30 Вентиляторы*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+/*31 Нагреватель*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+/*32 Охладитель*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+///*33 Насос СИО*/		{"Misting \310um\310#Hacoc C\245O",tpRELAY,0,MAX_SUM_RELAY},
+/*33 Насос СИО*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+
+///*34 Клапан СИО*/		{"Mist valve start#K\273a\276a\275\303 C\245O",tpRELAY,0,MAX_SUM_RELAY},
+///*35 Клапан  AHU*/		{"Mist AHU pump#Hacoc y\263\273 AHU",tpRELAY,0,MAX_SUM_RELAY},
+/*34 Клапан СИО*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+/*35 Насос  AHU*/		{"Mist AHU pump#Hacoc y\263\273 AHU",tpRELAY,0,MAX_SUM_RELAY},
+
 
 /*36 Авария*/			{"Alarm#A\263a\310\270\307",tpRELAY,0,MAX_SUM_RELAY},
 
@@ -260,10 +267,10 @@ eNameConfig NameOutputConfig[cConfSOutput]={
 /*40 Регулятор 4*/		{"Regulator 4#Pe\264\311\273\307\277o\310 4",tpRELAY,0,MAX_SUM_RELAY},
 /*41 Регулятор 5 */		{"Regulator 5#Pe\264\311\273\307\277o\310 5",tpRELAY,0,MAX_SUM_RELAY},
 
-/*42 Регулятор 1*/		{"Rez 1#Pez 1",tpRELAY,0,MAX_SUM_RELAY},
-/*43 Регулятор 1*/		{"Rez 1#Pez 1",tpRELAY,0,MAX_SUM_RELAY},
-/*44 Регулятор 1*/		{"Rez 1#Pez 1",tpRELAY,0,MAX_SUM_RELAY},
-/*45 Регулятор 1*/		{"Rez 1#Pez 1",tpRELAY,0,MAX_SUM_RELAY},
+/*42 Регулятор 1*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+/*43 Регулятор 1*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+/*44 Регулятор 1*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+/*45 Регулятор 1*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
 };
 
 
@@ -277,11 +284,12 @@ eNameConfig NameOutputConfig[cConfSOutput]={
 
 
 eNameConfig NameInputConfig[cConfSInputs]={
-/*0 Авария отопления*/ 			{"Heating alarm#A\263a\310\270\307 o\277o\272\273e\275",tpLEVEL,0,MAX_SUM_RELAY},
+/*0 Авария отопления*/ 			{"Heating alarm#A\263a\310\270\307 o\277o\276\273e\275",tpLEVEL,0,MAX_SUM_RELAY},
 /*1 Авария вентиляции*/			{"Vent alarm#A\263a\310\270\307 \263e\275\277\270\273",tpLEVEL,0,MAX_SUM_RELAY},
 /*2 Досветка 50%*/				{"Light 50%#50% \343oc\263e\277",tpLEVEL,0,MAX_SUM_RELAY},
 /*3 Досветка 100%*/ 			{"Light 100%#100% \343oc\263e\277",tpLEVEL,0,MAX_SUM_RELAY},
-/*4 Осадки*/					{"Rain#Oca\343\272\270",tpLEVEL,0,MAX_SUM_RELAY},
+///*4 Осадки*/					{"Rain#Oca\343\272\270",tpLEVEL,0,MAX_SUM_RELAY},
+/*4 Осадки*/					{"Rezerv#He \270c\276o\273\304\267",tpLEVEL,0,MAX_SUM_RELAY},
 /*5 Авария СО2*/				{"CO2 alarm#A\263a\310\270\307 CO2",tpLEVEL,0,MAX_SUM_RELAY},
 /*6 Авария света*/				{"Light alarm#A\263a\310\270\307 \343oc\263e\277",tpLEVEL,0,MAX_SUM_RELAY}
 };
@@ -300,7 +308,9 @@ NameParUpr[SUM_NAME_PARS]={
 /*4 Клапан 5*/			{"Max \310i\310e 5#Ma\272c \272o\275\277\311\310 5",SSSpS},
 /*5 Клапан AHU*/		{"Max \310i\310e AHU#Ma\272c \272o\275\277 AHU",SSSpS},
 /*6 Фрамуга СЕВЕР*/		{"Max vent UnW#Ma\272c \344\310a\274 \276o\343\263",SSSS},
-/*7 Фрамуга ЮГ*/		{"Max vent OnW#Ma\272c \344\310a\274 \275a\263",SSSS},
+///*7 Фрамуга ЮГ*/		{"Max vent OnW#Ma\272c \344\310a\274 \275a\263",SSSS},
+/*7 Фрамуга ЮГ*/		{"Rezerv#He \270c\276o\273\304\267",SSSS},
+
 /*8 Минимум контура 3*/	{"Min tem\310 \310i\310e 3#M\270\275 \272o\275\277\311\310 3",SSSpS},
 /*9 Минимум контура 4*/	{"Min tem\310 \310i\310e 4#M\270\275 \272o\275\277\311\310 4",SSSpS},
 /*10 Держать разн. давл*/{"Diff \310ressure#Pa\267\275\270\345a \343a\263\273",SSSpS},

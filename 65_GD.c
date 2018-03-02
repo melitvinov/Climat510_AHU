@@ -134,7 +134,6 @@ typedef struct eeClimTask {
 				int8_t		Win;
 				int16_t		SIO;
 				
-				//int16_t		DoTCool;
 				uint16_t	MistRHstop;
 
 				int8_t		AHUVent;
@@ -146,7 +145,11 @@ typedef struct eeClimTask {
 
 				int8_t		Status;
 
-				int16_t		Rez[10];
+				// изменение 86.
+				int16_t		TminAHU;
+
+				// изменение 86.
+				int16_t		Rez[9];   // 10
 				} eClimTask; 
 
 typedef struct eeNextTCalc {
@@ -449,7 +452,11 @@ typedef struct eeTuneClimate
         int16_t     sc_StartP1Zone;		/*Ёкран открывать шагами по*/
 		int16_t		sc_StepS1Zone;		/*Ёкран открывать-количество шагов*/
 		int16_t		sc_StepP1Zone;		/*Ёкран открывать-пауза между включени€ми*/
-		int16_t 	sc_MinDelta;		/*Ёкран исполн€ть если шаг больше*/
+		//int16_t 	sc_MinDelta;		/*Ёкран исполн€ть если шаг больше*/
+
+		int8_t 		sc_MinDelta;		/*Ёкран исполн€ть если шаг больше*/
+
+		int8_t 		ScreenCloseSpeed;		/*Ёкран исполн€ть если шаг больше*/
 //214
 /*-----------------------------------
                 ѕараметры- —»ќƒ
@@ -586,10 +593,8 @@ typedef struct eeTeplControl
 		uint16_t	tempPipe3;
 		uint16_t	InRHMax;
 		uint16_t	InRHMin;
-
-		uint16_t     MistMax;
-
-		uint16_t     PresMax;
+		uint16_t    MistMax;
+		uint16_t    PresMax;
 
 //		uint8_t 		crc1;
 //		uint8_t 		crc2;
@@ -792,12 +797,12 @@ typedef struct eeTControlTepl
 		int32_t			IntegralVent;
 		int32_t			SaveIntegral;
 //24
-		int16_t				qMaxKonturs;
-		int16_t				qMaxOwnKonturs;
-		int16_t				AbsMaxVent;
-		int16_t				LastTVentCritery;
-		int16_t				LastCritery;
-		int32_t				IntVal[cSRegCtrl];
+		int16_t			qMaxKonturs;
+		int16_t			qMaxOwnKonturs;
+		int16_t			AbsMaxVent;
+		int16_t			LastTVentCritery;
+		int16_t			LastCritery;
+		int32_t			IntVal[cSRegCtrl];
 //36
 //		int16_t				PrevSig[cSWaterKontur];
 //46
@@ -810,9 +815,9 @@ typedef struct eeTControlTepl
 		int8_t			nMaxKontur;
 //131
 //		int8_t			NumLight;
-		int16_t				PowMaxKonturs;
-		int16_t				PowOwnMaxKonturs;
-		int16_t				TimeSIO;
+		int16_t			PowMaxKonturs;
+		int16_t			PowOwnMaxKonturs;
+		int16_t			TimeSIO;
 		int8_t			SaveMaxMist;
 		int8_t			PrevNLight;//CorrScreen;
 //137

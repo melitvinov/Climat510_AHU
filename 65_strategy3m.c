@@ -797,12 +797,20 @@ int KeepFanSystem(char fnTepl)
 				tempKeep = 0;
 				if (PosFluger <= 180)
 				{
-					zone = 1;
+					if (greenHousePos > windDirect)
+						zone = 1;
+					else
+						zone = 0;
+
 					if (PosFluger > 90)
 						PosFluger = 90 - (PosFluger - 90);
 				} else
 				{
-					zone = 0;
+					if (greenHousePos > windDirect)
+						zone = 0;
+					else
+						zone = 1;
+
 					PosFluger = PosFluger - 180;
 					if (PosFluger > 90)
 						PosFluger = 90 - (PosFluger - 90);
@@ -2629,9 +2637,11 @@ int16_t __SetWinPress(uint16_t DoPres,uint8_t fNFram,uint16_t fOffset)
 	int16_t* IntVal;
 
 
-#warning то сейчас из-за этого фрамуга постоянно прыгает вниз-вверх. И похоже разбегается. Может Серега был и прав – дело реально в прошивке может быть
-	//if (!(pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do))
-	//	return 0;
+//#warning то сейчас из-за этого фрамуга постоянно прыгает вниз-вверх. И похоже разбегается. Может Серега был и прав – дело реально в прошивке может быть
+
+	// надо протестить
+	if (!(pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do))
+		return 0;
 
 	IntX=(pGD_Hot_Tepl->InTeplSens[cSmOverPSens].Value-DoPres)/10;
 	IntZ=SetPID(IntX,fNFram,100,0);
@@ -2690,13 +2700,17 @@ void __sMechWindows(void)
 			(*(pGD_Hot_Hand+cHSmAHUSpeed2)).Position=KeepFanSystem(fnTepl);//(*pGD_Hot_Tepl).AllTask.AHUVent;//pGD_Hot_Tepl->Kontur[cSmAHUSpd].Do;
 
 
-		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN].RCS,cbManMech)))
-		{
-			volatile int16_t vPresMax = pGD_Control_Tepl->PresMax * 100;
-			pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(vPresMax,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
-			//pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(2000,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
-//			pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetIntWin(GD.TuneClimate.fAHU_Sens1,cHSmWinN,GD.TuneClimate.fAHU_Offset1,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position);
-		}
+		// было изменение 92
+		//if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN].RCS,cbManMech)))
+		//{
+		//	volatile int16_t vPresMax = pGD_Control_Tepl->PresMax * 100;
+		//	pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(vPresMax,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
+		//}
+		//  стало
+		volatile int16_t vPresMax = pGD_Control_Tepl->PresMax * 100;
+		pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(vPresMax,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
+		// -----------
+
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN2].RCS,cbManMech)))
 			pGD_Hot_Tepl->HandCtrl[cHSmWinN2].Position=__SetIntWin(GD.TuneClimate.fAHU_Sens2,cHSmWinN2,GD.TuneClimate.fAHU_Offset2,pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position, fnTepl);
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN3].RCS,cbManMech)))
