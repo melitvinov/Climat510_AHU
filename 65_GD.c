@@ -232,7 +232,10 @@ typedef struct eeTepl	{
 				uint16_t	Light100;
 				uint16_t	CurrentStratSys;
 
-				int16_t		Rez1[26];  // 26
+				int16_t		RHParam;  		// new
+				uint16_t 	RHsens;  		// new
+
+				int16_t		Rez1[24];  // 26
 
 				int16_t		MaxReqWater;
 				int16_t		Rez[9];
@@ -596,10 +599,9 @@ typedef struct eeTeplControl
 		uint16_t    MistMax;
 		uint16_t    PresMax;
 
-//		uint8_t 		crc1;
-//		uint8_t 		crc2;
+		int16_t		sensRH;
 
-		int16_t		Rez[13];
+		int16_t		Rez[12];  //13
 
 		uint16_t 	crc;
 

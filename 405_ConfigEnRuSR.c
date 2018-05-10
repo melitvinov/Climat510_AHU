@@ -139,7 +139,7 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 {"Tem\310 out#Te\274\276 \275a\310\311\266\275\307\307",			SSpS0,	cuT,	cTypeAnal,	3,	0,	-6000,9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80},  /*Температура наружняя*/
 {"FAR#\245\275\277e\275c\270\263\275oc\277\304 co\273\275\345a",	SSSS,	cuBt,	cTypeSun,	11,	0,	0,	  1500,		15,  	2250,	0,   	5000, 	0,   	5000,	c3MidlSens,		200}, /*Солнечная радиация*/
 {"Wind s\310eed#C\272o\310oc\277\304 \263e\277\310a",				SSpS0,	cuMSec,	cTypeMeteo,	2,	0,	0,	  9900,		60,  	0,   	1,   	0,  	0,   	0,   	cNoMidlSens,	100}, /*Скорость ветра*/
-{"Wind direct#Ha\276\310a\263\273 \263e\277\310a",					SSSi,	cuGr,	cTypeNULL,	2,	0,	0,	  360, 		0,   	4520,	0,   	360, 	0,   	0,   	cNoMidlSens,	40},  /*Направление ветра*/
+{"Wind direct#Ha\276\310a\263\273 \263e\277\310a",					SSSi,	cuGr,	cTypeMeteo,	2,	0,	0,	  360, 		0,   	4520,	0,   	360, 	0,   	0,   	cNoMidlSens,	40},  /*Направление ветра*/
 {"Rain#Oca\343\272\270",											SSSi,	cu,		cTypeRain,	0,	0,	0,    10,  		250, 	650, 	-10, 	10,  	0,   	5000,   cNoMidlSens,	20},  /*Осадки*/
 {"Humidit\311 out#B\273a\266\275oc\277\304",						SSpS0,	cuPr,	cTypeAnal,	0,	0,	200,  9900,		800, 	5000,	0,   	0,   	0,   	5000,   c3MidlSens,		100}, /*Влажность наружняя*/
 {"T from boil#Te\274\276 \276\310\307\274o\246",					SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Температура воды прямой*/
@@ -235,7 +235,7 @@ eNameConfig NameOutputConfig[cConfSOutput]={
 /*16  Верт. экран 1*/	{"Screen vert#\257\272\310a\275 \263e\310\277",tpRELAY,0,MAX_SUM_RELAY},
 /*17 СО2 дозатор*/		{"CO2 valve#CO2 \272\273a\276a\275",tpRELAY,0,MAX_SUM_RELAY},
 /*18 Клапан панели*/	{"AHU Pad valve#K\273a\276a\275\303 \276a\275e\273\270",tpRELAY,0,MAX_SUM_RELAY},
-/*19 Досветка */		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+/*19 Досветка */		{"Lighting#\340oc\263e\277\272a",tpRELAY,0,MAX_SUM_RELAY},
 /*20 ВнутрУвлаж*/		{"Internal RH#B\275\311\277  \311\263\273a\266\275e\275\270e",tpRELAY,0,MAX_SUM_RELAY},
 /*21 Резерв*/			{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
 /*22 Резерв*/			{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},

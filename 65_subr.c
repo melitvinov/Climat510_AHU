@@ -46,6 +46,8 @@
 #define	DS18B20_FILL_EEPROM	0x48
 #define	DS18B20_SKIP_ROM	0xCC
 
+int32_t OldHotSun  = 0;
+
 int16_t teplTmes[8][30];
 
 int16_t getRH1AHUSensor(void)
@@ -69,6 +71,21 @@ int16_t getCSmRHAHUOutSens(void)
 }
 
 int16_t getTempSensor(char fnTepl, char sensor)
+{
+	if (pGD_Hot_Tepl->InTeplSens[sensor].RCS == 0)
+	{
+		teplTmes[fnTepl][sensor] = pGD_Hot_Tepl->InTeplSens[sensor].Value;
+		return pGD_Hot_Tepl->InTeplSens[sensor].Value;
+	}
+	if (pGD_Hot_Tepl->InTeplSens[sensor].RCS != 0)
+	{
+		if (pGD_Hot_Tepl->InTeplSens[sensor].Value == 0)
+			return 0;
+		return teplTmes[fnTepl][sensor];
+	}
+}
+
+int16_t getRHSensor(char fnTepl, char sensor)
 {
 	if (pGD_Hot_Tepl->InTeplSens[sensor].RCS == 0)
 	{
@@ -291,6 +308,51 @@ int8_t getTempHeatAlarm(char fnTepl)
 	return maskN;
 }
 
+int16_t getRHsens(char fnTepl)
+{
+	int16_t error = 0;
+	int16_t RH = 0;
+	int16_t i;
+	int8_t calcType = 0;
+	int8_t mask = 0;
+	int8_t maskN = 0;
+	int16_t max = 0;
+	int16_t min = 9900;
+	int16_t average = 0;
+	int8_t averageCount = 0;
+	int16_t singleSensor = 0;
+	calcType = GD.Control.Tepl[fnTepl].sensRH >> 6;
+	mask = GD.Control.Tepl[fnTepl].sensRH << 2;
+	mask = mask >> 2;
+	error = 0;
+	for (i=0;i<3;i++)
+	{
+		if ( (mask >> i & 1) && (getRHSensor(fnTepl, i+6)) )
+		{
+			RH = getRHSensor(fnTepl, i+6);
+			if (min > RH)
+				min = RH;
+			if (max < RH)
+				max = RH;
+			average += RH;
+			averageCount++;
+			singleSensor = RH;
+			maskN = (maskN >> 1) + 32;
+			error = 1;
+		} else maskN = (maskN >> 1);
+	}
+	average = average / averageCount;
+	if (error)
+	{
+		GD.Hot.Tepl[fnTepl].RHParam=maskN+(calcType<<6);
+		GD.Hot.Tepl[fnTepl].RHsens = average;
+		if (calcType & 1)
+			GD.Hot.Tepl[fnTepl].RHsens = min;
+		if (calcType >> 1 & 1)
+			GD.Hot.Tepl[fnTepl].RHsens = max;
+		return GD.Hot.Tepl[fnTepl].RHsens;
+	}
+}
 
 char ds18b20_ReadROM(void)
 {
@@ -419,20 +481,36 @@ void SetPointersOnKontur(char fnKontur)
 	pGD_MechConfig_Kontur=&pGD_MechConfig->RNum[fnKontur];
 	pGD_ConstMechanic_Mech=&pGD_ConstMechanic->ConstMixVal[fnKontur];
 }
+
 void MidlWindAndSr(void)
 {
 	if (startFlag)
 	{
+		//OldHotSun = 110;
 		if (startFlag < 0) startFlag = 0;
 		return;
 	}
-	GD.TControl.SumSun+=((long int)GD.TControl.MeteoSensing[cSmFARSens]);
-	GD.TControl.MidlSR=((((long int)GD.TControl.MidlSR)*(1000-o_MidlSRFactor))/1000
-		+((long int)GD.TControl.MeteoSensing[cSmFARSens])*o_MidlSRFactor);
-	GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
+
+	//int32_t sun;
+	//sun = (long int)GD.Hot.MeteoSensing[cSmFARSens].Value;
+
+	GD.TControl.SumSun += ((long int)GD.TControl.MeteoSensing[cSmFARSens]);
+
+//	if (	(sun < (sun + 1000)) &&
+//		(sun < 2000))
+//	GD.TControl.MidlSR = ((((long int)GD.Hot.MidlSR*1000)*(1000-o_MidlSRFactor))/1000
+//		+((long int)GD.Hot.MeteoSensing[cSmFARSens].Value)*o_MidlSRFactor);
+
+//	GD.TControl.MidlSR = ((((long int)GD.TControl.MidlSR)*(1000-o_MidlSRFactor))/1000
+//		+((long int)GD.TControl.MeteoSensing[cSmFARSens])*o_MidlSRFactor);
+
+//	OldHotSun = (long int)GD.Hot.MeteoSensing[cSmFARSens].Value;
+
+	//GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);   // было
 	if (GetMetSensConfig(cSmFARSens))
 	{
 		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
+		//GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
 	}
 	GD.Hot.MidlWind=(int)((((long int)GD.Hot.MidlWind)*(1000-o_MidlWindFactor)+((long int)GD.TControl.MeteoSensing[cSmVWindSens])*o_MidlWindFactor)/1000);
 
@@ -443,9 +521,8 @@ void CheckMidlSr(void)
 	if (GetMetSensConfig(cSmFARSens))
 	{
 		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
+		//GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
 	}
-	GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
-
 
 }
 

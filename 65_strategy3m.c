@@ -221,11 +221,19 @@ void CheckAHUPipeSystem(void)
 
 
 //установить минимумы, максимумы, возможность вверх, возможность вниз для клапана AHU
-void CheckUCValveSystem(void)			// отрабатывает
+void CheckUCValveSystem(int Tmes, int Tset)			// отрабатывает
 {
 	pGD_TControl_Tepl->Systems[cSysUCValve].Max=(*pGD_Hot_Tepl).Kontur[cSmWindowUnW].MaxCalc;
+	// изменение 96 если после коррекции минимума клапана он стал больше чем макс
+	//открытия из параметров, то не корректируем
+	if ((*pGD_Hot_Tepl).Kontur[cSmWindowUnW].MinCalc > pGD_Control_Tepl->f_MaxOpenUn)
+		pGD_TControl_Tepl->Systems[cSysUCValve].Min = pGD_Control_Tepl->f_MaxOpenUn;
+	else
+		pGD_TControl_Tepl->Systems[cSysUCValve].Min = (*pGD_Hot_Tepl).Kontur[cSmWindowUnW].MinCalc;
 
-	pGD_TControl_Tepl->Systems[cSysUCValve].Min=(*pGD_Hot_Tepl).Kontur[cSmWindowUnW].MinCalc;
+	// изменение 98 если заданная температура больше чем измеренная на величину больше либо равную "Нижней аварийной границе" max ставим = 0
+	if (Tset - Tmes > GD.TuneClimate.c_MaxDifTDown)
+		pGD_TControl_Tepl->Systems[cSysUCValve].Max = 0;
 
 	pGD_TControl_Tepl->Systems[cSysUCValve].RCS=0;
 	if ((YesBit(pGD_Hot_Hand[cHSmUCValve].RCS,cbManMech))||(!pGD_MechConfig->RNum[cHSmUCValve]))
@@ -834,14 +842,23 @@ int KeepFanSystem(char fnTepl)
 			}
 			break;
 		}
-
 	}
 
 	// итоговая проверка на мин и мак скорость
-	if (tempKeep > maxSpeed) tempKeep = maxSpeed;
-	if (tempKeep <= 0) tempKeep = minSpeed;
-	if (MaxSpeedAHUwind == 0)   // если усл коррекции скорости по ветру выкл то мин скорость как в задании
-		if (tempKeep < minSpeed) tempKeep = minSpeed;
+	// в зависимости от того открыт ли клапан в зоне в которую дует ветер
+	if (zone)		// инвертируем зоны
+		zone = 0;
+	else
+		zone = 1;
+	if (GD.TControl.Tepl[zone].Systems[cSysUCValve].Keep)
+	{
+		if (tempKeep > maxSpeed) tempKeep = maxSpeed;
+		if (tempKeep <= 0) tempKeep = minSpeed;
+		if (MaxSpeedAHUwind == 0)   // если усл коррекции скорости по ветру выкл то мин скорость как в задании
+			if (tempKeep < minSpeed) tempKeep = minSpeed;
+	}
+	else
+		tempKeep = minSpeed;
 	return tempKeep;
 }
 
@@ -2370,7 +2387,7 @@ void __sCalcKonturs(void)
 //Работа Т-вентиляции
 		CheckScreenSystem();
 		CheckAHUPipeSystem();
-		CheckUCValveSystem();
+		CheckUCValveSystem(getTempHeat(fnTepl), GD.Hot.Tepl[fnTepl].AllTask.DoTHeat);
 		CheckFanSystem();
 		CheckInRHSystem();
 

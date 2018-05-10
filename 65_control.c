@@ -1365,7 +1365,7 @@ void SetDiskr(char fnTepl)
 		__SetBitOutReg(fnTepl,cHSmHeat,0,0);*/
 ClrDog;
 	ByteX=1;
-    if (pGD_Control_Tepl->co_model==2) ByteX=2;
+    if (pGD_Control_Tepl->co_model>=2) ByteX=2;
 
 	if ((pGD_TControl_Tepl->SetupRegs[0].On)
 		&&(pGD_Control_Tepl->co_model))
@@ -1650,7 +1650,7 @@ void DoMechanics(char fnTepl)
 	}
 }
 
-void SetMeteo(void)
+void SetMeteo(void)		// выполняется каждые 20 сек
 {
 	uint16_t tMes,i;
 	for (i=0;i<cConfSMetSens;i++)
@@ -1697,7 +1697,7 @@ void SetLighting(void)
 //	if(SameSign(IntY,IntZ)) pGD_TControl_Tepl->LightExtraPause=0;
 
 	pGD_TControl_Tepl->LightPauseMode--;
-	if ((pGD_TControl_Tepl->LightPauseMode<0)||(pGD_TControl_Tepl->LightPauseMode>GD.TuneClimate.l_PauseMode))
+	if ( (pGD_TControl_Tepl->LightPauseMode<0)||(pGD_TControl_Tepl->LightPauseMode>GD.TuneClimate.l_PauseMode) )
 		pGD_TControl_Tepl->LightPauseMode=0;
 	ClrDog;
 	bZad=0;		// if bZab = 0 calc sun sensor
@@ -1736,20 +1736,20 @@ void SetLighting(void)
 //		if (GD.TControl.Tepl[0].SensHalfHourAgo<GD.TuneClimate.l_SunOn100)
 //			pGD_TControl_Tepl->LightMode=100;
 	}
-	if (pGD_TControl_Tepl->LightMode!=pGD_TControl_Tepl->OldLightMode)
+	if (pGD_TControl_Tepl->LightMode != pGD_TControl_Tepl->OldLightMode)
 	{
-		if (!(((int)pGD_TControl_Tepl->LightMode)*((int)pGD_TControl_Tepl->OldLightMode)))
+		if (!(((int)pGD_TControl_Tepl->LightMode) * ((int)pGD_TControl_Tepl->OldLightMode)))
 		{
-			pGD_TControl_Tepl->DifLightMode=pGD_TControl_Tepl->LightMode-pGD_TControl_Tepl->OldLightMode;
-			pGD_TControl_Tepl->LightPauseMode=GD.TuneClimate.l_PauseMode;
+			pGD_TControl_Tepl->DifLightMode = pGD_TControl_Tepl->LightMode - pGD_TControl_Tepl->OldLightMode;
+			pGD_TControl_Tepl->LightPauseMode = GD.TuneClimate.l_PauseMode;
 //			pGD_TControl_Tepl->LightExtraPause=o_DeltaTime;
 		}
 		else
 		{
-			pGD_TControl_Tepl->LightPauseMode=GD.TuneClimate.l_SoftPauseMode;
+			pGD_TControl_Tepl->LightPauseMode = GD.TuneClimate.l_SoftPauseMode;
 		}
 	}
-	pGD_TControl_Tepl->OldLightMode=pGD_TControl_Tepl->LightMode;
+	pGD_TControl_Tepl->OldLightMode = pGD_TControl_Tepl->LightMode;
 
 //	pGD_TControl_Tepl->LightExtraPause--;
 //	if (pGD_TControl_Tepl->LightExtraPause>0) return;

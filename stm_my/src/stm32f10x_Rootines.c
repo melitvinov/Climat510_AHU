@@ -915,8 +915,10 @@ void Measure()
 		}
 
 	}
+	volatile sen;
     for(nSens=0;nSens<cConfSMetSens;nSens++)
     {
+    	sen = nSens;
     	tSensVal=GetInIPC(GetMetSensConfig(nSens),&ErrModule);
     	if (ErrModule<0)
         {

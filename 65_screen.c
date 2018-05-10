@@ -297,9 +297,6 @@ void InitScreen(char typScr, char fnTepl)
 		(pScr->PauseMode>GD.TuneClimate.sc_PauseMode))
 		pScr->PauseMode=0;
 	CheckModeScreen(typScr,typScr, fnTepl);
-
-
-
 }
 
 // шиги отрабатывают не верно! Не видят коррекцию по макс открытию
@@ -387,36 +384,13 @@ void SetPosScreen(char typScr, char fnTepl)
 	{
 		if ((ByteX>=GD.TuneClimate.sc_StartP2Zone)&&(ByteX<GD.TuneClimate.sc_StartP1Zone))
 		{
-			step=GD.TuneClimate.sc_StepS2Zone;
-			if (step + ByteX > pScr->Value)
-				step = maxScreen - ByteX;
-			pScr->Pause=GD.TuneClimate.sc_StepP2Zone;
-		}
-		if (ByteX>=GD.TuneClimate.sc_StartP1Zone)
-		{
-			if (ByteX < pScr->Value)
-			{
-				if (ByteX + GD.TuneClimate.sc_StepS1Zone <= pScr->Value)//pGD_Control_Tepl->sc_TMaxOpen)
-					step=GD.TuneClimate.sc_StepS1Zone;
-				else
-					step = pScr->Value - ByteX;
-			}
-			else
-				step = ByteX - pScr->Value;
-			pScr->Pause=GD.TuneClimate.sc_StepP1Zone;
-		}
-	}
-	if (pScr->Mode == 1)
-	{
-		if ((ByteX>=GD.TuneClimate.sc_StartP2Zone)&&(ByteX<GD.TuneClimate.sc_StartP1Zone))
-		{
 			if ((typScr == 0) && (GD.TuneClimate.ScreenCloseSpeed > 0))
 				step = GD.TuneClimate.sc_StepS2Zone * GD.TuneClimate.ScreenCloseSpeed;
 			else
 				step = GD.TuneClimate.sc_StepS2Zone;
-			if (ByteX - step < GD.TuneClimate.sc_StartP2Zone)
-				step = ByteX - GD.TuneClimate.sc_StartP2Zone;
-			if (step - ByteX > pScr->Value)
+
+			//step=GD.TuneClimate.sc_StepS2Zone;
+			if (step + ByteX > pScr->Value)
 				step = maxScreen - ByteX;
 			pScr->Pause=GD.TuneClimate.sc_StepP2Zone;
 		}
@@ -427,6 +401,48 @@ void SetPosScreen(char typScr, char fnTepl)
 				stepSpeed = GD.TuneClimate.sc_StepS1Zone * GD.TuneClimate.ScreenCloseSpeed;
 			else
 				stepSpeed = GD.TuneClimate.sc_StepS1Zone;
+
+			if (ByteX < pScr->Value)
+			{
+//				if (ByteX + GD.TuneClimate.sc_StepS1Zone <= pScr->Value)//pGD_Control_Tepl->sc_TMaxOpen)
+//					step=GD.TuneClimate.sc_StepS1Zone;
+//				else
+//					step = pScr->Value - ByteX;
+
+				if (ByteX + stepSpeed <= pScr->Value)//pGD_Control_Tepl->sc_TMaxOpen)
+					step = stepSpeed;
+				else
+					step = pScr->Value - ByteX;
+
+			}
+			else
+				step = ByteX - pScr->Value;
+			pScr->Pause=GD.TuneClimate.sc_StepP1Zone;
+		}
+	}
+	if (pScr->Mode == 1)
+	{
+		if ((ByteX>=GD.TuneClimate.sc_StartP2Zone)&&(ByteX<GD.TuneClimate.sc_StartP1Zone))
+		{
+			//if ((typScr == 0) && (GD.TuneClimate.ScreenCloseSpeed > 0))
+			//	step = GD.TuneClimate.sc_StepS2Zone * GD.TuneClimate.ScreenCloseSpeed;
+			//else
+				step = GD.TuneClimate.sc_StepS2Zone;
+
+			if (ByteX - step < GD.TuneClimate.sc_StartP2Zone)
+				step = ByteX - GD.TuneClimate.sc_StartP2Zone;
+			if (step - ByteX > pScr->Value)
+				step = maxScreen - ByteX;
+			pScr->Pause=GD.TuneClimate.sc_StepP2Zone;
+		}
+		if (ByteX>=GD.TuneClimate.sc_StartP1Zone)
+		{
+			int stepSpeed;
+			//if (GD.TuneClimate.ScreenCloseSpeed > 1)
+			//	stepSpeed = GD.TuneClimate.sc_StepS1Zone * GD.TuneClimate.ScreenCloseSpeed;
+			//else
+				stepSpeed = GD.TuneClimate.sc_StepS1Zone;
+
 			if (ByteX>=GD.TuneClimate.sc_StartP1Zone)
 			{
 				if (ByteX > pScr->Value)
@@ -605,6 +621,10 @@ void RegWorkDiskr(char fHSmReg)
 	{
 	eRegsSettings* fReg;
 	int tMech;
+        int delta;
+	int sum;
+	int COset;
+	int val = 0;
 		fReg=&pGD_TControl_Tepl->SetupRegs[fHSmReg-cHSmCO2];
 		tMech=pGD_TControl_Tepl->COPosition;
 		if ((!pGD_Control_Tepl->co_model)||(fHSmReg!=cHSmCO2)) return;
@@ -614,6 +634,41 @@ void RegWorkDiskr(char fHSmReg)
 
 		IntY=0;	
 		ByteZ=0;
+
+/*
+		if (pGD_Control_Tepl->co_model==3)
+		{
+			COset = (*pGD_Hot_Tepl).AllTask.DoCO2;
+
+			sum =  (*(pGD_Hot_Hand+cHSmWinN)).Position + (*(pGD_Hot_Hand+cHSmWinS)).Position;
+			if ((sum >= GD.TuneClimate.co2Fram1) && (sum <= GD.TuneClimate.co2Fram2))
+			{
+			  if (COset > GD.TuneClimate.co2Off)
+			  {
+				  if (GD.TuneClimate.co2Fram2 > GD.TuneClimate.co2Fram1)
+					  val = GD.TuneClimate.co2Fram2 - GD.TuneClimate.co2Fram1;
+				  val = ((sum - GD.TuneClimate.co2Fram1) * GD.TuneClimate.co2Off) / val;
+				  GD.TuneClimate.co_MaxTime-(((int)tMech)*(GD.TuneClimate.co_MaxTime-GD.TuneClimate.co_MinTime))/100;
+				  COset = COset - val;
+			  }
+			}
+			if (sum > GD.TuneClimate.co2Fram2)
+			{
+				COset = COset - GD.TuneClimate.co2Off;
+			}
+			(*pGD_Hot_Tepl).CO2valveTask = 0;
+		    if (COset > (*pGD_Hot_Tepl).InTeplSens[cSmCOSens].Value)
+		    {
+			  delta = COset - (*pGD_Hot_Tepl).InTeplSens[cSmCOSens].Value;
+			  (*pGD_Hot_Tepl).CO2valveTask = delta;
+			  if (delta < GD.TuneClimate.co2On)
+				tMech = 0;
+		    }
+		    else
+		    	tMech = 0;
+		}
+*/
+
 		fReg->Work=GD.TuneClimate.co_Impuls;
 		if (!tMech) fReg->Work=0; 
 		fReg->Stop=GD.TuneClimate.co_MaxTime-(((int)tMech)*(GD.TuneClimate.co_MaxTime-GD.TuneClimate.co_MinTime))/100;
