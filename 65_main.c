@@ -299,6 +299,11 @@ start:
 #ifdef STM32_UNIT
 	   if (Second==58)
 	   {
+		   //volatile ress;
+		   //ress = GetDDWP(2200, 8000);
+		  // ress = GetDDWP(2300, 7000);
+		   //ress = GetDDWP(2000, 6000);
+
 		   UDPStartSend();
 		   CheckWithoutPC();
 	   	   CheckInputConfig();

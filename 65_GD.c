@@ -224,18 +224,20 @@ typedef struct eeTepl	{
 				int8_t		COStatus;
 
 				uchar		tempParamHeat;  // new
-				uchar		tempParamVent;  // new
+				uchar		tempParamVent;  // new		//изменение 100 это теперь контрольная Т
 				uint16_t 	tempHeat;  		// new
-				uint16_t 	tempVent;  		// new
+				uint16_t 	tempVent;  		// new		//изменение 100 это теперь контрольная Т
 
 				uint16_t	Light50;
 				uint16_t	Light100;
-				uint16_t	CurrentStratSys;
+				uint16_t	CurrentStratSys;	// вывод в Мониторе убрали вместо страт сейчас RH по которому идет управление
 
-				int16_t		RHParam;  		// new
+				int16_t		RHParam;  		// new		// изменение 100 в Hot блок добавлено, но в Мониторе не понятно куда выводить
 				uint16_t 	RHsens;  		// new
 
-				int16_t		Rez1[24];  // 26
+				int16_t 	DDWP;
+
+				int16_t		Rez1[23];  // 26
 
 				int16_t		MaxReqWater;
 				int16_t		Rez[9];
@@ -397,12 +399,14 @@ typedef struct eeTuneClimate
 /*-----------------------------------
                 Параметры-вентиляция
 ------------------------------------*/
-		uchar		f_S1MinDelta; 	// Клапан AHU
-		uchar		f_S1Level;		// Клапан AHU
-		uchar		f_S2MinDelta;	// Клапан AHU
-		uchar		f_S2Level;		// Клапан AHU
-		uchar		f_S3MinDelta;	// Клапан AHU
-		uchar		f_S3Level;		// Клапан AHU
+
+		uchar		f_S1MinDelta; 	// Клапан AHU			не используется
+		uchar		f_S1Level;		// Клапан AHU			не используется
+		uchar		f_S2MinDelta;	// Клапан AHU			не используется
+		uchar		f_S2Level;		// Клапан AHU			не используется
+		uchar		f_S3MinDelta;	// Клапан AHU			не используется
+		uchar		f_S3Level;		// Клапан AHU			не используется
+
 //+6
         int16_t     f_MinDelta;  	// Клапан AHU
 		int16_t		c_MaxDifTUp;  	// Клапан AHU
@@ -517,13 +521,17 @@ typedef struct eeTuneClimate
 		int16_t 	l_SoftPauseMode;
 		int16_t		o_TeplPosition;
 
-		uchar		fAHU_S1Level;
-		uchar		fAHU_S2Level;
-		uchar		fAHU_S3Level;
-		uchar		fAHU_Offset1;
-		uchar		fAHU_Offset2;
-		uchar		fAHU_Offset3;
-		uchar		fAHU_Offset4;
+		// изменение 100. Вместо этого вводим коррекции
+		uchar		AHUspeed_Tmin;
+		uchar		AHUspeed_Tmax;
+		uchar		AHUspeed_Corr;
+		//uchar		fAHU_S1Level;
+		//uchar		fAHU_S2Level;
+		//uchar		fAHU_S3Level;
+		uchar		fAHU_Offset1;		// не используется
+		uchar		fAHU_Offset2;		// не используется
+		uchar		fAHU_Offset3;		// не используется
+		uchar		fAHU_Offset4;		// не используется
 
 		uchar		fAHU_Sens1;
 		uchar		fAHU_Sens2;
@@ -599,9 +607,11 @@ typedef struct eeTeplControl
 		uint16_t    MistMax;
 		uint16_t    PresMax;
 
+		// изменеие 100. Добавляем два новых параметра
 		int16_t		sensRH;
+		int16_t		RHCorrSpeed;
 
-		int16_t		Rez[12];  //13
+		int16_t		Rez[11];  //12
 
 		uint16_t 	crc;
 

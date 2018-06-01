@@ -1,8 +1,11 @@
 /**************************************************************************/
 /*-*-*-*-*-*-*--Процедура установки границ для водных контуров--*-*-*-*-*-*/
 /**************************************************************************/
-int DefRH(void)
+int DefRH(char fnTepl)
 {
+	// изменеие 100. RH выводим как Theat
+	//if ((!(*pGD_Hot_Tepl).AllTask.DoRHAir)||(!(*pGD_Hot_Tepl).InTeplSens[cSmRHSens].Value)) return 0;
+	//return ((*pGD_Hot_Tepl).InTeplSens[cSmRHSens].Value-(*pGD_Hot_Tepl).AllTask.DoRHAir);
 	if ((!(*pGD_Hot_Tepl).AllTask.DoRHAir)||(!(*pGD_Hot_Tepl).InTeplSens[cSmRHSens].Value)) return 0;
 	return ((*pGD_Hot_Tepl).InTeplSens[cSmRHSens].Value-(*pGD_Hot_Tepl).AllTask.DoRHAir);
 
@@ -313,7 +316,7 @@ void CheckMistSystem(void)
     //pGD_TControl_Tepl->Systems[cSysMist].Power=pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_PFactor;
 } */
 
-void CheckMistSystemNew(void)
+void CheckMistSystemNew(char fnTepl)
 {
 	int16_t	OutAbsH, InAbsH;
 	//pGD_TControl_Tepl->Systems[cSysMist].Max = 100;//pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_TimeMixVal;
@@ -331,7 +334,9 @@ void CheckMistSystemNew(void)
 	volatile int16_t vTAHUdelta = 0;
 	//volatile int16_t vKeepRH = pGD_Hot_Tepl->AllTask. DoRHAir+500;				// RH теплицы Держать + 5 градус
 
-	volatile int16_t vRHtepl = pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
+	// изменеие 100. RH выводим как Theat
+	//volatile int16_t vRHtepl = pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
+	volatile int16_t vRHtepl = getRH(fnTepl);
 
 	// убираем это. Из задания убираем все. А точные настройки сделаем как диапазон работы дефицита водяного пара
 	volatile int16_t vKeepRHstart = (*pGD_Hot_Tepl).AllTask.RHAir + (GD.TuneClimate.f_MistRHstart*100);
@@ -744,6 +749,14 @@ int KeepFanSystem(char fnTepl)
 	windSpeed = GD.TControl.MeteoSensing[cSmVWindSens] / 100;
 	windDirect = GD.TControl.MeteoSensing[cSmDWindSens];
 	greenHousePos = GD.TuneClimate.o_TeplPosition;
+
+	// изменение 100
+	volatile int16_t Theat = getTempHeat(fnTepl);
+	volatile int16_t Tcont = getTempCont(fnTepl);
+	volatile int16_t minSpeedT = GD.TuneClimate.AHUspeed_Tmin * 100;
+	volatile int16_t maxSpeedT = GD.TuneClimate.AHUspeed_Tmax * 100;
+	volatile int16_t maxSpeedTcorr = GD.TuneClimate.AHUspeed_Corr;
+
 	if ((minT != 0) && (maxT != 0))
 		mode = 1;
 	if ((windSpeed > 0) && (MaxSpeedAHUwind > 0))
@@ -843,6 +856,24 @@ int KeepFanSystem(char fnTepl)
 			break;
 		}
 	}
+// провки в мониторе, Т контроля вместо Источника для Т вент
+	// изменение 100. коррекция скорости вент по Т и Тконтр
+	if ((Theat>0)&&(Tcont>0)&&(minSpeedT)&&(maxSpeedT)&&(maxSpeedTcorr))
+	{
+		if (Theat >= Tcont)
+			Theat = Theat - Tcont;
+		else if (Tcont > Theat)
+			Theat = Tcont - Theat;
+		if ((Theat >= minSpeedT) && (Theat <= maxSpeedT))
+		{
+			IntY = Theat;
+			CorrectionRule(minSpeedT, maxSpeedT, maxSpeedTcorr,0);
+			tempKeep = tempKeep + IntZ;
+		} else if (Theat > minSpeedT)
+			tempKeep = tempKeep + maxSpeedTcorr;
+	}
+	// -----------------------------
+
 
 	// итоговая проверка на мин и мак скорость
 	// в зависимости от того открыт ли клапан в зоне в которую дует ветер
@@ -858,7 +889,15 @@ int KeepFanSystem(char fnTepl)
 			if (tempKeep < minSpeed) tempKeep = minSpeed;
 	}
 	else
-		tempKeep = minSpeed;
+	{
+		if ((minSpeedT==0)&&(maxSpeedT==0)&&(maxSpeedTcorr==0)) // коментарии для проверки
+			tempKeep = minSpeed;
+		else
+			{
+				if (tempKeep > maxSpeed) tempKeep = maxSpeed;
+				if (tempKeep <= 0) tempKeep = minSpeed;
+			}
+	}
 	return tempKeep;
 }
 
@@ -1211,7 +1250,7 @@ long __MaxMechToVentTemp(void)
 /*************************************************************************/
 /*-*-*-*-*-*-*-*--Процедура установки границ для фрамуг--*-*-*-*-*-*-*-*-*/
 /*************************************************************************/
-void __sMinMaxWindows(void)
+void __sMinMaxWindows(char fnTepl)
 {	
 	int	t_max;
 //-------------------------------------------------------	
@@ -1247,7 +1286,7 @@ void __sMinMaxWindows(void)
 
 
 
-	IntY=DefRH();
+	IntY=DefRH(fnTepl);
 	CorrectionRule(GD.TuneClimate.f_min_RHStart,GD.TuneClimate.f_min_RHEnd,
 		((int)GD.TuneClimate.f_min_Cor),0);
 	ogrMin(&(pGD_Hot_Tepl->Kontur[cSmWindowUnW].MinCalc),IntZ);
@@ -2318,7 +2357,7 @@ void __sCalcKonturs(void)
 		}
 //		__sMinMaxScreen();
 // Расчет минимумов и максимумов фрамуг 
-		__sMinMaxWindows();
+		__sMinMaxWindows(fnTepl);
 #ifdef AHU1
 		__InitAHUSystems();
 #endif
@@ -2355,12 +2394,12 @@ void __sCalcKonturs(void)
 			//__sPotentialPosibilityKontur(0);//Приоритет в случае охлаждения   // NEW strat
 			//SetPriorityHeating(-1,DefRH(),&pGD_TControl_Tepl_Kontur->RealPower[0], ByteX);
 			// 46 именение было 0 и 1 стало 1 и 0
-			pGD_TControl_Tepl_Kontur->RealPower[1] = SetPriorityHeating(-1,DefRH(),ByteX);
+			pGD_TControl_Tepl_Kontur->RealPower[1] = SetPriorityHeating(-1,DefRH(fnTepl),ByteX);
 
 			//__sPotentialPosibilityKontur(1);//Приоритет в случае нагрева
 			//SetPriorityHeating(1,DefRH(),&pGD_TControl_Tepl_Kontur->RealPower[1], ByteX);
 
-			pGD_TControl_Tepl_Kontur->RealPower[0] = SetPriorityHeating(1,DefRH(),ByteX);
+			pGD_TControl_Tepl_Kontur->RealPower[0] = SetPriorityHeating(1,DefRH(fnTepl),ByteX);
 			ClrDog;
 
 			__WorkableKontur(ByteX,fnTepl);
@@ -2392,7 +2431,7 @@ void __sCalcKonturs(void)
 		CheckInRHSystem();
 
 //		CheckMistSystem(); 					// убрал временно вернуть
-		CheckMistSystemNew();
+		CheckMistSystemNew(fnTepl);
 //		CriterT=getTempVent(fnTepl)-GD.Hot.Tepl[fnTepl].AllTask.DoTVent;
 //		CriterRH=DefRH();
 //#warning Only f check
@@ -2417,7 +2456,9 @@ void __sCalcKonturs(void)
 		(*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT=pGD_Hot_Tepl->NextTCalc.TVentCritery-__MechToVentTemp();
 #warning check GD.Hot.Tepl[fnTepl].AllTask.DoTVent
 		//if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0))
-		if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0) && (getTempOutAHU(fnTepl)!=0) )
+		// изменеие 100. Вместо getTempVent делаем getTempHeat
+		//if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0) && (getTempOutAHU(fnTepl)!=0) )
+		if ((getTempHeat(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0) && (getTempOutAHU(fnTepl)!=0) )
 		{
 				PutCritery(CriterT,CriterRH); // first
 		}
@@ -2425,8 +2466,9 @@ void __sCalcKonturs(void)
 		//PutCritery((*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT,DefRH());  // было так
 #warning check GD.Hot.Tepl[fnTepl].AllTask.DoTVent
 		pGD_TControl_Tepl->AbsMaxVent=__MaxMechToVentTemp();
-		//if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0))
-		if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0) && (getTempOutAHU(fnTepl)!=0) )
+		// изменеие 100. Вместо getTempVent делаем getTempHeat
+		//if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0) && (getTempOutAHU(fnTepl)!=0) )
+		if ((getTempHeat(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0) && (getTempOutAHU(fnTepl)!=0) )
 			TakeForSys(CriterT,fnTepl);  // first
 		//TakeForSys(GD.Hot.Tepl[fnTepl].AllTask.DoTVent - getTempVent(fnTepl));  // last
 		//TakeForSys((*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT);  // было так

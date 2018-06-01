@@ -134,7 +134,60 @@ int16_t getTempOutEndAHU(char fnTepl)
 \brief Температура воздуха для вентиляци в зависимости от выбранного значение в Параметрах управления
 @return int16_t Температура
 */
-int16_t getTempVent(char fnTepl)
+// изменеие 100. Вместо getTempVent мспользуем как датчие контроля при коррекции скорости AHU
+int16_t getRH(char fnTepl)
+{
+	int16_t ResRH;
+	int16_t error = 0;
+	int16_t temp = 0;
+	int16_t i;
+	int8_t calcType = 0;
+	int8_t mask = 0;
+	int8_t maskN = 0;
+	int16_t max = 0;
+	int16_t min = 5000;
+	int16_t average = 0;
+	char averageCount = 0;
+	int16_t singleSensor = 0;
+	calcType = GD.Control.Tepl[fnTepl].sensRH >> 6;
+	mask = GD.Control.Tepl[fnTepl].sensRH << 2;
+	mask = mask >> 2;
+	error = 0;
+	for (i=6;i<9;i++)
+	{
+		if ( (mask >> (i-6) & 1) && (getRHSensor(fnTepl, i)) )
+		{
+			temp = getRHSensor(fnTepl, i);
+			if (min > temp)
+				min = temp;
+			if (max < temp)
+				max = temp;
+			average += temp;
+			averageCount++;
+			singleSensor = temp;
+			maskN = (maskN >> 1) + 32;
+			error = 1;
+		} else maskN = (maskN >> 1);
+	}
+	average = average / averageCount;
+
+	if (error)
+	{
+		GD.Hot.Tepl[fnTepl].RHsens = average;
+		if (calcType & 1)
+			GD.Hot.Tepl[fnTepl].RHsens = min;
+		if (calcType >> 1 & 1)
+			GD.Hot.Tepl[fnTepl].RHsens = max;
+		return GD.Hot.Tepl[fnTepl].RHsens;
+	}
+}
+
+/*!
+\brief Температура воздуха для вентиляци в зависимости от выбранного значение в Параметрах управления
+@return int16_t Температура
+*/
+// изменеие 100. Вместо getTempVent мспользуем как датчие контроля при коррекции скорости AHU
+int16_t getTempCont(char fnTepl)
 {
 	int16_t error = 0;
 	int16_t temp = 0;
@@ -1115,6 +1168,112 @@ int CorrectionRule(int fStartCorr,int fEndCorr, int fCorrectOnEnd, int fbSet)
 	else
 		IntZ=(int)((((long)(IntY-fStartCorr))*fCorrectOnEnd)/(fEndCorr-fStartCorr));
 	return fbSet;
+}
+
+//var MaxH:array [1..SKof] of T2Byte=(
+//520,557,595,637,680,757,779,828,883,
+//941,1002,1067,1136,1208,1284,1365,1450,1539,1632,
+//1732,1835,1944,2060,2181,2307,2440,2579,2726,2910);
+
+uint16_t GetMaxH(uint16_t vmT)
+{
+	volatile uint16_t res;
+	volatile uint16_t resM;
+	volatile uint16_t resM1;
+	uint16_t MaxH[] = {520,557,595,637,680,757,779,828,883,
+			941,1002,1067,1136,1208,1284,1365,1450,1539,1632,
+			1732,1835,1944,2060,2181,2307,2440,2579,2726,2910};
+	volatile uint16_t sot;
+	//sot = vmT mod 100;
+	//vmT = vmT div 100;
+	sot = vmT % 100;
+	vmT = vmT / 100;
+
+	if ((vmT<1) || (vmT>=29))  // последний элемент массива
+		return 0;
+	//else return MaxH[vmT]+(MaxH[vmT+1]-MaxH[vmT])*sot / 100;
+	//res = MaxH[vmT]+(MaxH[vmT+1]-MaxH[vmT])*sot / 100;
+	resM = MaxH[vmT];
+	resM1 = MaxH[vmT+1];
+	res = resM+(resM1-resM)*sot / 100;
+	//else return MaxH[vmT]+(MaxH[vmT+1]-MaxH[vmT])*sot / 100;
+	return res;
+}
+
+uint16_t GetDDWP(uint16_t vT, uint16_t vH)
+{
+	uint16_t res;
+	res = GetMaxH(vT)*(10000-vH) / 10000;
+	return res;
+	/*int16_t TEMP[] = {800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400,2500,2600,2700,2800,2900,3000};
+
+	int16_t DDWP[][23]={{4000},{50,53,56,60,64,68,72,77,82,87,92,98,104,110,117,124,131,138,146,155,163,173,182},
+						{4500},{46,49,52,55,59,62,66,71,75,80,85,90,95, 101,107,113,120,127,134,142,150,158,167},
+						{5000},{41,44,47,50,53,57,60,64,68,72,77,82,87,92,97,103,109,115,122,129,136,144,152},
+						{5500},{37,40,42,45,48,51,54,58,61,65,69,73,78,83,87,93,98,104,110,116,123,129,137},
+						{6000},{33,35,38,40,43,45,48,51,55,58,62,65,69,73,78,82,87,92,98,103,109,115,121},
+						{6500},{29,31,33,35,37,40,42,45,48,51,54,57,61,64,68,72,76,81,85,90,95,101,106},
+						{7000},{25,26,28,30,32,34,36,39,41,43,46,49,52,55,58,62,65,69,73,77,82,86,91},
+						{7500},{21,22,24,25,27,28,30,32,34,36,38,41,43,46,49,51,54,58,61,64,68,72,76},
+						{8000},{17,18,19,20,21,23,24,26,27,29,31,33,35,37,39,41,44,46,49,52,54,58,61},
+						{8500},{12,13,14,15,16,17,18,19,20,22,23,24,26,28,29,31,33,35,37,39,41,43,46},
+						{9000},{8,9,9,10,11,11,12,13,14,14,15,16,17,18,19,21,22,23,24,26,27,29,30},
+						{9500},{04,04,05,05,05,06,06,06,07,07,8,8,9,9,10,10,11,12,12,13,14,14,15},
+						{9900},{01,01,01,01,01,01,01,01,01,01,02,02,02,02,02,02,02,02,02,03,03,03,03}};
+	uint32_t deltaT;
+	uint32_t deltaRH;
+	uint32_t deltaMes;
+	uint32_t resI_T;
+	uint32_t resI_RH;
+
+	uint32_t res;
+	for (int i=0;i<13;i++)
+	{
+		if (vH > DDWP[i][0])
+			resI_RH = i;
+	}
+	for (int i=0;i<23;i++)
+	{
+		if (vT > TEMP[i])
+			resI_T = i;
+	}
+	deltaT = TEMP[resI_T+1] - TEMP[resI_T];
+	deltaRH = DDWP[resI_RH][0] - DDWP[resI_RH+1][0];
+	deltaRH = DDWP[resI_RH][resI_T] - DDWP[resI_RH+1][resI_T+1];
+	deltaMes = TEMP[resI_T+1] - vT;
+
+	res = DDWP[resI_RH+1][resI_T+1]
+
+
+	for (int i=0;i<13;i++)
+	{
+		if (vH > DDWP[i][0])
+			resI_RH = i;
+	}
+	for (int i=0;i<13;i++)
+	{
+		if (vH > DDWP[i][0])
+		{
+
+		}
+	}
+
+	if (vH == 0)
+	 return 0;
+ else
+	 return GetMaxH(vT)*(10000-vH) / 10000;		*/
+}
+
+uint16_t GetRH_DDWP(uint16_t vT, uint16_t vD)
+{
+	uint16_t mxH;
+	//Result:=0;
+	if ((vT==0) || (vD==0)) return;
+	mxH = GetMaxH(vT);
+	if (mxH > 0)
+	return 10000 - ((vD*10000) / mxH);
+
+	//return (10000 - vD*10000) / mxH;
 }
 
 uint16_t AbsHum(uint16_t fTemp, uint16_t fRH)

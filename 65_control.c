@@ -536,7 +536,7 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 }
 
 
-void AllTaskAndCorrection(void)
+void AllTaskAndCorrection(char fnTepl)
 {
 	
 	IntY=GD.Hot.MidlSR;//MeteoSens[cSmFARSens].Value;
@@ -572,7 +572,17 @@ void AllTaskAndCorrection(void)
 			GD.TuneClimate.s_RHConst,cbCorrRHOnSun);	
 		SetBit((*pGD_Hot_Tepl).RCS,IntX);
 		(*pGD_Hot_Tepl).AllTask.DoRHAir-=IntZ;
-			/*Коррекция прогноза*/
+
+
+		// изменение 100. ДДВП коррекция AllTask.RHAir, вывод ДДВП
+		//uint16_t ddwp = GetDDWP((*pGD_Hot_Tepl).AllTask.TAir, (*pGD_Hot_Tepl).AllTask.RHAir);
+		//uint16_t ddwp = GetDDWP(getTempHeat(fnTepl), getRH(fnTepl));
+		uint16_t ddwp = GetDDWP(getTempHeat(fnTepl), getRH(fnTepl));
+		(*pGD_Hot_Tepl).DDWP = ddwp;
+		uint16_t ddwp_rh = GetRH_DDWP(getTempHeat(fnTepl), GetDDWP((*pGD_Hot_Tepl).AllTask.TAir, (*pGD_Hot_Tepl).AllTask.RHAir));
+		//uint16_t ddwp_rh = GetRH_DDWP(getTempHeat(fnTepl), ddwp);
+		(*pGD_Hot_Tepl).AllTask.DoRHAir = ddwp_rh;
+		/*Коррекция прогноза*/
 //		(*pGD_Hot_Tepl).AllTask.NextRHAir-=IntZ;		
 		}
 	/*---------------------------------------------------*/
@@ -596,7 +606,7 @@ void AllTaskAndCorrection(void)
 				GD.TuneClimate.s_MinTPipeConst,0/*cbCorrMinTaskOnSun*/);
 	//		SetBit((*pGD_Hot_Tepl).Kontur[cSmKontur1].RCS,IntX);
 			(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinTask-IntZ;
-			IntY=DefRH();//MeteoSens[cSmFARSens].Value;
+			IntY=DefRH(fnTepl);//MeteoSens[cSmFARSens].Value;
 
 			IntX=CorrectionRule(GD.TuneClimate.c_RHStart,GD.TuneClimate.c_RHEnd,
 				GD.TuneClimate.c_RHOnMin1,0/*cbCorrMinTaskOnSun*/);
@@ -607,7 +617,7 @@ void AllTaskAndCorrection(void)
 		(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinTask;
 		if ((*pGD_Hot_Tepl).Kontur[cSmKontur2].MinTask)
 		{
-			IntY=DefRH();//MeteoSens[cSmFARSens].Value;
+			IntY=DefRH(fnTepl);//MeteoSens[cSmFARSens].Value;
 
 			IntX=CorrectionRule(GD.TuneClimate.c_RHStart,GD.TuneClimate.c_RHEnd,
 			GD.TuneClimate.c_RHOnMin2,0/*cbCorrMinTaskOnSun*/);
@@ -617,7 +627,7 @@ void AllTaskAndCorrection(void)
 		(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinCalc=(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinTask;
 		if ((*pGD_Hot_Tepl).Kontur[cSmKontur3].MinTask)
 		{
-			IntY=DefRH();//MeteoSens[cSmFARSens].Value;
+			IntY=DefRH(fnTepl);//MeteoSens[cSmFARSens].Value;
 
 			IntX=CorrectionRule(GD.TuneClimate.c_RHStart,GD.TuneClimate.c_RHEnd,
 			GD.TuneClimate.c_RHOnMin3,0/*cbCorrMinTaskOnSun*/);
@@ -670,7 +680,7 @@ void AllTaskAndCorrection(void)
 		(*pGD_Hot_Tepl).Kontur[cSmWindowUnW].MinCalc+=IntZ;
 	}
 	/*----------------------------------------------------------------*/
-		IntY=DefRH();
+		IntY=DefRH(fnTepl);
 		CorrectionRule(GD.TuneClimate.f_min_RHStart,GD.TuneClimate.f_min_RHEnd,
 			GD.TuneClimate.f_CorrTVent,0);
 		(*pGD_Hot_Tepl).AllTask.NextTVent-=IntZ;
@@ -1006,7 +1016,9 @@ void __cNextTCalc(char fnTepl)
 /******************************************************************
 		Далее расчет критерия для фрамуг
 *******************************************************************/
-	IntY=(*pGD_Hot_Tepl).AllTask.DoTVent-getTempVent(fnTepl);
+	//IntY=(*pGD_Hot_Tepl).AllTask.DoTVent-getTempVent(fnTepl);
+	// изменеие 100. Вместо getTempVent делаем getTempHeat
+	IntY=(*pGD_Hot_Tepl).AllTask.DoTVent-getTempHeat(fnTepl);
 
 	(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent=((int)((((long)(IntY))*((long)pGD_Control_Tepl->f_PFactor))/100));
  	(*pGD_TControl_Tepl).IntegralVent+=((((long)(IntY))*((long)pGD_Control_Tepl->f_IFactor))/10);
@@ -1067,7 +1079,10 @@ void __cNextTCalc(char fnTepl)
 
 	// стало  last
 	//(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent,pGD_Hot_Tepl->AllTask.DoRHAir);
-	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent, 4*pGD_Hot_Tepl->AllTask.DoRHAir-(3*GD.Hot.Tepl[fnTepl].InTeplSens[cSmRHSens].Value));
+
+	// изменеие 100. RH выводим как Theat
+	//(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent, 4*pGD_Hot_Tepl->AllTask.DoRHAir-(3*GD.Hot.Tepl[fnTepl].InTeplSens[cSmRHSens].Value));
+	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent, 4*pGD_Hot_Tepl->AllTask.DoRHAir-(3*getRH(fnTepl)));
 	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=RelHum(GD.Hot.Tepl[fnTepl].InTeplSens[cSmTAHUOutSens].Value, (*pGD_Hot_Tepl).NextTCalc.ICorrectionVent);
 	if ((*pGD_Hot_Tepl).NextTCalc.ICorrectionVent>9500)
 		(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=9500;
@@ -1844,7 +1859,7 @@ void SetTepl(char fnTepl)
 		SetBit((*pGD_Hot_Tepl).RCS,cbNoSensingTemp);
 //	if(!(*pGD_Hot_Tepl).RCS)
 	{	
-		AllTaskAndCorrection();
+		AllTaskAndCorrection(fnTepl);
 		LaunchCalorifer();
 
 		__cNextTCalc(fnTepl);

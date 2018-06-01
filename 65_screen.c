@@ -109,7 +109,9 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 		int sc_TOutClose = GD.TuneClimate.sc_TOutClose;
 		volatile int sc_LineSunVol = GD.TuneClimate.sc_LineSunVol*10;
 
-		int sc_RHinTepl = pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
+		// изменеие 100. RH выводим как Theat
+		//int sc_RHinTepl = pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
+		int sc_RHinTepl = getRH(fnTepl);
 		int sc_RHStart = GD.TuneClimate.sc_RHStart;
 		int sc_RHEnd = GD.TuneClimate.sc_RHEnd;
 		int sc_RHMax = GD.TuneClimate.sc_RHMax;
@@ -237,7 +239,9 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 		// Влияние разницы влажности на открытие экрана
 		if ( (sc_RHinTepl) && (sc_RHStart) && (sc_RHEnd) && (sc_RHMax) )
 		{
-			IntY=pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value-pGD_Hot_Tepl->AllTask.DoRHAir;
+			// изменеие 100. RH выводим как Theat
+			//IntY=pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value-pGD_Hot_Tepl->AllTask.DoRHAir;
+			IntY=getRH(fnTepl)-pGD_Hot_Tepl->AllTask.DoRHAir;
 			CorrectionRule(GD.TuneClimate.sc_RHStart,GD.TuneClimate.sc_RHEnd,GD.TuneClimate.sc_RHMax,0);
 			if (!pGD_Hot_Tepl->AllTask.DoRHAir) IntZ=0;
 				pScr->Value-=IntZ;

@@ -19,22 +19,35 @@ void SetUpSiod(char fnTepl)
 		pGD_TControl_Tepl->PauseSIO++;	
  
 	IntX=0;
-	if ((((pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value-pGD_Hot_Tepl->AllTask.DoRHAir)>GD.TuneClimate.sio_RHStop)
-		||(pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value>9600))
+	// изменение 100. RH выводим как Theat
+//	if ((((pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value-pGD_Hot_Tepl->AllTask.DoRHAir)>GD.TuneClimate.sio_RHStop)
+//		||(pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value>9600))
+//		&&(pGD_Hot_Tepl->AllTask.DoRHAir)) return;
+	if ((((getRH(fnTepl)-pGD_Hot_Tepl->AllTask.DoRHAir)>GD.TuneClimate.sio_RHStop)
+		||(getRH(fnTepl)>9600))
 		&&(pGD_Hot_Tepl->AllTask.DoRHAir)) return;
+
 	if ((pGD_Hot_Tepl->AllTask.DoTHeat-getTempHeat(fnTepl))>GD.TuneClimate.sio_TStop) return;
+	// изменение 100. RH выводим как Theat
+//	if (((getTempHeat(fnTepl)-pGD_Hot_Tepl->AllTask.DoTHeat)<GD.TuneClimate.sio_TStart)
+//		&&(((pGD_Hot_Tepl->AllTask.DoRHAir-pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value)<GD.TuneClimate.sio_RHStart)
+//		||(!pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value))) return;
 	if (((getTempHeat(fnTepl)-pGD_Hot_Tepl->AllTask.DoTHeat)<GD.TuneClimate.sio_TStart)
-		&&(((pGD_Hot_Tepl->AllTask.DoRHAir-pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value)<GD.TuneClimate.sio_RHStart)
-		||(!pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value))) return;	
+		&&(((pGD_Hot_Tepl->AllTask.DoRHAir-getRH(fnTepl))<GD.TuneClimate.sio_RHStart)
+		||(!getRH(fnTepl)))) return;
 
 	IntY=getTempHeat(fnTepl)-pGD_Hot_Tepl->AllTask.DoTHeat;
 	CorrectionRule(GD.TuneClimate.sio_TStart,GD.TuneClimate.sio_TEnd,GD.TuneClimate.sio_TStartFactor-GD.TuneClimate.sio_TEndFactor,0);
 	IntX=(int)(GD.TuneClimate.sio_TStartFactor-IntZ);
 
-	IntY=pGD_Hot_Tepl->AllTask.DoRHAir-pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
+	// изменение 100. RH выводим как Theat
+	//IntY=pGD_Hot_Tepl->AllTask.DoRHAir-pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
+	IntY=pGD_Hot_Tepl->AllTask.DoRHAir-getRH(fnTepl);
 	CorrectionRule(GD.TuneClimate.sio_RHStart,GD.TuneClimate.sio_RHEnd,GD.TuneClimate.sio_RHStartFactor-GD.TuneClimate.sio_RHEndFactor,0);
 	IntZ=GD.TuneClimate.sio_RHStartFactor-IntZ;
-	if ((pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value)&&(pGD_Hot_Tepl->AllTask.DoRHAir))
+	// изменение 100. RH выводим как Theat
+	//if ((pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value)&&(pGD_Hot_Tepl->AllTask.DoRHAir))
+	if ((getRH(fnTepl))&&(pGD_Hot_Tepl->AllTask.DoRHAir))
 		if (IntX>IntZ) 
 			IntX=IntZ;
 	if (pGD_TControl_Tepl->PauseSIO<IntX) return;
