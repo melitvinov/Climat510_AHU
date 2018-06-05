@@ -565,7 +565,9 @@ void MidlWindAndSr(void)
 		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
 		//GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
 	}
-	GD.Hot.MidlWind=(int)((((long int)GD.Hot.MidlWind)*(1000-o_MidlWindFactor)+((long int)GD.TControl.MeteoSensing[cSmVWindSens])*o_MidlWindFactor)/1000);
+
+	// нужен дефайн сделаем расчет так же как среднее солн в Мониторе
+	//GD.Hot.MidlWind=(int)((((long int)GD.Hot.MidlWind)*(1000-o_MidlWindFactor)+((long int)GD.TControl.MeteoSensing[cSmVWindSens])*o_MidlWindFactor)/1000);
 
 }
 

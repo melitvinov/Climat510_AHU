@@ -1,5 +1,6 @@
 #include "stm32f10x_Rootines.h"
 #include "misc.h"
+#include "stm32f10x.h"
 #include "stm32f10x_tim.h"
 #include "stm32f10x_rtc.h"
 #include "stm32f10x_i2c.h"
@@ -222,9 +223,53 @@ void TIM2_IRQHandler(void)
 
 }
 
+static void wait_for_write_completion(void)
+{
+    while (! (RTC->CRL & RTC_CRL_RTOFF));
+}
+
+
 void InitRTC(void)
 {
-	int	i;
+	RCC->APB1ENR |= RCC_APB1ENR_PWREN | RCC_APB1ENR_BKPEN;	// power to the rtc and backup registers
+
+	// if rtc config has gone (magic mismatch), do reinit
+	if (BKP->DR1 != 0xA5A6 || !(RCC->BDCR & RCC_BDCR_RTCEN))
+	{
+		PWR->CR |= PWR_CR_DBP;  // allow access to RTC and backup registers
+		wait_for_write_completion();
+		RTC->CRL |= RTC_CRL_CNF;    // enter config mode
+		wait_for_write_completion();
+
+		RCC->BDCR |= RCC_BDCR_BDRST;    // start resetting backup domain
+		RCC->BDCR &= ~RCC_BDCR_BDRST;   // stop resetting backup domain :-)
+
+		RCC->BDCR |= RCC_BDCR_LSEON;     // start xtal and wait to stabilize
+		while (! (RCC->BDCR & RCC_BDCR_LSERDY));
+
+		RCC->BDCR |= RCC_BDCR_RTCSEL_LSE;
+		RCC->BDCR |= RCC_BDCR_RTCEN;
+
+		while (! (RTC->CRL & RTC_CRL_RSF));
+
+		// 1 second period
+		RTC->PRLL = 0x7FFF;
+		RTC->PRLH = 0;
+		wait_for_write_completion();
+
+		uint32_t timestamp = (11*60+55)*60; // here: 1st January 2000 11:55:00
+		RTC->CNTL = timestamp;
+		RTC->CNTH = timestamp >> 16;
+		wait_for_write_completion();
+
+		RTC->CRL &= ~RTC_CRL_CNF;    // exit config mode
+		wait_for_write_completion();
+
+		BKP->DR1 = 0xA5A6;
+		PWR->CR &= ~PWR_CR_DBP;  // forbid access to backup registers
+	}
+
+	// enable per-second interrupt
 	NVIC_InitTypeDef NVIC_InitStructure;
 
 	/* Configure one bit for preemption priority */
@@ -237,69 +282,7 @@ void InitRTC(void)
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR | RCC_APB1Periph_BKP, ENABLE);
-
-	for(i=0;i<15000;i++) { ; }
-
-//	RCC_LSEConfig(RCC_LSE_ON);
-//	while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET) { ; }
-//	RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE);
-
-	RCC_LSICmd(ENABLE);	 // устанавливаем бит разрешения работы
-
-//	RCC_RTCCLKConfig(RCC_RTCCLKSource_LSI);
-
-
-
-	if (BKP_ReadBackupRegister(BKP_DR1) != 0xA5A6) {
-		/* Backup data register value is not correct or not yet programmed (when
-		   the first time the program is executed) */
-
-		/* Allow access to BKP Domain */
-		PWR_BackupAccessCmd(ENABLE);
-
-		/* Reset Backup Domain */
-		BKP_DeInit();
-
-		RCC_LSEConfig(RCC_LSE_OFF);
-
-		RCC_LSICmd(ENABLE);	 // устанавливаем бит разрешения работы
-		while (RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET);
-		RCC_RTCCLKConfig(RCC_RTCCLKSource_LSI);
-
-/*		// Enable LSE
-		RCC_LSEConfig(RCC_LSE_ON);
-		while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET) { ; }
-		RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE);*/
-		/* Enable RTC Clock */
-		RCC_RTCCLKCmd(ENABLE);
-		/* Wait for RTC registers synchronization */
-		RTC_WaitForSynchro();
-		/* Wait until last write operation on RTC registers has finished */
-		RTC_WaitForLastTask();
-		/* Set RTC prescaler: set RTC period to 1sec */
-		//RTC_SetPrescaler(40000); /* RTC period = RTCCLK/RTC_PR = (32.768 KHz)/(32767+1) */   // было так !!!
-		RTC_SetPrescaler(32000); /* RTC period = RTCCLK/RTC_PR = (32.768 KHz)/(32767+1) */   // вернул 32767 как более понятное
-		/* Wait until last write operation on RTC registers has finished */
-		RTC_WaitForLastTask();
-		/* Set initial value */
-		RTC_SetCounter( (uint32_t)((11*60+55)*60) ); // here: 1st January 2000 11:55:00
-		/* Wait until last write operation on RTC registers has finished */
-		RTC_WaitForLastTask();
-		BKP_WriteBackupRegister(BKP_DR1, 0xA5A6);
-		/* Lock access to BKP Domain */
-		PWR_BackupAccessCmd(DISABLE);
-
-	} else {
-
-		/* Wait for RTC registers synchronization */
-		RTC_WaitForSynchro();
-	}
-	RTC_ITConfig(RTC_IT_SEC, ENABLE);
-
-
-
-
+	RTC->CRH = RTC_CRH_SECIE;
 }
 
 
