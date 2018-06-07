@@ -205,7 +205,7 @@ void (* const g_pfnVectors[])(void) =
   CAN2_RX1_IRQHandler,           /*!< 65: CAN2 RX1                             */
   CAN2_SCE_IRQHandler,           /*!< 66: CAN2 SCE                             */
   OTG_FS_IRQHandler,             /*!< 67: USB OTG FS                           */
-  (void *)0xF108F85F            /*!< Boot in RAM mode                         */
+  (void *)0XE54430FE             /*!< Magic for the bootloader to recognize firmware */
 };        
 
 

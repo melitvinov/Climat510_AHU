@@ -95,9 +95,9 @@
       <linkerarg value="-Map=${project.name}.map"/>
       <linkerarg value="-mcpu=cortex-m3"/>
       <linkerarg value="-mthumb"/>
-      <linkerarg value="-L${linkdir}"/>
+      <linkerarg value="-L."/>
       <linkerarg value="--gc-sections"/>
-      <linkerarg value="-T${linkdir}\link.ld"/>
+      <linkerarg value="-T\link.ld"/>
       
     </cc>
   </target>

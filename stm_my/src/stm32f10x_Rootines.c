@@ -268,36 +268,16 @@ void InitRTC(void)
 		BKP->DR1 = 0xA5A6;
 		PWR->CR &= ~PWR_CR_DBP;  // forbid access to backup registers
 	}
-
-	// enable per-second interrupt
-	NVIC_InitTypeDef NVIC_InitStructure;
-
-	/* Configure one bit for preemption priority */
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
-
-	/* Enable the RTC Interrupt */
-	NVIC_InitStructure.NVIC_IRQChannel = RTC_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 4;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-
-	RTC->CRH = RTC_CRH_SECIE;
 }
 
-
-void RTC_IRQHandler(void)
+int GetRTCSecond(void)
 {
-	if (RTC_GetITStatus(RTC_IT_SEC) != RESET)
-	{
-		RTC_ClearITPendingBit(RTC_IT_SEC);
-		RTC_WaitForLastTask();
-		bSec=1;
-		Second++;
-		//SumAnswers=IntCount;
-		//IntCount=0;
-	}
+	uint32_t t;
+	while ( ( t = RTC_GetCounter() ) != RTC_GetCounter() ) { ; }
+
+	return t % 60;
 }
+
 
 #define PORT1WIRE	GPIOB
 #define PIN1WIRE	GPIO_Pin_12

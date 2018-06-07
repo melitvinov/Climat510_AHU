@@ -28,7 +28,6 @@ void    *AdrVal;
 uchar   TecChan;
 bit     ReadyIZ;
 bit     FalseIZ;
-bit     bSec;
 bit     BITKL;
 bit     Menu;
 bit     B_video;

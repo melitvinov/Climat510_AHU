@@ -2135,7 +2135,7 @@ char tCTepl,ttTepl;
 		GD.Hot.FullHeat=(int)((GD.TControl.FullVol*GD.TuneClimate.ScaleRasx/100)*(GD.TControl.MeteoSensing[cSmMainTSens]-GD.TControl.MeteoSensing[cSmMainTSens+1])/1000);
 	}	
 	Volume=0;
-	if( Second < 60) return;
+	if( Second != 59) return;
 
 	WriteToFRAM();
 	MidlWindAndSr();
@@ -2155,7 +2155,6 @@ char tCTepl,ttTepl;
 #endif
 	
 	ClrDog;
-	Second=0;
 //	w1_test();
 //	ds18b20_ConvertTemp();
 

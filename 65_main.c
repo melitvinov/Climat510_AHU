@@ -249,7 +249,10 @@ char    timeDog;
         InRHInit();
         //initCheckConfig();
         startFlag = 5;
+
+        int prevSec = 0;
 start:
+	Second = GetRTCSecond();
 
    if (not) {
         if(!ton_t--) { ton_t=ton; not--; Sound;}
@@ -294,7 +297,8 @@ start:
             GD.SostRS=OUT_UNIT;
             SIM=105;
             }
-   if(bSec) {
+   if(prevSec != Second) {
+	   prevSec = Second;
 
 #ifdef STM32_UNIT
 	   if (Second==58)
@@ -315,7 +319,6 @@ start:
 
         if(GD.SostRS==OUT_UNIT) TestMem(0);
 #endif
-        bSec=0;
         ClrDog;
         Control();
         ClrDog;
