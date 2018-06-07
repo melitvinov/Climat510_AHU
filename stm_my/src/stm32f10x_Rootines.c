@@ -234,7 +234,7 @@ void InitRTC(void)
 	RCC->APB1ENR |= RCC_APB1ENR_PWREN | RCC_APB1ENR_BKPEN;	// power to the rtc and backup registers
 
 	// if rtc config has gone (magic mismatch), do reinit
-	if (BKP->DR1 != 0xA5A6 || !(RCC->BDCR & RCC_BDCR_RTCEN))
+	if (BKP->DR1 != 0xA5A7 || !(RCC->BDCR & RCC_BDCR_RTCEN))
 	{
 		PWR->CR |= PWR_CR_DBP;  // allow access to RTC and backup registers
 		wait_for_write_completion();
@@ -265,7 +265,7 @@ void InitRTC(void)
 		RTC->CRL &= ~RTC_CRL_CNF;    // exit config mode
 		wait_for_write_completion();
 
-		BKP->DR1 = 0xA5A6;
+		BKP->DR1 = 0xA5A7;
 		PWR->CR &= ~PWR_CR_DBP;  // forbid access to backup registers
 	}
 }
