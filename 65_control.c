@@ -1600,7 +1600,7 @@ void DoMechanics(char fnTepl)
 					{
 					SetBit(MBusy->RCS,cMSBlockRegs);
 
-					TimeVol = pGD_ConstMechanic_Mech->v_TimeMixVal/4;
+					TimeVol = pGD_ConstMechanic_Mech->v_TimeMixVal/10;
 					if (MBusy->TimeRealMech + TimeVol <= pGD_ConstMechanic_Mech->v_TimeMixVal)
 						MBusy->TimeRealMech+=TimeVol;
 					//MBusy->TimeRealMech+=pGD_ConstMechanic_Mech->v_TimeMixVal/4;
@@ -1609,7 +1609,7 @@ void DoMechanics(char fnTepl)
 					{
 					SetBit(MBusy->RCS,cMSBlockRegs);
 
-					TimeVol = pGD_ConstMechanic_Mech->v_TimeMixVal/4;
+					TimeVol = pGD_ConstMechanic_Mech->v_TimeMixVal/10;
 					if (MBusy->TimeRealMech - TimeVol > 0)
 						MBusy->TimeRealMech-=TimeVol;
 					//MBusy->TimeRealMech-=pGD_ConstMechanic_Mech->v_TimeMixVal/4;
