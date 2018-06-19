@@ -579,9 +579,11 @@ void AllTaskAndCorrection(char fnTepl)
 		//uint16_t ddwp = GetDDWP(getTempHeat(fnTepl), getRH(fnTepl));
 		uint16_t ddwp = GetDDWP(getTempHeat(fnTepl), getRH(fnTepl));
 		(*pGD_Hot_Tepl).DDWP = ddwp;
-		uint16_t ddwp_rh = GetRH_DDWP(getTempHeat(fnTepl), GetDDWP((*pGD_Hot_Tepl).AllTask.TAir, (*pGD_Hot_Tepl).AllTask.RHAir));
+
+		//uint16_t ddwp_rh = GetRH_DDWP(getTempHeat(fnTepl), GetDDWP((*pGD_Hot_Tepl).AllTask.TAir, (*pGD_Hot_Tepl).AllTask.RHAir));
+		//(*pGD_Hot_Tepl).AllTask.DoRHAir = ddwp_rh;
+
 		//uint16_t ddwp_rh = GetRH_DDWP(getTempHeat(fnTepl), ddwp);
-		(*pGD_Hot_Tepl).AllTask.DoRHAir = ddwp_rh;
 		/*Коррекция прогноза*/
 //		(*pGD_Hot_Tepl).AllTask.NextRHAir-=IntZ;		
 		}
