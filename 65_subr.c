@@ -1188,11 +1188,16 @@ uint16_t GetMaxH(uint16_t vmT)
 	volatile uint16_t sot;
 	//sot = vmT mod 100;
 	//vmT = vmT div 100;
+
+	if (vmT > 2910)  // последний элемент массива, далее оставляем влажность постоянной
+		vmT = 2910;
+
 	sot = vmT % 100;
 	vmT = vmT / 100;
 
-	if ((vmT<1) || (vmT>=29))  // последний элемент массива
+	if (vmT<1)  // последний элемент массива
 		return 0;
+
 	//else return MaxH[vmT]+(MaxH[vmT+1]-MaxH[vmT])*sot / 100;
 	//res = MaxH[vmT]+(MaxH[vmT+1]-MaxH[vmT])*sot / 100;
 	resM = MaxH[vmT];

@@ -575,15 +575,14 @@ void AllTaskAndCorrection(char fnTepl)
 
 
 		// изменение 100. ДДВП коррекция AllTask.RHAir, вывод ДДВП
-		//uint16_t ddwp = GetDDWP((*pGD_Hot_Tepl).AllTask.TAir, (*pGD_Hot_Tepl).AllTask.RHAir);
-		//uint16_t ddwp = GetDDWP(getTempHeat(fnTepl), getRH(fnTepl));
+		//uint16_t ddwp = GetDDWP((*pGD_Hot_Tepl).AllTask.TAir, (*pGD_Hot_Tepl).AllTask.RHAir);	// для теста
+		//uint16_t ddwp = GetDDWP(getTempHeat(fnTepl), getRH(fnTepl)); 	// для теста
 		uint16_t ddwp = GetDDWP(getTempHeat(fnTepl), getRH(fnTepl));
 		(*pGD_Hot_Tepl).DDWP = ddwp;
+		uint16_t ddwp_rh = GetRH_DDWP(getTempHeat(fnTepl), GetDDWP((*pGD_Hot_Tepl).AllTask.TAir, (*pGD_Hot_Tepl).AllTask.RHAir));
+		(*pGD_Hot_Tepl).AllTask.DoRHAir = ddwp_rh;
 
-		//uint16_t ddwp_rh = GetRH_DDWP(getTempHeat(fnTepl), GetDDWP((*pGD_Hot_Tepl).AllTask.TAir, (*pGD_Hot_Tepl).AllTask.RHAir));
-		//(*pGD_Hot_Tepl).AllTask.DoRHAir = ddwp_rh;
-
-		//uint16_t ddwp_rh = GetRH_DDWP(getTempHeat(fnTepl), ddwp);
+		//uint16_t ddwp_rh = GetRH_DDWP(getTempHeat(fnTepl), ddwp);   // для теста
 		/*Коррекция прогноза*/
 //		(*pGD_Hot_Tepl).AllTask.NextRHAir-=IntZ;		
 		}

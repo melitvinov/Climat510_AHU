@@ -609,9 +609,8 @@ typedef struct eeTeplControl
 
 		// изменеие 100. Добавляем два новых параметра
 		int16_t		sensRH;
-		int16_t		RHCorrSpeed;
 
-		int16_t		Rez[11];  //12
+		int16_t		Rez[12];  //12
 
 		uint16_t 	crc;
 
