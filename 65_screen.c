@@ -8,6 +8,7 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 	pScr=&pGD_TControl_Tepl->Screen[typScr];
 	ttyp=typScr;
 	if (ttyp>cHSmScrV_S1) ttyp=cHSmScrV_S1;	
+
 	bZad=0;
 	if (pScr->PauseMode) bZad=1;
 
@@ -75,7 +76,7 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			//if (YesBit(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS,cbDownAlarmSens))
 			//	pScr->Mode=1;
 			if((GD.TuneClimate.sc_ZSRClose)&&(MidlSun>SunZClose)) pScr->Mode=1;
-		}
+
 /*		if 	(pScr->Mode!=pScr->OldMode)
 		{
 			ClrBit(pGD_TControl_Tepl->RCS1,cbSCCorrection);
@@ -143,8 +144,8 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 				}
 			}
 	*/
-			if (MidlSun <= sc_TSROpen)
-			{
+			if (MidlSun <= sc_TSROpen)  // суть в том что экран от 0 до ћ»Ќ должен быть открыть если высока€ внешн€€ температура и закрыт только если
+			{							// если внешн€€ температура меньше
 				if ( sc_TOutClose < sc_Tout ) // коррекци€ по внешней температуре с признаком ночи, экран не надо сварачивать
 				{
 					pScr->Mode=1;
@@ -246,6 +247,11 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			if (!pGD_Hot_Tepl->AllTask.DoRHAir) IntZ=0;
 				pScr->Value-=IntZ;
 		}
+		}
+
+		if 	(pScr->Mode!=pScr->OldMode)
+			pScr->PauseMode=GD.TuneClimate.sc_PauseMode;
+		pScr->OldMode=pScr->Mode;
 
 /* ¬ли€ние стекла
 		IntY=pGD_Hot_Tepl->InTeplSens[cSmGlassSens].Value;
@@ -319,8 +325,11 @@ void SetPosScreen(char typScr, char fnTepl)
 
 	if (YesBit((*(pGD_Hot_Hand+cHSmScrTH+typScr)).RCS, cbManMech)) return;
 
-	if (pScr->Pause<=0)
-		pScr->Pause=0;
+	// если была смена режима экрана выставл€етс€ пауза, пока она не 0 не работаем
+	if (pScr->PauseMode) return;
+
+	if (pScr->Pause < 0)
+		pScr->Pause = 0;
 	if (pScr->Pause > 0)
 		{
 			pScr->Pause--;

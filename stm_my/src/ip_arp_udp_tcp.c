@@ -100,11 +100,18 @@ void init_ip_arp_udp_tcp(unsigned char *mymac,unsigned char *myip,unsigned int w
         i++;
 		}*/
 	i=0;
-	while(i<6)
-		{
-        macaddr[i]=mymac[i];
-        i++;
-		}
+	//while(i<6)
+	//	{
+//        macaddr[i]=mymac[i];
+		macaddr[0]=mymac[0];
+		macaddr[1]=mymac[1];
+		macaddr[2]=mymac[2];
+		macaddr[3]=mymac[3];
+		macaddr[4]=mymac[4];
+		macaddr[5]=mymac[5];
+
+        //i++;
+	//	}
 	}
 
 unsigned char eth_type_is_arp_and_my_ip(unsigned char *buf,unsigned  int len)

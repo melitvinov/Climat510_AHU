@@ -610,7 +610,11 @@ typedef struct eeTeplControl
 		// изменеие 100. Добавляем два новых параметра
 		int16_t		sensRH;
 
-		int16_t		Rez[12];  //12
+		// изменеие 104. Делаем расчет влажности выключаемым
+		int16_t		DDWP_RH_OnOff;
+
+
+		int16_t		Rez[11];  //12
 
 		uint16_t 	crc;
 

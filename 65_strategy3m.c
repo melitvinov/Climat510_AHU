@@ -570,11 +570,11 @@ char valveGetOldPos(void)
 
 //uint16_t fInRH_Res = 0;
 
-int KeepInRH(void)
+int KeepInRH(char fnTepl)
 {
 	if (!pGD_TControl_Tepl->Systems[cSysInRH].Keep) return 0;
 	int16_t Res;
-	int16_t RH1, RH2, RHset;
+	int16_t RH1, RH2, RHset, RHmes;
 	int16_t	OutAbsH, InAbsH;
 	//pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_TimeMixVal;
 
@@ -584,18 +584,21 @@ int KeepInRH(void)
 	//pGD_TControl_Tepl->Systems[cSysInRH].Min = (pGD_Control_Tepl->InRHMin * pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_TimeMixVal) / 100;
 
 
-	RH1 = getRH1AHUSensor();
-	RH2 = getRH2AHUSensor();
+	//RH1 = getRH1AHUSensor();
+	//RH2 = getRH2AHUSensor();
+	RHmes = getRH(fnTepl)/100;
 	RHset = DefAbsHum()/100;
-	RH1 = DefAbsHumSensor(RH1)/100;
-	RH2 = DefAbsHumSensor(RH2)/100;
+	//RH1 = DefAbsHumSensor(RH1)/100;
+	//RH2 = DefAbsHumSensor(RH2)/100;
 
 	//fInRH_RH1 = RH1;
 	//fInRH_RH2 = RH2;
  	//fInRH_RHset = RHset;
 
-	if ((RH1) && (RH2) && (RHset))
-		Res = (pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_PFactor * (RHset - ((RH1 + RH2)/2) )) / pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_IFactor;
+	//if ((RH1) && (RH2) && (RHset))
+	if ((RHmes) && (RHset))
+		Res = pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_PFactor * (RHset - RHmes);
+		//Res = (pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_PFactor * (RHset - ((RH1 + RH2)/2) )) / pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_IFactor;
 	else
 		return 0;
 	//fInRH_Res = Res;  // потом убрать!
@@ -2782,7 +2785,7 @@ void __sMechWindows(void)
 			//pGD_Hot_Tepl->HandCtrl[cHSmAHUPad].Position=__SetPad(fnTepl);/*KeepMistSystem();*/
 
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmInRH].RCS,cbManMech)))
-			pGD_Hot_Tepl->HandCtrl[cHSmInRH].Position=KeepInRH();
+			pGD_Hot_Tepl->HandCtrl[cHSmInRH].Position=KeepInRH(fnTepl);
 
 	}
 }

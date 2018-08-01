@@ -12,12 +12,105 @@
 #include "I2CSoft.h"
 
 
-uint8_t* mymac = 0x1FFFF7EE;
+//uint8_t* mymac = 0x1FFFF7EE;
+
+//uint8_t* mymac[6];
+uint8_t mymac[6];
 
 static unsigned char myip[4] = {192,168,1,231};
 
 uint16_t* IWDG_Reset;
 uint8_t KeyDelay;
+
+//*********************************************************
+#define MIN(a, b)          ({ typeof(a) _a = (a); typeof(b) _b = (b); _a < _b ? _a : _b; })
+
+unsigned int MurmurHash2 ( const void * key, int len, unsigned int seed )
+{
+	// 'm' and 'r' are mixing constants generated offline.
+	// They're not really 'magic', they just happen to work well.
+
+	const unsigned int m = 0x5bd1e995;
+	const int r = 24;
+
+	// Initialize the hash to a 'random' value
+
+	unsigned int h = seed ^ len;
+
+	// Mix 4 bytes at a time into the hash
+
+	const unsigned char * data = (const unsigned char *)key;
+
+	while(len >= 4)
+	{
+		unsigned int k = *(unsigned int *)data;
+
+		k *= m;
+		k ^= k >> r;
+		k *= m;
+
+		h *= m;
+		h ^= k;
+
+		data += 4;
+		len -= 4;
+	}
+
+	// Handle the last few bytes of the input array
+
+	switch(len)
+	{
+	case 3: h ^= data[2] << 16;
+	case 2: h ^= data[1] << 8;
+	case 1: h ^= data[0];
+	        h *= m;
+	};
+
+	// Do a few final mixes of the hash to ensure the last few
+	// bytes are well-incorporated.
+
+	h ^= h >> 13;
+	h *= m;
+	h ^= h >> 15;
+
+	return h;
+}
+
+uint HAL_sys_read_sn(uint8_t *dst, uint8_t maxsize)
+{
+    const uint8_t *src = (const u8 *)0x1FFFF7E8;
+    uint16_t i;
+
+    for (i = 0; i < MIN(maxsize, 12U); i++)
+        *dst++ = *src++;
+
+    return i;
+}
+
+void netapp_get_macaddr()//(uint8_t *dst)
+{
+	uint8_t sn[12];
+	uint16_t sn_size = HAL_sys_read_sn(sn, 12);
+
+    uint32_t hash = MurmurHash2(sn, 12, 0);
+
+
+    mymac[0] = 0x02;
+    mymac[1] = 0x00;
+    mymac[2] = hash;
+    mymac[3] = hash >> 8;
+    mymac[4] = hash >> 16;
+    mymac[5] = hash >> 24;
+
+//    dst[0] = 0x02;
+//    dst[1] = 0x00;
+//    dst[2] = hash;
+//    dst[3] = hash >> 8;
+//    dst[4] = hash >> 16;
+//    dst[5] = hash >> 24;
+}
+
+//*********************************************************
 
 void CheckWithoutPC(void)
 {
@@ -57,12 +150,14 @@ void Init_STM32(void) {
 		InitMainTimer();
 		SETEA;
 
+		// изменение 105
+		netapp_get_macaddr();
 
 		Keyboard_Init();
 		InitRTC();
 	    PORTNUM=DEF_PORTNUM;
 
-		simple_server(AdrGD,&GD.SostRS,&NumBlock,GD.Control.IPAddr,mymac,&PORTNUM);
+		simple_server(AdrGD,&GD.SostRS,&NumBlock,GD.Control.IPAddr, mymac ,&PORTNUM);
 
 
 		w1Init();

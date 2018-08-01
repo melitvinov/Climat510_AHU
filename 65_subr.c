@@ -539,36 +539,22 @@ void MidlWindAndSr(void)
 {
 	if (startFlag)
 	{
-		//OldHotSun = 110;
 		if (startFlag < 0) startFlag = 0;
 		return;
 	}
-
-	//int32_t sun;
-	//sun = (long int)GD.Hot.MeteoSensing[cSmFARSens].Value;
-
-	GD.TControl.SumSun += ((long int)GD.TControl.MeteoSensing[cSmFARSens]);
-
-//	if (	(sun < (sun + 1000)) &&
-//		(sun < 2000))
-//	GD.TControl.MidlSR = ((((long int)GD.Hot.MidlSR*1000)*(1000-o_MidlSRFactor))/1000
-//		+((long int)GD.Hot.MeteoSensing[cSmFARSens].Value)*o_MidlSRFactor);
-
-//	GD.TControl.MidlSR = ((((long int)GD.TControl.MidlSR)*(1000-o_MidlSRFactor))/1000
-//		+((long int)GD.TControl.MeteoSensing[cSmFARSens])*o_MidlSRFactor);
-
-//	OldHotSun = (long int)GD.Hot.MeteoSensing[cSmFARSens].Value;
-
-	//GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);   // было
+	GD.TControl.SumSun+=((long int)GD.TControl.MeteoSensing[cSmFARSens]);
+#ifdef METEO_SUN_ON
+	GD.TControl.MidlSR=((((long int)GD.TControl.MidlSR)*(1000-o_MidlSRFactor))/1000
+		+((long int)GD.TControl.MeteoSensing[cSmFARSens])*o_MidlSRFactor);
+	GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
+#endif
 	if (GetMetSensConfig(cSmFARSens))
 	{
 		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
-		//GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
 	}
-
-	// нужен дефайн сделаем расчет так же как среднее солн в Мониторе
+#ifdef METEO_WIND_ON
 	GD.Hot.MidlWind=(int)((((long int)GD.Hot.MidlWind)*(1000-o_MidlWindFactor)+((long int)GD.TControl.MeteoSensing[cSmVWindSens])*o_MidlWindFactor)/1000);
-
+#endif
 }
 
 void CheckMidlSr(void)
@@ -576,9 +562,10 @@ void CheckMidlSr(void)
 	if (GetMetSensConfig(cSmFARSens))
 	{
 		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
-		//GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
 	}
-
+#ifdef METEO_SUN_ON
+	GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
+#endif
 }
 
 int abs(int f_in)
