@@ -1126,6 +1126,7 @@ int8_t fnMKeepOut[8][8];
 int16_t fnMKeepParamOut[8][5];
 int8_t fnMKeepErrorOut[8];
 
+
 int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 {
 	int16_t fnSys,fnMSys,fnMPrior;

@@ -1,8 +1,5 @@
 
-//#define DEBUG
-
-#define METEO_SUN_ON
-#define METEO_WIND_ON
+#define DEBUG
 
 //#define DEMO  // работа контуров будет разрешена, даже если смесительные клапана открыты на 100%
 #define AHU

@@ -193,8 +193,6 @@ switch (Sockets[nSock].IP_PHASE)
 			{
 				crc = 55-CheckSum(&f_buf[data_p], info_data_len-1);
 				size = info_data_len-1;
-				//if ( crc != f_buf[info_data_len+53] )
-				//	flag = 0;
 			}
 			else {
 				size = 0;

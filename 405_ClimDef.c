@@ -64,6 +64,6 @@ uchar		Buf1W[10];
 uchar*		pBuf;
 int8_t		ToHiTime;
 int8_t		ToLowTime;
-char	fLightOn;
+char		fLightOn;
 int16_t		fLightPause;
 

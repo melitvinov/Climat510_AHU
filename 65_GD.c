@@ -2,6 +2,8 @@
 
 int volatile startFlag;
 
+int16_t fnScreenOut[4];
+
 typedef struct eeCalSensor {
 	uint8_t		Type;
 	uint8_t		nInput;
@@ -641,8 +643,9 @@ typedef struct eeControl
 		uint8_t			Cod;
 	//	uint8_t			Saverez;
 
-		uint8_t			TimeCorrection;
-		int8_t     		Rez[9];
+		uint8_t			MidlSunCalc;
+		uint8_t			MidlWindCalc;
+		int8_t     		Rez[8];
 		//int16_t     		Rez[5];
 	
 	} eControl;

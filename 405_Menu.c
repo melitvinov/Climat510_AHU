@@ -406,7 +406,7 @@ void pmParam() {
                 if(!ByteZ)
 				{
 		                //Y_menu2%=8;
-                		Y_menu2%=12;
+                		Y_menu2%=10;
                         w_txt(Mes126); //Controller num~
                         w_int(&GD.Control.NFCtr,SS);
                         if(!Y_menu2) BlkW=1;
@@ -431,7 +431,7 @@ void pmParam() {
                         	w_int(&GD.Control.ConfSTepl,oS);
 						}
 
-                       	if ( (Y_menu2>=4) && (Y_menu2<=7) )
+                       	if ( (Y_menu2>=4) && (Y_menu2<=8) )
                        	{
                         	w_txt("IP:");
                         	w_int(&GD.Control.IPAddr[0],SSS);
@@ -444,13 +444,25 @@ void pmParam() {
                             if(Y_menu2==6) BlkW=1;
                         	w_txt(".");
                         	w_int(&GD.Control.IPAddr[3],SSS);
+                        	if(Y_menu2==7) BlkW=1;
+                        	Ad_Buf=Str5;
                        	}
 
-                       	if (Y_menu2>=8)
+                       	if ((Y_menu2>=8)&&(Y_menu2<=9))
                        	{
-                        	w_txt("Time correction:");
-                        	w_int(&GD.Control.TimeCorrection,SSS);
+
+                        	w_txt("Midl Sun calc: ");
+                        	w_int(&GD.Control.MidlSunCalc,SSS);
+                        	if(Y_menu2==8) BlkW=1;
+                        	Ad_Buf=Str5;
                        	}
+                       	if (Y_menu2>=9)
+                       	{
+                       		w_txt("Midl Wind calc: ");
+                        	w_int(&GD.Control.MidlWindCalc,SSS);
+                        	//Ad_Buf=Str5;
+                       	}
+
 
                        	/*
                        	if (Y_menu2==3)
@@ -560,6 +572,20 @@ void pmHand(void) {
 						w_txt(Mes136); Ad_Buf++;
                         IntX=(*pGD_MechConfig_Kontur);
                         w_int(&IntX,SpSSpSS);
+
+                        if (ByteW == cHSmScrTH)
+                        {
+                        buf[Ad_Buf++]='(';
+                  	  	w_int(&fnScreenOut[0],SSSS);							//
+                  	    buf[Ad_Buf++]=',';												//
+                  	    w_int(&fnScreenOut[1],SSSS);
+                  	    buf[Ad_Buf++]=',';												//
+                  	    w_int(&fnScreenOut[2],SSSS);
+                  	    buf[Ad_Buf++]=',';												//
+                  	    w_int(&fnScreenOut[3],SSSS);
+                  	    buf[Ad_Buf++]=')';												//
+                        }
+
 
                         if (ByteW == cHSmUCValve)
                         {

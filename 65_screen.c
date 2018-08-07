@@ -249,6 +249,14 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 		}
 		}
 
+		if ((ttyp == 0)&&(fnTepl == 0))
+		{
+			fnScreenOut[0] = pScr->PauseMode;
+			fnScreenOut[1] = MidlSun;
+			fnScreenOut[2] = GD.Hot.MidlWind;
+			fnScreenOut[3] = sc_Tout;
+		}
+
 		if 	(pScr->Mode!=pScr->OldMode)
 			pScr->PauseMode=GD.TuneClimate.sc_PauseMode;
 		pScr->OldMode=pScr->Mode;
@@ -326,7 +334,7 @@ void SetPosScreen(char typScr, char fnTepl)
 	if (YesBit((*(pGD_Hot_Hand+cHSmScrTH+typScr)).RCS, cbManMech)) return;
 
 	// если была смена режима экрана выставляется пауза, пока она не 0 не работаем
-	if (pScr->PauseMode) return;
+//	if (pScr->PauseMode) return;
 
 	if (pScr->Pause < 0)
 		pScr->Pause = 0;

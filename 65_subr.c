@@ -543,18 +543,27 @@ void MidlWindAndSr(void)
 		return;
 	}
 	GD.TControl.SumSun+=((long int)GD.TControl.MeteoSensing[cSmFARSens]);
-#ifdef METEO_SUN_ON
-	GD.TControl.MidlSR=((((long int)GD.TControl.MidlSR)*(1000-o_MidlSRFactor))/1000
+	if (GD.Control.MidlSunCalc)
+	{
+		GD.TControl.MidlSR=((((long int)GD.Hot.MidlSR)*(1000-o_MidlSRFactor))/1000
+		+((long int)GD.Hot.MeteoSensing[cSmFARSens].Value)*o_MidlSRFactor);
+		GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
+	}
+	else
+	{
+		GD.TControl.MidlSR=((((long int)GD.TControl.MidlSR)*(1000-o_MidlSRFactor))/1000
 		+((long int)GD.TControl.MeteoSensing[cSmFARSens])*o_MidlSRFactor);
-	GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
-#endif
+		GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
+	}
+
 	if (GetMetSensConfig(cSmFARSens))
 	{
 		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
 	}
-#ifdef METEO_WIND_ON
-	GD.Hot.MidlWind=(int)((((long int)GD.Hot.MidlWind)*(1000-o_MidlWindFactor)+((long int)GD.TControl.MeteoSensing[cSmVWindSens])*o_MidlWindFactor)/1000);
-#endif
+	if (GD.Control.MidlWindCalc)
+		GD.Hot.MidlWind=(int)((((long int)GD.Hot.MidlWind)*(1000-o_MidlWindFactor)+((long int)GD.Hot.MeteoSensing[cSmVWindSens].Value)*o_MidlWindFactor)/1000);
+	else
+		GD.Hot.MidlWind=(int)((((long int)GD.Hot.MidlWind)*(1000-o_MidlWindFactor)+((long int)GD.TControl.MeteoSensing[cSmVWindSens])*o_MidlWindFactor)/1000);
 }
 
 void CheckMidlSr(void)
@@ -562,10 +571,8 @@ void CheckMidlSr(void)
 	if (GetMetSensConfig(cSmFARSens))
 	{
 		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
+		GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
 	}
-#ifdef METEO_SUN_ON
-	GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
-#endif
 }
 
 int abs(int f_in)
@@ -1080,7 +1087,8 @@ ClrDog;
 		GD.Control.Language=cDefLanguage;
 		GD.Control.Cod=111;
 		GD.Control.Screener=40;
-		GD.Control.TimeCorrection = 1;
+		GD.Control.MidlSunCalc = 1;
+		GD.Control.MidlWindCalc = 1;
 
         GD.Control.NFCtr=NumCtr;
 
