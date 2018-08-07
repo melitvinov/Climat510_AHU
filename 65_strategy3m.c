@@ -2778,8 +2778,13 @@ void __sMechWindows(void)
 			pGD_Hot_Tepl->HandCtrl[cHSmWinN2].Position=__SetIntWin(GD.TuneClimate.fAHU_Sens2,cHSmWinN2,GD.TuneClimate.fAHU_Offset2,pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position, fnTepl);
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN3].RCS,cbManMech)))
 			pGD_Hot_Tepl->HandCtrl[cHSmWinN3].Position=__SetIntWin(GD.TuneClimate.fAHU_Sens3,cHSmWinN3,GD.TuneClimate.fAHU_Offset3,pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position, fnTepl);
+
+
+
+		// изменения для нового конструктива
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN4].RCS,cbManMech)))
-			pGD_Hot_Tepl->HandCtrl[cHSmWinN4].Position=__SetIntWin(GD.TuneClimate.fAHU_Sens4,cHSmWinN4,GD.TuneClimate.fAHU_Offset4,pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position, fnTepl);
+			pGD_Hot_Tepl->HandCtrl[cHSmWinN4].Position= 100 - pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position; //__SetIntWin(GD.TuneClimate.fAHU_Sens4,cHSmWinN4,GD.TuneClimate.fAHU_Offset4,pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position, fnTepl);
+
 
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmAHUPad].RCS,cbManMech)))
 			pGD_Hot_Tepl->HandCtrl[cHSmAHUPad].Position=KeepMistSystem();
