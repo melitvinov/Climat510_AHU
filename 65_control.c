@@ -539,7 +539,10 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 void AllTaskAndCorrection(char fnTepl)
 {
 	
-	IntY=GD.Hot.MidlSR;//MeteoSens[cSmFARSens].Value;
+	// из Hot блока брать средее нельзя !!!
+	//IntY=GD.Hot.MidlSR;
+	IntY=MidlSunCalc;// GD.Hot.MidlSR;
+
 	/*Установка и коррекция по солнцу температуры обогрева*/
 	(*pGD_Hot_Tepl).AllTask.DoTHeat=(*pGD_Hot_Tepl).AllTask.TAir;
 	IntX=CorrectionRule(GD.TuneClimate.s_TStart[0],GD.TuneClimate.s_TEnd,
@@ -792,7 +795,10 @@ void __cNextTCalc(char fnTepl)
 
 /**********************************************/	
 /*Вычиляем увеличение от солнечной радиации*/
-	IntY=GD.Hot.MidlSR;
+
+	//IntY=GD.Hot.MidlSR;
+	IntY=MidlSunCalc;
+
 	if ((!YesBit(pGD_Hot_Tepl->InTeplSens[cSmInLightSens].RCS,cbNoWorkSens)))
 		IntY=pGD_Hot_Tepl->InTeplSens[cSmInLightSens].Value;
 
@@ -809,7 +815,8 @@ void __cNextTCalc(char fnTepl)
 /*Вычисляем корректировки ветра фрамуг и разницы между температурой задания
 и внешней температуры соответственно*/		
 /*Ветер и фрамуги увеличивают эту разницу*/
-	IntY=GD.Hot.MidlWind;
+	//IntY=GD.Hot.MidlWind;
+	IntY=MidlWindCalc;
 	CorrectionRule(GD.TuneClimate.c_WindStart,GD.TuneClimate.c_WindEnd,
 		GD.TuneClimate.c_WindFactor,0);	
 	IntY=(*pGD_Hot_Tepl).AllTask.NextTAir-GD.TControl.MeteoSensing[cSmOutTSens]-IntZ;
@@ -856,7 +863,9 @@ void __cNextTCalc(char fnTepl)
 ***********************************************************************/
 	pGD_Hot_Tepl->NextTCalc.dSumCalcF=0;
 /*Вычиляем увеличение от солнечной радиации*/
-	IntY=GD.Hot.MidlSR;
+
+	//IntY=GD.Hot.MidlSR;
+	IntY=MidlSunCalc;
 /*if work on internal light sensor, then change IntY*/
 
 	if ((!YesBit(pGD_Hot_Tepl->InTeplSens[cSmInLightSens].RCS,cbNoWorkSens)))
@@ -870,7 +879,8 @@ void __cNextTCalc(char fnTepl)
 /*Вычисляем корректировки ветра фрамуг и разницы между температурой задания
 и внешней температуры соответственно*/		
 /*Ветер и фрамуги увеличивают эту разницу*/
-	IntY=GD.Hot.MidlWind;
+	//IntY=GD.Hot.MidlWind;
+	IntY=MidlWindCalc;
 	CorrectionRule(GD.TuneClimate.c_WindStart,GD.TuneClimate.c_WindEnd,
 		GD.TuneClimate.f_WindFactor,0);	
 	IntY=(*pGD_Hot_Tepl).AllTask.NextTAir-GD.TControl.MeteoSensing[cSmOutTSens]-IntZ;
@@ -1741,14 +1751,16 @@ void SetLighting(void)
 		if (GD.Hot.Zax-60>GD.Hot.Time)
 			pGD_TControl_Tepl->LightMode=0;
 		//if (GD.TControl.Tepl[0].SensHalfHourAgo>GD.TuneClimate.l_SunOn50)  // sun > 50% then off light
-		if (GD.Hot.MidlSR > GD.TuneClimate.l_SunOn50)  // sun > 50% then off light
+
+		//if (GD.Hot.MidlSR > GD.TuneClimate.l_SunOn50)  // sun > 50% then off light
+		if (MidlSunCalc > GD.TuneClimate.l_SunOn50)  // sun > 50% then off light
 			pGD_TControl_Tepl->LightMode=0;
 
-		//if (GD.TControl.Tepl[0].SensHalfHourAgo<GD.TuneClimate.l_SunOn50)
-		if (GD.Hot.MidlSR < GD.TuneClimate.l_SunOn50)
+		//if (GD.Hot.MidlSR < GD.TuneClimate.l_SunOn50)
+		if (MidlSunCalc < GD.TuneClimate.l_SunOn50)
 		{
-//			pGD_TControl_Tepl->LightMode=50;
-			IntY=GD.Hot.MidlSR;
+			//IntY=GD.Hot.MidlSR;
+			IntY=MidlSunCalc;
 			CorrectionRule(GD.TuneClimate.l_SunOn100,GD.TuneClimate.l_SunOn50,50,0);
 			pGD_TControl_Tepl->LightMode=100-IntZ;
 		}
@@ -2067,10 +2079,27 @@ char tCTepl,ttTepl;
 		}
 		if (Second==20)
 		{
+
+
+						//fnScreenOut[0] = GD.Hot.MeteoSensing[cSmOutTSens].Value;
+						//fnScreenOut[1] = GD.Hot.MeteoSensing[cSmFARSens].Value;
+
+//						fnScreenOut[0] = GD.TControl.MeteoSensing[cSmOutTSens];
+//						fnScreenOut[1] = GD.TControl.MeteoSensing[cSmFARSens];
+
+//						fnScreenOut[2] = MidlSunCalc;
+//						fnScreenOut[3] = GD.Hot.MidlSR;
+
+
+
 	        InitLCD();
 //	        GD.Control.ConfSTepl=10;
     	    ClrDog;
 			SetMeteo();
+
+
+
+
 		}
 		if ((Second==40)||(GD.TControl.Delay))
 		{

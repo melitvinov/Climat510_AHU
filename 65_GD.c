@@ -4,6 +4,9 @@ int volatile startFlag;
 
 int16_t fnScreenOut[4];
 
+volatile int16_t MidlSunCalc;
+volatile int16_t MidlWindCalc;
+
 typedef struct eeCalSensor {
 	uint8_t		Type;
 	uint8_t		nInput;

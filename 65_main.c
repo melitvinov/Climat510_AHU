@@ -192,10 +192,26 @@ char CheckSumMain(void)
   return res;
 }
 
+char CheckSumMainMeteo(void)
+{
+  int i;
+  char res = 0;
+  volatile int8_t r =0;
+  for (i=0; i < 60; i++)
+  {
+	  //r = (*(uint8_t *)&GD.Hot.News + i);
+	  r = (*((&(GD.Hot.News))+i));
+	  res = res + r;
+  }
+  return res;
+}
+
 main()
 {
 char    timeDog;
 		BITKL=0;
+
+		GD.Hot.Demo = 0xFF;
 
 #ifndef STM32_UNIT
         init8051();
@@ -282,6 +298,18 @@ start:
             		crc1 = 55-CheckSumMain();
             		if (crc != crc1)
             			ReadFromFRAM();
+            	}
+
+            	if ( (NumBlock == 0) && (size == 60) )
+            	{
+            		crc1 = 55-CheckSumMainMeteo();
+            		if (crc != crc1)
+            		{
+            			fnScreenOut[0] = fnScreenOut[0]++;
+            			if (fnScreenOut[0] == 100)
+            				fnScreenOut[0] = 0;
+            			ReadFromFRAM();
+            		}
             	}
 
             	if ( GD.Timer[0].crc != 0xAA )

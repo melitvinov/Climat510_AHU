@@ -545,9 +545,15 @@ void MidlWindAndSr(void)
 	GD.TControl.SumSun+=((long int)GD.TControl.MeteoSensing[cSmFARSens]);
 	if (GD.Control.MidlSunCalc)
 	{
-		GD.TControl.MidlSR=((((long int)GD.Hot.MidlSR)*(1000-o_MidlSRFactor))/1000
-		+((long int)GD.Hot.MeteoSensing[cSmFARSens].Value)*o_MidlSRFactor);
-		GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
+		//MidlSunCalc = (int)((((long int)MidlSunCalc)*(1000-o_MidlSRFactor)+((long int)GD.TControl.MeteoSensing[cSmFARSens])*o_MidlSRFactor)/1000);
+		MidlSunCalc = (int)((((long int)MidlSunCalc)*(1000-o_MidlSRFactor)+((long int)GD.Hot.MeteoSensing[cSmFARSens].Value)*o_MidlSRFactor)/1000);
+
+		//GD.Hot.MidlSR=(int)((((long int)GD.Hot.MidlSR)*(1000-o_MidlSRFactor)+((long int)GD.TControl.MeteoSensing[cSmFARSens])*o_MidlSRFactor)/1000);
+		//if (MidlSunCalc != GD.Hot.MidlSR)
+		GD.Hot.MidlSR = MidlSunCalc;
+
+
+		//GD.Hot.MidlSR=(int)(GD.Hot.MidlSR);
 	}
 	else
 	{
@@ -561,7 +567,11 @@ void MidlWindAndSr(void)
 		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
 	}
 	if (GD.Control.MidlWindCalc)
-		GD.Hot.MidlWind=(int)((((long int)GD.Hot.MidlWind)*(1000-o_MidlWindFactor)+((long int)GD.Hot.MeteoSensing[cSmVWindSens].Value)*o_MidlWindFactor)/1000);
+	{
+		//MidlWindCalc = (int)((((long int)MidlWindCalc)*(1000-o_MidlWindFactor)+((long int)GD.TControl.MeteoSensing[cSmVWindSens])*o_MidlWindFactor)/1000);
+		MidlWindCalc = (int)((((long int)MidlWindCalc)*(1000-o_MidlWindFactor)+((long int)GD.Hot.MeteoSensing[cSmVWindSens].Value)*o_MidlWindFactor)/1000);
+		GD.Hot.MidlWind = MidlWindCalc;
+	}
 	else
 		GD.Hot.MidlWind=(int)((((long int)GD.Hot.MidlWind)*(1000-o_MidlWindFactor)+((long int)GD.TControl.MeteoSensing[cSmVWindSens])*o_MidlWindFactor)/1000);
 }
@@ -571,7 +581,7 @@ void CheckMidlSr(void)
 	if (GetMetSensConfig(cSmFARSens))
 	{
 		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
-		GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
+		//GD.Hot.MidlSR=(int)(GD.TControl.MidlSR);//;/1000);
 	}
 }
 
@@ -1364,7 +1374,8 @@ void WindDirect(void)
 		GD.Hot.PozFluger=0;
 		return;
 	}
-	if (GD.Hot.MidlWind<GD.TuneClimate.f_WindStart) return;
+	//if (GD.Hot.MidlWind<GD.TuneClimate.f_WindStart) return;
+	if (MidlWindCalc < GD.TuneClimate.f_WindStart) return;
 	IntZ=GD.TControl.MeteoSensing[cSmDWindSens]+GD.TuneClimate.o_TeplPosition;
 	IntZ%=360;
 	GD.TControl.Tepl[0].CurrPozFluger=GD.Hot.PozFluger;

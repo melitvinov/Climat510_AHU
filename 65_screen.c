@@ -41,7 +41,8 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 	int Ti;
 	Tz = pGD_Hot_Tepl->AllTask.DoTHeat;
 	Ti = getTempHeat(fnTepl);
-	volatile int MidlSun = GD.Hot.MidlSR;
+	volatile int MidlSun = MidlSunCalc;//GD.Hot.MidlSR;
+	volatile int MidlWind = MidlWindCalc;
 
 	IntY=getTempHeat(fnTepl)-pGD_Hot_Tepl->AllTask.DoTHeat;
 	CorrectionRule(GD.TuneClimate.sc_dTStart,GD.TuneClimate.sc_dTEnd,GD.TuneClimate.sc_dTSunFactor,0);   // начинает вли€ть на солнце при, начинает вли€ть на солнце до, уменьшает солнце на
@@ -174,6 +175,11 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 					{
 						CorrRes = ((MidlSun - sc_ZSRClose) * pGD_Control_Tepl->sc_TMaxOpen) / (sc_LineSunVol - sc_ZSRClose);
 						pScr->Value = CorrRes;
+
+						if (CorrRes < sc_StartP1Zone)
+							pScr->Value = 0;
+						if (CorrRes > maxScreen)
+							pScr->Value = maxScreen;
 					}
 					else
 					{
@@ -251,9 +257,9 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 
 		if ((ttyp == 0)&&(fnTepl == 0))
 		{
-			fnScreenOut[0] = pScr->PauseMode;
+			//fnScreenOut[0] = pScr->PauseMode;
 			fnScreenOut[1] = MidlSun;
-			fnScreenOut[2] = GD.Hot.MidlWind;
+			fnScreenOut[2] = MidlWind;
 			fnScreenOut[3] = sc_Tout;
 		}
 
@@ -350,11 +356,11 @@ void SetPosScreen(char typScr, char fnTepl)
 
 	int maxScreen;
 	if (typScr == 0)
-		maxScreen = pScr->Value;//  pGD_Control_Tepl->sc_TMaxOpen;
+		maxScreen = pGD_Control_Tepl->sc_TMaxOpen;//pScr->Value;//  pGD_Control_Tepl->sc_TMaxOpen;
 	if (typScr == 1)
-		maxScreen = pScr->Value; //pGD_Control_Tepl->sc_ZMaxOpen;
+		maxScreen = pGD_Control_Tepl->sc_ZMaxOpen;//pScr->Value; //pGD_Control_Tepl->sc_ZMaxOpen;
 	if (typScr > 1)
-		maxScreen = pScr->Value;//100;
+		maxScreen = 100;//pScr->Value;//100;
 
 	if (!typScr) // “олько если термический, то произвести коррекцию
 	{

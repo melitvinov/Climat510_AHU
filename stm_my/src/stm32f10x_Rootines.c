@@ -977,13 +977,20 @@ void Measure()
     for(nSens=0;nSens<cConfSMetSens;nSens++)
     {
     	sen = nSens;
+
+    	if ((GetMetSensConfig(nSens) == 0)&&(GD.Hot.MeteoSensing[nSens].Value > 0))
+    	{
+    		GD.TControl.MeteoSensing[nSens] = GD.Hot.MeteoSensing[nSens].Value;
+    	}
+
     	tSensVal=GetInIPC(GetMetSensConfig(nSens),&ErrModule);
     	if (ErrModule<0)
         {
-        	GD.Hot.MeteoSensing[nSens].RCS=cbNoWorkSens;
+    		GD.Hot.MeteoSensing[nSens].RCS=cbNoWorkSens;
     		GD.uMeteoSens[nSens]=0;
         	continue;
         }
+
     	if (ErrModule>=iMODULE_MAX_ERR) tSensVal=0;
     	CalibrNew(0,0,nSens,tSensVal);
     }

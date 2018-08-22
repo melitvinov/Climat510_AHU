@@ -764,7 +764,8 @@ int KeepFanSystem(char fnTepl)
 		mode = 1;
 	if ((windSpeed > 0) && (MaxSpeedAHUwind > 0))
 	{
-		if (GD.Hot.MidlWind<GD.TuneClimate.f_WindStart)
+		//if (GD.Hot.MidlWind<GD.TuneClimate.f_WindStart)
+		if (MidlWindCalc<GD.TuneClimate.f_WindStart)
 			mode = 0;
 		mode = 2;
 	}
@@ -1295,7 +1296,8 @@ void __sMinMaxWindows(char fnTepl)
 		((int)GD.TuneClimate.f_min_Cor),0);
 	ogrMin(&(pGD_Hot_Tepl->Kontur[cSmWindowUnW].MinCalc),IntZ);
 
-	IntY=GD.TControl.MidlSR;// MeteoSensing[cSmOutTSens];
+	//IntY=GD.TControl.MidlSR;
+	IntY=MidlSunCalc;
 	CorrectionRule(GD.TuneClimate.f_SunStart,GD.TuneClimate.f_SunEnd,
 		(GD.TuneClimate.f_SunIncOutT),0);
 
@@ -1328,7 +1330,8 @@ void __sMinMaxWindows(char fnTepl)
 //--------------------------------------------------------------------------------
 //  Коррекция работы фраму по ветру
 //--------------------------------------------------------------------------------
-	IntY=GD.Hot.MidlWind;
+	//IntY=GD.Hot.MidlWind;
+	IntY=MidlWindCalc;
 	CorrectionRule(GD.TuneClimate.f_StormWind-f_StartWind,GD.TuneClimate.f_StormWind,100,0);
 //В IntZ - ограничение по ветру
 
@@ -1800,7 +1803,8 @@ void __WorkableKontur(char fnKontur, char fnTepl)
 //------------------------------------------------------------------------
 		if ((!(*pGD_TControl_Tepl_Kontur).PumpStatus)&&(pGD_TControl_Tepl->Critery>0)&&(fnKontur<cSmKontur5))
 		{
-			if  ((GD.Hot.MidlSR<GD.TuneClimate.f_MinSun)&&(pGD_Hot_Tepl->AllTask.NextTAir-GD.TControl.MeteoSensing[cSmOutTSens]>GD.TuneClimate.f_DeltaOut)||
+			//if  ((GD.Hot.MidlSR<GD.TuneClimate.f_MinSun)&&(pGD_Hot_Tepl->AllTask.NextTAir-GD.TControl.MeteoSensing[cSmOutTSens]>GD.TuneClimate.f_DeltaOut)||
+			if  ((MidlSunCalc<GD.TuneClimate.f_MinSun)&&(pGD_Hot_Tepl->AllTask.NextTAir-GD.TControl.MeteoSensing[cSmOutTSens]>GD.TuneClimate.f_DeltaOut)||
 			((getTempHeat(fnTepl)-(*pGD_Hot_Tepl).AllTask.DoTHeat)<0)&&(((pGD_Control_Tepl->c_PFactor%100)<90)||(pGD_TControl_Tepl->StopVentI>0)))
 			{
 				SetBit((*pGD_Hot_Tepl_Kontur).ExtRCS,cbReadyPumpKontur);
@@ -2055,7 +2059,11 @@ void __sLastCheckWindow(void)
 	//pGD_TControl_Tepl->Kontur[cSmAHUSpd].DoT=DoOn;
 
 	//pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do=(*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT;  // было так
-	pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do=pGD_TControl_Tepl->Systems[cSysUCValve].Keep;  // last
+
+//	pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do=pGD_TControl_Tepl->Systems[cSysUCValve].Keep;  // last
+
+	// изменение 1.09
+	pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do=pGD_TControl_Tepl->Systems[cSysUCValve].Value;  // last
 
 //	IntX=pGD_Hot_Tepl->InTeplSens[].Value
 //	SetPID()
