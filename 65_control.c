@@ -1529,6 +1529,10 @@ void DoMechanics(char fnTepl)
 
 		ClrBit(MBusy->RCS,cMSBusyMech);
 		ByteY=0;
+
+		// изменение 01.11  Выключим коррекцию по положению датчика
+		// Клапан AHU допустимое отклонение от датчика
+		/*
 		if ((!YesBit(MBusy->RCS,cMSAlarm))&&(MBusy->Sens)&&(!YesBit(MBusy->Sens->RCS,cbNoWorkSens))&&(GD.TuneClimate.f_MaxAngle))   // TuneClimate.f_MaxAngle - о
 		{
 			MBusy->PauseMech=10;
@@ -1586,6 +1590,9 @@ void DoMechanics(char fnTepl)
 			}
 			//else return;
 		}
+		*/
+
+
 //Выход из паузы при блокировке на крайних положениях
 		if(YesBit(MBusy->RCS,cMSBlockRegs)
 			&&((pGD_Hot_Hand_Kontur->Position>0)||(MBusy->TimeSetMech>0))

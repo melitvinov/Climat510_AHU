@@ -364,7 +364,7 @@ typedef struct eeTuneClimate
 
 		int8_t		c_MullDown;  /*Контур 1 - (Тзад-Тизм)начинает влиять при*/
 
-		int8_t		f_DefOnUn;  // Клапан AHU
+		int8_t		f_DefOnUn;  // Клапан AHU			не используется
 
 		int8_t		c_5ExtrHeat;  /*Контур 1 - (Тзад-Тизм)влияет до*/
         int16_t     c_CriticalSnowOut;  /*Контур 1 - (Тзад-Тизм)увеличивает на*/
@@ -411,12 +411,14 @@ typedef struct eeTuneClimate
 		uchar		f_S2Level;		// Клапан AHU			не используется
 		uchar		f_S3MinDelta;	// Клапан AHU			не используется
 		uchar		f_S3Level;		// Клапан AHU			не используется
+        int16_t     f_MinDelta;  	// Клапан AHU			не используется
 
-//+6
-        int16_t     f_MinDelta;  	// Клапан AHU
+
 		int16_t		c_MaxDifTUp;  	// Клапан AHU
 		int16_t		f_MinTime;  	// Клапан AHU минимальная пауза между включениями
-        int16_t     f_StormWindOn; 	// Клапан AHU
+
+        int16_t     f_StormWindOn; 	// Клапан AHU			не используется
+
         int16_t     f_StormWind; 	// Клапан AHU ветер закрывает
         int16_t     f_WindStart;  	// Фрамуги минимальный ветер при расчете
 //154 байта
