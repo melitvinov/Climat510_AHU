@@ -545,15 +545,15 @@ void MidlWindAndSr(void)
 	GD.TControl.SumSun+=((long int)GD.TControl.MeteoSensing[cSmFARSens]);
 	if (GD.Control.MidlSunCalc)
 	{
+		int Sun;
 		//MidlSunCalc = (int)((((long int)MidlSunCalc)*(1000-o_MidlSRFactor)+((long int)GD.TControl.MeteoSensing[cSmFARSens])*o_MidlSRFactor)/1000);
-		MidlSunCalc = (int)((((long int)MidlSunCalc)*(1000-o_MidlSRFactor)+((long int)GD.Hot.MeteoSensing[cSmFARSens].Value)*o_MidlSRFactor)/1000);
-
-		//GD.Hot.MidlSR=(int)((((long int)GD.Hot.MidlSR)*(1000-o_MidlSRFactor)+((long int)GD.TControl.MeteoSensing[cSmFARSens])*o_MidlSRFactor)/1000);
-		//if (MidlSunCalc != GD.Hot.MidlSR)
-		GD.Hot.MidlSR = MidlSunCalc;
-
-
-		//GD.Hot.MidlSR=(int)(GD.Hot.MidlSR);
+		Sun = GD.Hot.MeteoSensing[cSmFARSens].Value;
+		if ((Sun < 2000) && (Sun > 0))
+		{
+			if ( ( (int)((((long int)MidlSunCalc)*(1000-o_MidlSRFactor)+((long int)Sun)*o_MidlSRFactor)/1000) < 2000) &&
+			   ( (int)((((long int)MidlSunCalc)*(1000-o_MidlSRFactor)+((long int)Sun)*o_MidlSRFactor)/1000) > 0) )
+			MidlSunCalc = (int)((((long int)MidlSunCalc)*(1000-o_MidlSRFactor)+((long int)Sun)*o_MidlSRFactor)/1000);
+		}
 	}
 	else
 	{
