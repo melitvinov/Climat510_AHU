@@ -507,21 +507,18 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 
 	// изменеине 86
 	(*pGD_Hot_Tepl).AllTask.TminAHU = pGD_CurrTimer->MinTPipe3;
-
 	(*pGD_Hot_Tepl).AllTask.SIO=pGD_CurrTimer->SIO;
 	(*pGD_Hot_Tepl).AllTask.RHAir=JumpNext(pGD_CurrTimer->RHAir_c,pGD_NextTimer->RHAir_c,1,100);
 	(*pGD_Hot_Tepl).AllTask.CO2=JumpNext(pGD_CurrTimer->CO2,pGD_NextTimer->CO2,1,1);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinTask=JumpNext(pGD_CurrTimer->MinTPipe1,pGD_NextTimer->MinTPipe1,1,10);
-
 	(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinTask=JumpNext(pGD_CurrTimer->MinTPipe2,pGD_NextTimer->MinTPipe2,1,10);
-
 	(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinTask=JumpNext(pGD_CurrTimer->MinTPipe3,pGD_NextTimer->MinTPipe3,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur5].MinTask=JumpNext(pGD_CurrTimer->MinTPipe5,pGD_NextTimer->MinTPipe5,1,10);
-
+#ifdef RICHEL
+	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MinTask=JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
+#endif
 	(*pGD_Hot_Tepl).Kontur[cSmKontur1].Optimal=JumpNext(pGD_CurrTimer->TOptimal1,pGD_NextTimer->TOptimal1,1,10);
-
 	(*pGD_Hot_Tepl).Kontur[cSmKontur2].Optimal=JumpNext(pGD_CurrTimer->TOptimal2,pGD_NextTimer->TOptimal2,1,10);
-
 	(*pGD_Hot_Tepl).Kontur[cSmWindowUnW].MinTask=JumpNext(((uchar)pGD_CurrTimer->MinOpenWin),((uchar)pGD_NextTimer->MinOpenWin),0,1);
 	(*pGD_Hot_Tepl).AllTask.Win=pGD_CurrTimer->Win;
 	(*pGD_Hot_Tepl).AllTask.Screen[0]=pGD_CurrTimer->Screen[0];
@@ -529,10 +526,11 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	(*pGD_Hot_Tepl).AllTask.Screen[2]=pGD_CurrTimer->Screen[2];
 	(*pGD_Hot_Tepl).AllTask.AHUVent=pGD_CurrTimer->AHUVent;
 	(*pGD_Hot_Tepl).Kontur[cSmAHUSpd].MinCalc=(*pGD_Hot_Tepl).AllTask.AHUVent;
-//	(*pGD_Hot_Tepl).AllTask.Poise=pGD_CurrTimer->Poise;
 	(*pGD_Hot_Tepl).Kontur[cSmKontur3].Do=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur4].Do=JumpNext(pGD_CurrTimer->TPipe4,pGD_NextTimer->TPipe4,1,10);
-
+#ifdef RICHEL
+	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].Do = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
+#endif
 }
 
 
@@ -1084,6 +1082,13 @@ void __cNextTCalc(char fnTepl)
 	}
 	pGD_TControl_Tepl->TVentCritery = IntX;
 
+	// изменение 113. Коррекция T рукава Держать
+	IntY = IntY=MidlSunCalc;
+	IntX = CorrectionRule(GD.TuneClimate.f_AHU_T_SunStart, GD.TuneClimate.f_AHU_T_SunEnd,
+			GD.TuneClimate.f_AHU_T_SunCorr,0);
+	pGD_TControl_Tepl->TVentCritery = pGD_TControl_Tepl->TVentCritery - (IntZ * 100);
+	// ----------------------------------------
+
 	(*pGD_Hot_Tepl).NextTCalc.TVentCritery=(*pGD_TControl_Tepl).TVentCritery;
 	// 54 изменение
 	// было
@@ -1098,7 +1103,10 @@ void __cNextTCalc(char fnTepl)
 	// изменеие 100. RH выводим как Theat
 	//(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent, 4*pGD_Hot_Tepl->AllTask.DoRHAir-(3*GD.Hot.Tepl[fnTepl].InTeplSens[cSmRHSens].Value));
 	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent, 4*pGD_Hot_Tepl->AllTask.DoRHAir-(3*getRH(fnTepl)));
-	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=RelHum(GD.Hot.Tepl[fnTepl].InTeplSens[cSmTAHUOutSens].Value, (*pGD_Hot_Tepl).NextTCalc.ICorrectionVent);
+	// изменение 112
+	//(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=RelHum(GD.Hot.Tepl[fnTepl].InTeplSens[cSmTAHUOutSens].Value, (*pGD_Hot_Tepl).NextTCalc.ICorrectionVent);
+	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=RelHum(getTempHeat(fnTepl), (*pGD_Hot_Tepl).NextTCalc.ICorrectionVent);
+	// ----------------
 	if ((*pGD_Hot_Tepl).NextTCalc.ICorrectionVent>9500)
 		(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=9500;
 	// стало
@@ -1932,7 +1940,7 @@ void SubConfig(char fnTepl)
 					GD.Hot.Tepl[pGD_TControl_Tepl_Kontur->MainTepl].HandCtrl[ByteY].RCS;
 				pGD_Hot_Hand[ByteY].Position=
 					GD.Hot.Tepl[pGD_TControl_Tepl_Kontur->MainTepl].HandCtrl[ByteY].Position;
-				pGD_TControl_Tepl_Kontur->SensValue=
+				pGD_TControl_Tepl_Kontur->SensValue =
 					GD.TControl.Tepl[pGD_TControl_Tepl_Kontur->MainTepl].Kontur[ByteX].SensValue;
 			}
 		}

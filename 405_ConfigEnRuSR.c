@@ -174,7 +174,15 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 #define cHSmWinS		7
 #define cHSmWinN2		8
 #define cHSmWinN3		9
-#define cHSmWinN4		10
+
+#ifdef KUBO
+	#define cHSmWinN4		10
+#endif
+#ifdef RICHEL
+	#define cHSmUCOutValve	10
+#endif
+
+
 #define cHSmUCValve		11
 #define cHSmAHUSpeed1	12
 #define cHSmAHUSpeed2	13

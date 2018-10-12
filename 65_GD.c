@@ -77,7 +77,10 @@ typedef struct  eeTimer
 		//uint16_t	TCool;
 		uint16_t	MistRHstop;
 
-		uint16_t	Rez[8];
+        uchar   	MinTPipeAHU;		// richel
+		uchar		XXX;			// richel
+
+		uint16_t	Rez[7];
 		uint16_t	crc;
         }
         eTimer;
@@ -405,12 +408,14 @@ typedef struct eeTuneClimate
                 Параметры-вентиляция
 ------------------------------------*/
 
-		uchar		f_S1MinDelta; 	// Клапан AHU			не используется
-		uchar		f_S1Level;		// Клапан AHU			не используется
-		uchar		f_S2MinDelta;	// Клапан AHU			не используется
-		uchar		f_S2Level;		// Клапан AHU			не используется
-		uchar		f_S3MinDelta;	// Клапан AHU			не используется
-		uchar		f_S3Level;		// Клапан AHU			не используется
+        int16_t		f_AHU_T_SunStart; 	// Коррекция Т рукава при солнце при
+        int16_t		f_AHU_T_SunEnd;		// Коррекция Т рукава при солнце до
+        int16_t		f_AHU_T_SunCorr;	// Коррекция Т рукава при солнце на
+
+
+		//uchar		f_S2Level;		// Клапан AHU			не используется
+		//uchar		f_S3MinDelta;	// Клапан AHU			не используется
+		//uchar		f_S3Level;		// Клапан AHU			не используется
         int16_t     f_MinDelta;  	// Клапан AHU			не используется
 
 

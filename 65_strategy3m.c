@@ -55,6 +55,17 @@ void __sMinMaxWater(char fnKontur)
 		pGD_Hot_Tepl_Kontur->Optimal=pGD_Control_Tepl->c_OptimalTPipe[1];
 		pGD_Hot_Tepl_Kontur->MinCalc=pGD_Hot_Tepl_Kontur->MinTask;
 	}
+
+#ifdef RICHEL
+	if (fnKontur==cSmKonturAHU)
+	{
+		pGD_Hot_Tepl_Kontur->MinTask=pGD_Control_Tepl->c_MinTPipe[1];
+		pGD_Hot_Tepl_Kontur->Optimal=pGD_Control_Tepl->c_OptimalTPipe[1];
+		pGD_Hot_Tepl_Kontur->MinCalc=pGD_Hot_Tepl_Kontur->MinTask;
+	}
+#endif
+
+
 //------------------------------------------------------------------------
 //Если установлен минимум то насос должен быть всегда включен
 //------------------------------------------------------------------------
@@ -2392,7 +2403,15 @@ void __sCalcKonturs(void)
 			__sRegulKontur(ByteX);
 			pGD_TControl_Tepl_Kontur->Manual=0;
 			ClrDog;
+
+#ifdef KUBO
 			if ((ByteX==cSmKontur3)||(ByteX==cSmKonturAHU)) continue;
+#endif
+#ifdef RICHEL
+			if ((ByteX==cSmKontur3)) continue;
+#endif
+
+
 			if 	(YesBit(pGD_Hot_Tepl_Kontur->RCS,cbNoWorkKontur)) continue;
 			if 	(pGD_Hot_Tepl_Kontur->Do)
 			{
@@ -2786,9 +2805,15 @@ void __sMechWindows(void)
 			pGD_Hot_Tepl->HandCtrl[cHSmWinN2].Position=__SetIntWin(GD.TuneClimate.fAHU_Sens2,cHSmWinN2,GD.TuneClimate.fAHU_Offset2,pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position, fnTepl);
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN3].RCS,cbManMech)))
 			pGD_Hot_Tepl->HandCtrl[cHSmWinN3].Position=__SetIntWin(GD.TuneClimate.fAHU_Sens3,cHSmWinN3,GD.TuneClimate.fAHU_Offset3,pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position, fnTepl);
+
+#ifdef KUBO
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN4].RCS,cbManMech)))
 			pGD_Hot_Tepl->HandCtrl[cHSmWinN4].Position=__SetIntWin(GD.TuneClimate.fAHU_Sens4,cHSmWinN4,GD.TuneClimate.fAHU_Offset4,pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position, fnTepl);
-
+#endif
+#ifdef RICHEL
+		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmUCOutValve].RCS,cbManMech)))
+			pGD_Hot_Tepl->HandCtrl[cHSmUCOutValve].Position = 100 - pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position;
+#endif
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmAHUPad].RCS,cbManMech)))
 			pGD_Hot_Tepl->HandCtrl[cHSmAHUPad].Position=KeepMistSystem();
 			//pGD_Hot_Tepl->HandCtrl[cHSmAHUPad].Position=__SetPad(fnTepl);/*KeepMistSystem();*/

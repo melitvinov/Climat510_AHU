@@ -1,6 +1,9 @@
 
 //#define DEBUG
 
+//#define RICHEL
+#define KUBO
+
 //#define DEMO  // работа контуров будет разрешена, даже если смесительные клапана открыты на 100%
 #define AHU
 //#define AGAPOVSKIY_DOUBLE_VALVE
