@@ -1083,10 +1083,15 @@ void __cNextTCalc(char fnTepl)
 	pGD_TControl_Tepl->TVentCritery = IntX;
 
 	// изменение 113. Коррекция T рукава Держать
-	IntY = IntY=MidlSunCalc;
+	IntY = MidlSunCalc;
 	IntX = CorrectionRule(GD.TuneClimate.f_AHU_T_SunStart, GD.TuneClimate.f_AHU_T_SunEnd,
-			GD.TuneClimate.f_AHU_T_SunCorr,0);
-	pGD_TControl_Tepl->TVentCritery = pGD_TControl_Tepl->TVentCritery - (IntZ * 100);
+			GD.TuneClimate.f_AHU_T_SunCorr * 100,0);
+	if ( minMinPipeTemp <= pGD_TControl_Tepl->TVentCritery - IntZ )//(IntZ * 100) )
+		pGD_TControl_Tepl->TVentCritery = pGD_TControl_Tepl->TVentCritery - IntZ;//(IntZ * 100);
+	else
+		pGD_TControl_Tepl->TVentCritery = minMinPipeTemp;
+
+
 	// ----------------------------------------
 
 	(*pGD_Hot_Tepl).NextTCalc.TVentCritery=(*pGD_TControl_Tepl).TVentCritery;
@@ -1104,8 +1109,10 @@ void __cNextTCalc(char fnTepl)
 	//(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent, 4*pGD_Hot_Tepl->AllTask.DoRHAir-(3*GD.Hot.Tepl[fnTepl].InTeplSens[cSmRHSens].Value));
 	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent, 4*pGD_Hot_Tepl->AllTask.DoRHAir-(3*getRH(fnTepl)));
 	// изменение 112
-	//(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=RelHum(GD.Hot.Tepl[fnTepl].InTeplSens[cSmTAHUOutSens].Value, (*pGD_Hot_Tepl).NextTCalc.ICorrectionVent);
-	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=RelHum(getTempHeat(fnTepl), (*pGD_Hot_Tepl).NextTCalc.ICorrectionVent);
+	// оcтавляем как было
+	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=RelHum(GD.Hot.Tepl[fnTepl].InTeplSens[cSmTAHUOutSens].Value, (*pGD_Hot_Tepl).NextTCalc.ICorrectionVent);
+	// новое
+	//(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=RelHum(getTempHeat(fnTepl), (*pGD_Hot_Tepl).NextTCalc.ICorrectionVent);
 	// ----------------
 	if ((*pGD_Hot_Tepl).NextTCalc.ICorrectionVent>9500)
 		(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=9500;
@@ -1630,7 +1637,8 @@ void DoMechanics(char fnTepl)
 					{
 					SetBit(MBusy->RCS,cMSBlockRegs);
 
-					TimeVol = pGD_ConstMechanic_Mech->v_TimeMixVal/10;
+					TimeVol = pGD_ConstMechanic_Mech->v_TimeMixVal/40;		// 40 это ~2%
+					//TimeVol = pGD_ConstMechanic_Mech->v_TimeMixVal/10;		// 10 это 10%
 					if (MBusy->TimeRealMech + TimeVol <= pGD_ConstMechanic_Mech->v_TimeMixVal)
 						MBusy->TimeRealMech+=TimeVol;
 					//MBusy->TimeRealMech+=pGD_ConstMechanic_Mech->v_TimeMixVal/4;
@@ -1639,7 +1647,8 @@ void DoMechanics(char fnTepl)
 					{
 					SetBit(MBusy->RCS,cMSBlockRegs);
 
-					TimeVol = pGD_ConstMechanic_Mech->v_TimeMixVal/10;
+					TimeVol = pGD_ConstMechanic_Mech->v_TimeMixVal/40;		// 40 это ~2%
+					//TimeVol = pGD_ConstMechanic_Mech->v_TimeMixVal/10;		// 10 это 10%
 					if (MBusy->TimeRealMech - TimeVol > 0)
 						MBusy->TimeRealMech-=TimeVol;
 					//MBusy->TimeRealMech-=pGD_ConstMechanic_Mech->v_TimeMixVal/4;

@@ -177,7 +177,13 @@ char CheckSumMain(void)
 		  Bl = 2;
 		  break;
 	  }
-  }
+	  case 9:
+	  {
+		  Bl = 3;
+		  break;
+	  }
+
+ }
 
   int i;
   char res = 0;
