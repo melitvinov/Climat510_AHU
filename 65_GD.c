@@ -413,8 +413,9 @@ typedef struct eeTuneClimate
         int16_t		f_AHU_T_SunCorr;	// Коррекция Т рукава при солнце на
 
 
-		//uchar		f_S2Level;		// Клапан AHU			не используется
-		//uchar		f_S3MinDelta;	// Клапан AHU			не используется
+		uchar		f_AHU_T_LightCorr;	// Коррекция Т рукава при вкл Досветки
+
+        //uchar		f_S3MinDelta;	// Клапан AHU			не используется
 		//uchar		f_S3Level;		// Клапан AHU			не используется
         int16_t     f_MinDelta;  	// Клапан AHU			не используется
 
