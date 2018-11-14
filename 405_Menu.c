@@ -573,6 +573,15 @@ void pmHand(void) {
                         IntX=(*pGD_MechConfig_Kontur);
                         w_int(&IntX,SpSSpSS);
 
+                        if (ByteW == cHSmInRH)
+                        {
+                        buf[Ad_Buf++]='(';
+                  	  	w_int(&fnInRHOut[0],SSSS);							//
+                  	    buf[Ad_Buf++]=',';												//
+                  	    w_int(&fnInRHOut[1],SSSS);
+                  	    buf[Ad_Buf++]=')';												//
+                        }
+
                         if (ByteW == cHSmScrTH)
                         {
                         buf[Ad_Buf++]='(';

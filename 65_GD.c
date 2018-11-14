@@ -4,6 +4,8 @@ int volatile startFlag;
 
 int16_t fnScreenOut[4];
 
+int16_t fnInRHOut[2];
+
 volatile int16_t MidlSunCalc;
 volatile int16_t MidlWindCalc;
 

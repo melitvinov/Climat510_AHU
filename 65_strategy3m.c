@@ -598,7 +598,7 @@ int KeepInRH(char fnTepl)
 	//RH1 = getRH1AHUSensor();
 	//RH2 = getRH2AHUSensor();
 	RHmes = getRH(fnTepl)/100;
-	RHset = DefAbsHum()/100;
+	RHset = pGD_Hot_Tepl->AllTask.DoRHAir / 100; //DefAbsHum()/100;
 	//RH1 = DefAbsHumSensor(RH1)/100;
 	//RH2 = DefAbsHumSensor(RH2)/100;
 
@@ -607,6 +607,10 @@ int KeepInRH(char fnTepl)
  	//fInRH_RHset = RHset;
 
 	//if ((RH1) && (RH2) && (RHset))
+
+	fnInRHOut[0] = RHmes;
+	fnInRHOut[1] = RHset;
+
 	if ((RHmes) && (RHset))
 		Res = pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_PFactor * (RHset - RHmes);
 		//Res = (pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_PFactor * (RHset - ((RH1 + RH2)/2) )) / pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_IFactor;
