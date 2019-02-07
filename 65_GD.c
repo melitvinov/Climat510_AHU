@@ -461,12 +461,22 @@ typedef struct eeTuneClimate
 		int16_t		sc_TWindStart;		/*Экран термический - ветер влияет до*/
         int16_t     sc_TVSRMaxOpen; 	/*Экран термический - ветер увеличивает Т внеш на*/
         int16_t     sc_ZSRClose;   		/*Экран затеняющий    Солнце разворачивает при*/
+		int16_t		f_WindFactor;		/*Т вентиляции - ветер понижает Т внеш на*/
 
-		int16_t		f_WindFactor;		/*Экран - (Тзад-Тизм) влияет до*/
+		#ifdef RICHEL
+		int8_t		PressCellStart;		//Давление камеры начинает влиять при
+		int8_t		PressCellEnd;		//Давление камеры влияет до
+		int8_t		PressCellValue;		//Давление камеры снижает скорость AHU до
+		int8_t		nouse1;
+		int8_t		nouse2;
+		int8_t		nouse3;
+		#endif
 
+		#ifdef KUBO
 		int16_t		sc_LineSunVol_notuse;		/* не используется  */
 		int16_t		s_StartCorrPow;  	/*Фрамуги - Солнце начинает влиять при*/		// не используется
 		int16_t		s_EndCorrPow;  		/*Фрамуги - Солнце влияет до*/					// не используется
+		#endif
 
         int16_t     s_PowFactor;        /*Фрамуги - Солнце увеличивает на*/
         int16_t     sc_StartP2Zone;		/*Экран закрывать шагами по*/

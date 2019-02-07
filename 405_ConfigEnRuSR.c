@@ -133,7 +133,7 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 {"Tem\310 \310i\310e3#Te\274\276 \272o\275\277\311\310a 3",			SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Т прям контура3*/
 {"Tem\310 \310i\310e4#Te\274\276 \272o\275\277\311\310a 4",			SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Т прям контура4*/
 {"Tem\310 \310i\310e5#Te\274\276 \272o\275\277\311\310a 5",			SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Т прям контура5*/
-{"Rezerv#He \270c\276o\273\304\267",								SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Т контура AHU*/
+{"Tem\310 \310i\310e6#Te\274\276 \272o\275\277\311\310a 6",			SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Т прям контура6*/
 //{"Tem\310 \310i\310e AHU#Te\274\276 \272o\275\277 AHU",				SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Т контура AHU*/
 //26
 {"Tem\310 out#Te\274\276 \275a\310\311\266\275\307\307",			SSpS0,	cuT,	cTypeAnal,	3,	0,	-6000,9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80},  /*Температура наружняя*/
@@ -228,16 +228,28 @@ eNameConfig NameOutputConfig[cConfSOutput]={
 /*2 Клапан 3*/			{"Mixing valve 3#C\274ec \272\273a\276a\275 3",tpRELAY,0,MAX_SUM_RELAY},
 /*3 Клапан 4*/ 			{"Mixing valve 4#C\274ec \272\273a\276a\275 4",tpRELAY,0,MAX_SUM_RELAY},
 /*4 Клапан 5*/			{"Mixing valve 5#C\274ec \272\273a\276a\275 5",tpRELAY,0,MAX_SUM_RELAY},
-/*5 Клапан AHU*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+#ifdef RICHEL
+/*5 Клапан AHU*/		{"Mixing valve 6#C\274ec \272\273a\276a\275 6",tpRELAY,0,MAX_SUM_RELAY},
+#endif
+#ifdef KUBO
+/*10 Фрамуга СЕВЕР*/	{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+#endif
 /*6 Фрамуга СЕВЕР*/		{"Window 1#\252\310a\274\311\264a 1",tpRELAY,0,MAX_SUM_RELAY},
 ///*7 Фрамуга ЮГ*/		{"Window SOUTH#\252\310a\274\311\264a \260\241",tpRELAY,0,MAX_SUM_RELAY},
 /*7 Фрамуга ЮГ*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
 /*8 Фрамуга СЕВЕР*/		{"Window 2#\252\310a\274\311\264a 2",tpRELAY,0,MAX_SUM_RELAY},
 /*9 Фрамуга СЕВЕР*/		{"Window 3#\252\310a\274\311\264a 3",tpRELAY,0,MAX_SUM_RELAY},
+
+#ifdef RICHEL
+/*10 Circulation valve*/{"Circ valve#Circ valve",tpRELAY,0,MAX_SUM_RELAY},
+#endif
+#ifdef KUBO
 /*10 Фрамуга СЕВЕР*/	{"Window 4#\252\310a\274\311\264a 4",tpRELAY,0,MAX_SUM_RELAY},
+#endif
+
 /*11 Клапан UC*/		{"AHU valve#AHU \272\273a\276a\275",tpRELAY,0,MAX_SUM_RELAY},
 /*12 Скорость AHU*/		{"AHU speed 1#C\272o\310oc\277\304 AHU 1",tpRELAY,0,MAX_SUM_RELAY},
-/*13 Скорость AHU*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+/*13 Скорость AHU*/		{"AHU speed 2#C\272o\310oc\277\304 AHU 2",tpRELAY,0,MAX_SUM_RELAY},
 /*14 Экран*/			{"Screen thermal#\257\272\310a\275 \277e\310\274\270\300",tpRELAY,0,MAX_SUM_RELAY},
 /*15  Экран затеняющ*/	{"Screen shade#\257\272\310a\275 \267e\277e\275",tpRELAY,0,MAX_SUM_RELAY},
 /*16  Верт. экран 1*/	{"Screen vert#\257\272\310a\275 \263e\310\277",tpRELAY,0,MAX_SUM_RELAY},
@@ -254,7 +266,7 @@ eNameConfig NameOutputConfig[cConfSOutput]={
 /*26 Насос 3*/			{"Heat \310um\310 3#Hacoc 3",tpRELAY,0,MAX_SUM_RELAY},
 /*27 Насос 4*/			{"Heat \310um\310 4#Hacoc 4",tpRELAY,0,MAX_SUM_RELAY},
 /*28 Насос 5*/			{"Heat \310um\310 5#Hacoc 5",tpRELAY,0,MAX_SUM_RELAY},
-/*29 Насос 5*/			{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
+/*29 Насос 6*/			{"Heat \310um\310 6#Hacoc 6",tpRELAY,0,MAX_SUM_RELAY},
 /*30 Вентиляторы*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
 /*31 Нагреватель*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
 /*32 Охладитель*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},

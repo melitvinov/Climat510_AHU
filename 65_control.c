@@ -830,10 +830,35 @@ void __cNextTCalc(char fnTepl)
 	//  (*pGD_Hot_Tepl).NextTCalc.UpLight=(  ((long)GD.TuneClimate.c_LightFactor)*((*(pGD_Hot_Hand+cHSmLight)).Position) ) / 100;
 	// стало
 
-	if ((GD.Hot.Tepl[fnTepl].Light50 > 0) || (GD.Hot.Tepl[fnTepl].Light100 > 0))
-		(*pGD_Hot_Tepl).NextTCalc.UpLight = ( (GD.TuneClimate.c_LightFactor/2) * (GD.Hot.Tepl[fnTepl].Light50*10)) / 100;
-	if ((GD.Hot.Tepl[fnTepl].Light50 > 0) && (GD.Hot.Tepl[fnTepl].Light100 > 0))
-		(*pGD_Hot_Tepl).NextTCalc.UpLight = ((long)GD.TuneClimate.c_LightFactor * (GD.Hot.Tepl[fnTepl].Light100*10)) / 100;
+	//if ((GD.Hot.Tepl[fnTepl].Light50 > 0) || (GD.Hot.Tepl[fnTepl].Light100 > 0))
+	//	(*pGD_Hot_Tepl).NextTCalc.UpLight = ( (GD.TuneClimate.c_LightFactor/2) * (GD.Hot.Tepl[fnTepl].Light50*10)) / 100;
+	//if ((GD.Hot.Tepl[fnTepl].Light50 > 0) && (GD.Hot.Tepl[fnTepl].Light100 > 0))
+	//	(*pGD_Hot_Tepl).NextTCalc.UpLight = ((long)GD.TuneClimate.c_LightFactor * (GD.Hot.Tepl[fnTepl].Light100*10)) / 100;
+
+	// 117 правка. Если нет сигналов обратной связи досветки работаем по состоянию
+	int lightSignals = 1;
+	if ((GD.MechConfig[fnTepl].RNum[48] == 0) && (GD.MechConfig[fnTepl].RNum[49] == 0))
+		lightSignals = 0;
+	switch (lightSignals)
+	{
+		case 0:
+			if ( ((*(pGD_Hot_Hand+cHSmLight)).Position >= 50)  && ((*(pGD_Hot_Hand+cHSmLight)).Position < 100) )
+				(*pGD_Hot_Tepl).NextTCalc.UpLight = (GD.TuneClimate.c_LightFactor / 2) / 100;
+			if ((*(pGD_Hot_Hand+cHSmLight)).Position >= 100)
+				(*pGD_Hot_Tepl).NextTCalc.UpLight = (long)GD.TuneClimate.c_LightFactor / 100;
+			break;
+		case 1:
+			if ((GD.Hot.Tepl[fnTepl].Light50 > 0) || (GD.Hot.Tepl[fnTepl].Light100 > 0))
+				(*pGD_Hot_Tepl).NextTCalc.UpLight = ( (GD.TuneClimate.c_LightFactor/2) * (GD.Hot.Tepl[fnTepl].Light50*10)) / 100;
+			if ((GD.Hot.Tepl[fnTepl].Light50 > 0) && (GD.Hot.Tepl[fnTepl].Light100 > 0))
+				(*pGD_Hot_Tepl).NextTCalc.UpLight = ((long)GD.TuneClimate.c_LightFactor * (GD.Hot.Tepl[fnTepl].Light100*10)) / 100;
+			break;
+	}
+
+
+
+
+
 
 
 	//(*pGD_Hot_Tepl).NextTCalc.UpLight= GD.TuneClimate.c_LightFactor *  LightIn  / 100;

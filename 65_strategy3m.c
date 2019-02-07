@@ -584,15 +584,51 @@ char valveGetOldPos(void)
 int KeepInRH(char fnTepl)
 {
 	if (!pGD_TControl_Tepl->Systems[cSysInRH].Keep) return 0;
-	int16_t Res;
-	int16_t RH1, RH2, RHset, RHmes;
-	int16_t	OutAbsH, InAbsH;
-	//pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_TimeMixVal;
+	int MeasValue = getRH(fnTepl);
+	int DoValue = pGD_Hot_Tepl->AllTask.DoRHAir;
+	fnInRHOut[0] = MeasValue;
+	fnInRHOut[1] = DoValue;
+	if ((DoValue <= 0) && (MeasValue <= 0))
+		return 0;
+    int some_pid_val = pGD_TControl_Tepl->Systems[cSysInRH].Power;  // будем для внутренего увлажнения сдесь считать интегральную составляющую
+    int err = DoValue - MeasValue;
+    int p_err = err * pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_PFactor / 10000;
+    int position = some_pid_val / 100 + p_err;
+    if (position > 100)
+    {
+        some_pid_val = (100 - p_err) * 100;
+        position = 100;
+    } else if (position < 0)
+    {
+        some_pid_val = (-p_err) * 100;
+        position = 0;
+    } else
+    {
+        some_pid_val += err * pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_IFactor / 100;
+    }
 
 	pGD_TControl_Tepl->Systems[cSysInRH].Max = pGD_Control_Tepl->InRHMax;
 	pGD_TControl_Tepl->Systems[cSysInRH].Min = pGD_Control_Tepl->InRHMin;
-	//pGD_TControl_Tepl->Systems[cSysInRH].Max = (pGD_Control_Tepl->InRHMax * pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_TimeMixVal) / 100;
-	//pGD_TControl_Tepl->Systems[cSysInRH].Min = (pGD_Control_Tepl->InRHMin * pGD_ConstMechanic->ConstMixVal[cHSmInRH].v_TimeMixVal) / 100;
+	if (position > pGD_TControl_Tepl->Systems[cSysInRH].Max)
+		position = pGD_TControl_Tepl->Systems[cSysInRH].Max;
+
+	if ( (position > 0) && (position < pGD_TControl_Tepl->Systems[cSysInRH].Min) )
+		position = pGD_TControl_Tepl->Systems[cSysInRH].Min;
+	if (GD.TuneClimate.CloseInRH_AHU > 0)
+	{
+		if (pGD_Hot_Hand[cHSmUCValve].Position > GD.TuneClimate.CloseInRH_AHU)
+			position = 0;
+	}
+
+    return position;
+
+
+
+
+/*
+
+	pGD_TControl_Tepl->Systems[cSysInRH].Max = pGD_Control_Tepl->InRHMax;
+	pGD_TControl_Tepl->Systems[cSysInRH].Min = pGD_Control_Tepl->InRHMin;
 
 
 	//RH1 = getRH1AHUSensor();
@@ -634,6 +670,7 @@ int KeepInRH(char fnTepl)
 			Res = 0;
 	}
 	return Res;
+	*/
 }
 
 int KeepUCValve(char prevPosition)
@@ -875,7 +912,7 @@ int KeepFanSystem(char fnTepl)
 			break;
 		}
 	}
-// провки в мониторе, Т контроля вместо Источника для Т вент
+// правки в мониторе, Т контроля вместо Источника для Т вент
 	// изменение 100. коррекция скорости вент по Т и Тконтр
 	if ((Theat>0)&&(Tcont>0)&&(minSpeedT)&&(maxSpeedT)&&(maxSpeedTcorr))
 	{
