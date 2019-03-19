@@ -513,10 +513,17 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinTask=JumpNext(pGD_CurrTimer->MinTPipe1,pGD_NextTimer->MinTPipe1,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinTask=JumpNext(pGD_CurrTimer->MinTPipe2,pGD_NextTimer->MinTPipe2,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinTask=JumpNext(pGD_CurrTimer->MinTPipe3,pGD_NextTimer->MinTPipe3,1,10);
+
+	(*pGD_Hot_Tepl).Kontur[cSmKontur3].MaxCalc=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
+
 	(*pGD_Hot_Tepl).Kontur[cSmKontur5].MinTask=JumpNext(pGD_CurrTimer->MinTPipe5,pGD_NextTimer->MinTPipe5,1,10);
 #ifdef RICHEL
 	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MinTask=JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
 #endif
+	// коррекция не реальзована до конца // изменене 119. Контур AHU инерполтруем, держать и минимум
+	//(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MaxCalc = JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
+	//(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MinTask = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
+
 	(*pGD_Hot_Tepl).Kontur[cSmKontur1].Optimal=JumpNext(pGD_CurrTimer->TOptimal1,pGD_NextTimer->TOptimal1,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur2].Optimal=JumpNext(pGD_CurrTimer->TOptimal2,pGD_NextTimer->TOptimal2,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmWindowUnW].MinTask=JumpNext(((uchar)pGD_CurrTimer->MinOpenWin),((uchar)pGD_NextTimer->MinOpenWin),0,1);
@@ -529,7 +536,7 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	(*pGD_Hot_Tepl).Kontur[cSmKontur3].Do=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur4].Do=JumpNext(pGD_CurrTimer->TPipe4,pGD_NextTimer->TPipe4,1,10);
 #ifdef RICHEL
-	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].Do = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
+	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MinTask = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
 #endif
 }
 
@@ -1118,19 +1125,43 @@ void __cNextTCalc(char fnTepl)
 	// -------------------------------------------------------
 
 	// изменение 115. Коррекция T рукава Держать по вкл Досветки
+	// изменение 117. Коррекция T рукава Держать по вкл Досветки, в том числе если не заданы входы от контроллера
 	int f_AHU_T_LightCorr = GD.TuneClimate.f_AHU_T_LightCorr * 100;
 	if (f_AHU_T_LightCorr > 0)
 	{
-		if ((GD.Hot.Tepl[fnTepl].Light50 > 0) ^ (GD.Hot.Tepl[fnTepl].Light100 > 0))
+
+		int lightSignals = 1;
+		if ((GD.MechConfig[fnTepl].RNum[48] == 0) && (GD.MechConfig[fnTepl].RNum[49] == 0))
+			lightSignals = 0;
+
+		if (lightSignals)
 		{
-			if (pGD_TControl_Tepl->TVentCritery > pGD_TControl_Tepl->TVentCritery - (f_AHU_T_LightCorr / 2))
-				pGD_TControl_Tepl->TVentCritery = pGD_TControl_Tepl->TVentCritery - (f_AHU_T_LightCorr / 2);
+			if ((GD.Hot.Tepl[fnTepl].Light50 > 0) ^ (GD.Hot.Tepl[fnTepl].Light100 > 0))
+			{
+				if (pGD_TControl_Tepl->TVentCritery > pGD_TControl_Tepl->TVentCritery - (f_AHU_T_LightCorr / 2))
+					pGD_TControl_Tepl->TVentCritery = pGD_TControl_Tepl->TVentCritery - (f_AHU_T_LightCorr / 2);
+			}
+			if ((GD.Hot.Tepl[fnTepl].Light50 > 0) && (GD.Hot.Tepl[fnTepl].Light100 > 0))
+			{
+				if (pGD_TControl_Tepl->TVentCritery > pGD_TControl_Tepl->TVentCritery - f_AHU_T_LightCorr)
+					pGD_TControl_Tepl->TVentCritery = pGD_TControl_Tepl->TVentCritery - f_AHU_T_LightCorr;
+			}
 		}
-		if ((GD.Hot.Tepl[fnTepl].Light50 > 0) && (GD.Hot.Tepl[fnTepl].Light100 > 0))
+		if (lightSignals == 0)
 		{
-			if (pGD_TControl_Tepl->TVentCritery > pGD_TControl_Tepl->TVentCritery - f_AHU_T_LightCorr)
-				pGD_TControl_Tepl->TVentCritery = pGD_TControl_Tepl->TVentCritery - f_AHU_T_LightCorr;
+			if ( ((*(pGD_Hot_Hand+cHSmLight)).Position >= 50)  && ((*(pGD_Hot_Hand+cHSmLight)).Position < 100) )
+			{
+				if (pGD_TControl_Tepl->TVentCritery > pGD_TControl_Tepl->TVentCritery - (f_AHU_T_LightCorr / 2))
+					pGD_TControl_Tepl->TVentCritery = pGD_TControl_Tepl->TVentCritery - (f_AHU_T_LightCorr / 2);
+			}
+			if ((*(pGD_Hot_Hand+cHSmLight)).Position >= 100)
+			{
+				if (pGD_TControl_Tepl->TVentCritery > pGD_TControl_Tepl->TVentCritery - f_AHU_T_LightCorr)
+					pGD_TControl_Tepl->TVentCritery = pGD_TControl_Tepl->TVentCritery - f_AHU_T_LightCorr;
+			}
+
 		}
+
 		if (minMinPipeTemp > pGD_TControl_Tepl->TVentCritery)
 			pGD_TControl_Tepl->TVentCritery = minMinPipeTemp;
 	}

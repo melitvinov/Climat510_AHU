@@ -463,20 +463,12 @@ typedef struct eeTuneClimate
         int16_t     sc_ZSRClose;   		/*Ёкран затен€ющий    —олнце разворачивает при*/
 		int16_t		f_WindFactor;		/*“ вентил€ции - ветер понижает “ внеш на*/
 
-		#ifdef RICHEL
-		int8_t		PressCellStart;		//ƒавление камеры начинает вли€ть при
-		int8_t		PressCellEnd;		//ƒавление камеры вли€ет до
-		int8_t		PressCellValue;		//ƒавление камеры снижает скорость AHU до
-		int8_t		nouse1;
-		int8_t		nouse2;
-		int8_t		nouse3;
-		#endif
-
-		#ifdef KUBO
-		int16_t		sc_LineSunVol_notuse;		/* не используетс€  */
-		int16_t		s_StartCorrPow;  	/*‘рамуги - —олнце начинает вли€ть при*/		// не используетс€
-		int16_t		s_EndCorrPow;  		/*‘рамуги - —олнце вли€ет до*/					// не используетс€
-		#endif
+		int8_t		ahu_PressCellStart;		//ƒавление камеры начинает вли€ть при
+		int8_t		ahu_PressCellEnd;		//ƒавление камеры вли€ет до
+		int8_t		ahu_PressCellValue;		//ƒавление камеры снижает скорость AHU до
+		int8_t		nouse1;		// не используетс€
+		int8_t		nouse2;		// не используетс€
+		int8_t		nouse3;		// не используетс€
 
         int16_t     s_PowFactor;        /*‘рамуги - —олнце увеличивает на*/
         int16_t     sc_StartP2Zone;		/*Ёкран закрывать шагами по*/
@@ -534,9 +526,9 @@ typedef struct eeTuneClimate
 		int16_t		co_IFactor;
 		int16_t		MinRainTime;
 		int16_t		f_BlockFan;
-		int16_t		sc_RHStart;     // не используетс€
-		int16_t		sc_RHEnd;		// не используетс€
-		int16_t		sc_RHMax;		// не используетс€
+		int16_t		sc_RHStart;
+		int16_t		sc_RHEnd;
+		int16_t		sc_RHMax;
 
 
 		int16_t		v_MinFreeze;
@@ -555,6 +547,7 @@ typedef struct eeTuneClimate
 		//uchar		fAHU_S1Level;
 		//uchar		fAHU_S2Level;
 		//uchar		fAHU_S3Level;
+
 		uchar		fAHU_Offset1;		// не используетс€
 		uchar		fAHU_Offset2;		// не используетс€
 		uchar		fAHU_Offset3;		// не используетс€

@@ -750,19 +750,6 @@ int KeepUCValve(char prevPosition)
 				return tempKeep;
 		}
 	}
-
-/*	GD.TuneClimate.fAHU_S1Level;
-	GD.TuneClimate.fAHU_S2Level;
-	GD.TuneClimate.fAHU_S3Level;
-
-	GD.TuneClimate.fAHU_Offset1;
-	GD.TuneClimate.fAHU_Offset2;
-	GD.TuneClimate.fAHU_Offset3;
-	GD.TuneClimate.fAHU_Offset4;
-*/
-
-//	//return pGD_TControl_Tepl->Systems[cSysUCValve].Keep;
-//	return 0;
 }
 
 int KeepFanSystem(char fnTepl)
@@ -788,6 +775,10 @@ int KeepFanSystem(char fnTepl)
 	volatile float windSpeedCalc = 0;
 	volatile int16_t zone = 10;
 	volatile int16_t deltaW = 0;
+	volatile int8_t PressCellStart = 0;
+	volatile int8_t PressCellEnd = 0;
+	volatile int8_t PressCellValue = 0;
+
 	minSpeed = GD.Hot.Tepl[fnTepl].AllTask.AHUVent;
 	maxSpeed = GD.Control.Tepl[fnTepl].f_MaxAHUSpd;
 	minT = GD.TuneClimate.vAHU_MinTempr * 100;
@@ -804,6 +795,12 @@ int KeepFanSystem(char fnTepl)
 	windSpeed = GD.TControl.MeteoSensing[cSmVWindSens] / 100;
 	windDirect = GD.TControl.MeteoSensing[cSmDWindSens];
 	greenHousePos = GD.TuneClimate.o_TeplPosition;
+
+	#ifdef RICHEL
+	PressCellStart = GD.TuneClimate.ahu_PressCellStart;
+	PressCellEnd = GD.TuneClimate.ahu_PressCellEnd;
+	PressCellValue = GD.TuneClimate.ahu_PressCellValue;
+	#endif
 
 	// изменение 100
 	volatile int16_t Theat = getTempHeat(fnTepl);
@@ -954,6 +951,14 @@ int KeepFanSystem(char fnTepl)
 				if (tempKeep <= 0) tempKeep = minSpeed;
 			}
 	}
+
+	// изменение 118. Коррекция скорости AHU по датчику давления
+	#ifdef RICHEL
+	IntY = GD.Hot.Tepl[fnTepl].InTeplSens[cSmOverPSensAHU].Value / 100;
+	CorrectionRule(PressCellStart, PressCellEnd, PressCellValue,0);
+	tempKeep = tempKeep - (PressCellValue - IntZ);
+	#endif
+
 	return tempKeep;
 }
 

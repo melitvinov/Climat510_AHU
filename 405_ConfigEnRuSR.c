@@ -35,7 +35,7 @@
 #define cSmT1AHUOutSens	14
 
 #define cSmOverPSens	15   // датчик избыточного давления
-#define cSmRoofSens		16
+#define cSmOverPSensAHU	16	 // датчик избыточного давления камеры AHU  // был датчик крыши
 #define cSmGlassSens	18
 #define cSmCOSens		11
 //#define cSmTCSens		1
