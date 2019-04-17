@@ -95,7 +95,7 @@ rads = pi/180.0;
 // read system date and extract the year
 
 /** First get time **/
-time(&sekunnit);
+$ControlTime(&sekunnit);
 
 /** Next get localtime **/
 

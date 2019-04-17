@@ -1,4 +1,6 @@
-#include "stm32f10x_Rootines.h"
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "misc.h"
 #include "stm32f10x.h"
 #include "stm32f10x_tim.h"
@@ -11,6 +13,15 @@
 #include "stm32f10x_iwdg.h"
 #include "I2CSoft.h"
 
+#include "stm32f10x_clock.h"
+
+
+#include "stm32f10x_Define.h"
+#include "stm32f10x_RS485.h"
+
+#include "stm32f10x_Rootines.h"
+
+#include "rtc.h"
 
 //uint8_t* mymac = 0x1FFFF7EE;
 
@@ -352,7 +363,7 @@ void InitRTC(void)
 		RTC->PRLH = 0;
 		wait_for_write_completion();
 
-		uint32_t timestamp = (11*60+55)*60; // here: 1st January 2000 11:55:00
+		uint32_t timestamp = 946720800;
 		RTC->CNTL = timestamp;
 		RTC->CNTH = timestamp >> 16;
 		wait_for_write_completion();
@@ -365,13 +376,7 @@ void InitRTC(void)
 	}
 }
 
-int GetRTCSecond(void)
-{
-	uint32_t t;
-	while ( ( t = RTC_GetCounter() ) != RTC_GetCounter() ) { ; }
-
-	return t % 60;
-}
+//volatile uint32_t TempTime;
 
 
 #define PORT1WIRE	GPIOB
@@ -598,33 +603,33 @@ void ReadFromFRAM()
 
 }
 
-void SetRTC(void) {
-		eDateTime	fDateTime;
-        fDateTime.sec=Second;
-        fDateTime.min=CtrTime%60;
-        fDateTime.hour=CtrTime/60;
-        fDateTime.mday=CtrData&0xff;
-        fDateTime.month=CtrData>>8;
-        fDateTime.year=CtrYear+2000;
-        ClrDog;
-        WriteDateTime(&fDateTime);
+void control_time_to_datetime(datetime_t *dst, eTime *src, int second)
+{
+    dst->sec = second;
+    dst->min=src->Time % 60;
+    dst->hour=src->Time/60;
+    dst->mday=src->Date&0xff;
+    if ((dst->mday < 1)||(dst->mday > 31))  {
+        dst->mday = 1;
+    }
+    dst->month=src->Date>>8;
+    if ((dst->month < 1)||(dst->month > 12))  {
+        dst->month = 1;
+    }
+    dst->year = src->Year + 2000;
 }
 
-void GetRTC(void) {
-
-		eDateTime	fDateTime;
-        ReadDateTime(&fDateTime); //CtrTime=0;
-
+void datetime_to_control_time(eTime *dst, const datetime_t *src)
+{
 		 //Second=DateTime.Sec&0x0F;
 		 //Second+=(DateTime.Sec>>4)*10;
-         CtrTime=fDateTime.min;
-		 CtrTime+=fDateTime.hour*60;
-         CtrData=fDateTime.mday;
-		 CtrData+=fDateTime.month<<8;
-         CtrYear=fDateTime.year-2000;
-         NowDayOfWeek=fDateTime.wday;
+         dst->Time=src->min + src->hour*60;
+         dst->Date= src->mday;
+		 dst->Date+= src->month<<8;
+         dst->Year= src->year - 2000;
 }
 
+// NowDayOfWeek=fDateTime.wday;
 
 
 void CopyEEP()

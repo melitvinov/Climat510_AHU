@@ -430,7 +430,7 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 
 	pGD_Hot_Tepl=&GD.Hot.Tepl[fnTeplLoad];
 	(*pGD_Hot_Tepl).AllTask.TAir=0;
-	IntZ=CtrTime+fsmTime;
+	IntZ=ControlTime.Time +fsmTime;
 	IntZ%=1440;
 	MaxTimeStart=0;
 	PrevTimeStart=0;
@@ -473,7 +473,7 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	pGD_CurrTimer=&GD.Timer[sTimerPrev];
 	pGD_NextTimer=&GD.Timer[sTimerNext];
 
-	IntX=CtrTime-GD.Timer[sTimerPrev].TimeStart;
+	IntX=ControlTime.Time-GD.Timer[sTimerPrev].TimeStart;
 	IntY=GD.Timer[sTimerNext].TimeStart-GD.Timer[sTimerPrev].TimeStart;
 	if (IntY<0)
 	{	IntY+=1440;}
@@ -517,9 +517,11 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	(*pGD_Hot_Tepl).Kontur[cSmKontur3].MaxCalc=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
 
 	(*pGD_Hot_Tepl).Kontur[cSmKontur5].MinTask=JumpNext(pGD_CurrTimer->MinTPipe5,pGD_NextTimer->MinTPipe5,1,10);
-#ifdef RICHEL
-	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MinTask=JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
-#endif
+//#ifdef RICHEL
+//	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MinTask=JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
+//#endif
+
+
 	// коррекция не реальзована до конца // изменене 119. Контур AHU инерполтруем, держать и минимум
 	//(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MaxCalc = JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
 	//(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MinTask = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
@@ -536,7 +538,8 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	(*pGD_Hot_Tepl).Kontur[cSmKontur3].Do=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur4].Do=JumpNext(pGD_CurrTimer->TPipe4,pGD_NextTimer->TPipe4,1,10);
 #ifdef RICHEL
-	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MinTask = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
+	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].Do = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
+	//(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MinTask = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
 #endif
 }
 
@@ -1847,7 +1850,7 @@ void SetLighting(void)
 
 	if (!bZad)
 	{
-		if (GD.Hot.Zax-60>GD.Hot.Time)
+		if (GD.Hot.Zax-60>ControlTime.Time)
 			pGD_TControl_Tepl->LightMode=0;
 		//if (GD.TControl.Tepl[0].SensHalfHourAgo>GD.TuneClimate.l_SunOn50)  // sun > 50% then off light
 
@@ -2218,14 +2221,14 @@ char tCTepl,ttTepl;
 					MemClr(&GD.Hot.Tepl[tCTepl].ExtRCS,(
 						sizeof(char)*2+sizeof(eClimTask)+sizeof(eOtherCalc)+
 						sizeof(eNextTCalc)+sizeof(eKontur)*cSKontur+20));
-					IntZ=((GD.Hot.Time+o_DeltaTime)%(24*60));
+					IntZ=((ControlTime.Time+o_DeltaTime)%(24*60));
 					TaskTimer(1,tCTepl,tCTepl);
 					ttTepl=tCTepl;
 					while ((!GD.Hot.Tepl[tCTepl].AllTask.NextTAir)&&(ttTepl))
 					{
 						TaskTimer(1,--ttTepl,tCTepl);
 					}
-					IntZ=GD.Hot.Time;
+					IntZ=ControlTime.Time;
 					ClrDog;
 					loadSettings(tCTepl);
 					TaskTimer(0,ttTepl,tCTepl);
@@ -2295,15 +2298,13 @@ char tCTepl,ttTepl;
 		TimeReset--;
 	if(TimeReset<0)
 		TimeReset=1;
-	GD.Hot.Time++;
-	GetRTC();
 	not=220;ton=10;
 /*	if ((bNight)&&(GD.Hot.Time>=GD.Hot.Vosx)&&(GD.Hot.Time<GD.Hot.Zax))
 	{
 		MemClr(&GD.TControl.Tepl[cSmTeplA].MidlSensDN,12);
 	}
 */	bNight=1;
-	if ((GD.Hot.Time>=GD.Hot.Vosx)&&(GD.Hot.Time<GD.Hot.Zax))
+	if ((ControlTime.Time>=GD.Hot.Vosx)&&(ControlTime.Time<GD.Hot.Zax))
 		bNight=0;
 /*	if((GD.Arx[0].Date!=GD.Hot.Data)&&(GD.Hot.Time>GD.Hot.Vosx)) 
 		{
@@ -2313,23 +2314,8 @@ char tCTepl,ttTepl;
 
 		}
 */
-	if(GD.Hot.Time>=24*60)      /*новые сутки*/
-		{
-		GD.Hot.Time=0;
-		GD.Hot.Data++;
-		ByteX=GD.Hot.Data/256;  /* это месц */
-		if (ByteX<=0) {ByteX=1;GD.Hot.Data=1;}
-		if ((GD.Hot.Data%256)>Mon[ByteX-1]) 
-			{
-			if((++ByteX)>12) 
-				{
-				GD.Hot.Year++;
-				ByteX=1;
-				}
-			GD.Hot.Data=(int)ByteX*256+1;
-			}
-		}
-	if(GD.TControl.Data!=GD.Hot.Data)      /*новые сутки*/
+
+	if(GD.TControl.prevDate!=ControlTime.Date)      /*новые сутки*/
 	{
 		for (tCTepl=0;tCTepl<cSTepl;tCTepl++)
 		{
@@ -2337,7 +2323,7 @@ char tCTepl,ttTepl;
 			GD.TControl.Tepl[tCTepl].TimeSIO=0;
 		}
 		GD.TControl.SumSun=0;
-		GD.TControl.Data=GD.Hot.Data;
+		GD.TControl.prevDate=ControlTime.Date;
 		GD.TControl.FullVol=0;
 	}
 }

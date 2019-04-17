@@ -57,7 +57,7 @@ void controlGetTempHeatAlarm(char fnTepl);
 //----- Прототипы функций
 void CopyEEP(void);
 void CalcEEPSum(void);
-void GetRTC(void);
+void GetRtcJustForMonitor(void);
 void SetRTC(void);
 //void InitZgen(void);
 char TestRAM(void);

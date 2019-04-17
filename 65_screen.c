@@ -9,8 +9,14 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 	ttyp=typScr;
 	if (ttyp>cHSmScrV_S1) ttyp=cHSmScrV_S1;	
 
-	bZad=0;
-	if (pScr->PauseMode) bZad=1;
+//	bZad=0;
+//	if (pScr->PauseMode) bZad=1;
+
+//	if ((ttyp == 0)&&(fnTepl == 0))
+//		fnScreenOut[0] = pScr->Pause;
+
+//	if (pScr->Pause != 0)
+//		return;
 
 	int maxScreen;
 	if (ttyp == 0)
@@ -232,14 +238,6 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 		}
 		}
 
-		if ((ttyp == 0)&&(fnTepl == 0))
-		{
-			//fnScreenOut[0] = pScr->PauseMode;
-			fnScreenOut[1] = MidlSun;
-			fnScreenOut[2] = MidlWind;
-			fnScreenOut[3] = sc_Tout;
-		}
-
 		// проверка на максимум
 		if (pScr->Value > pGD_Control_Tepl->sc_TMaxOpen)
 			pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;
@@ -294,14 +292,14 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 
 void InitScreen(char typScr, char fnTepl)
 {
-    eScreen *pScr;
-	pScr=&pGD_TControl_Tepl->Screen[typScr];
-	if (!(pGD_MechConfig->RNum[cHSmScrTH+typScr])) return;
-	pScr->PauseMode--;
-	if ((pScr->PauseMode<0)||
-		(pScr->PauseMode>GD.TuneClimate.sc_PauseMode))
-		pScr->PauseMode=0;
-	CheckModeScreen(typScr,typScr, fnTepl);
+    //eScreen *pScr;
+	//pScr=&pGD_TControl_Tepl->Screen[typScr];
+	//if (!(pGD_MechConfig->RNum[cHSmScrTH+typScr])) return;
+	//pScr->PauseMode--;
+	//if ((pScr->PauseMode<0)||
+	//	(pScr->PauseMode>GD.TuneClimate.sc_PauseMode))
+	//	pScr->PauseMode=0;
+	//CheckModeScreen(typScr,typScr, fnTepl);
 }
 
 // шиги отрабатывают не верно! Ќе вид€т коррекцию по макс открытию
@@ -323,15 +321,30 @@ void SetPosScreen(char typScr, char fnTepl)
 	// если была смена режима экрана выставл€етс€ пауза, пока она не 0 не работаем
 //	if (pScr->PauseMode) return;
 
-	if (pScr->Pause < 0)
-		pScr->Pause = 0;
+//	if (pScr->Pause < 0)
+//		pScr->Pause = 0;
 	if (pScr->Pause > 0)
 		{
 			pScr->Pause--;
+
+			if ((typScr == 0)&&(fnTepl == 0))
+				fnScreenOut[0] = pScr->Pause;
+
 			if (pScr->Pause != 0)
 				return;
 		}
 	
+	if (pScr->PauseMode < 0)
+		pScr->PauseMode = 0;
+	if (pScr->PauseMode > 0)
+		{
+			pScr->PauseMode--;
+			if (pScr->PauseMode != 0)
+				return;
+		}
+
+	CheckModeScreen(typScr,typScr, fnTepl);
+
 	ByteX=(*pMech);
 	IntZ=pScr->Value;
 	//IntZ=pScr->Value-pGD_TControl_Tepl->Systems[cSysScreen].Keep;
@@ -380,11 +393,7 @@ void SetPosScreen(char typScr, char fnTepl)
 
 			if (step + ByteX > pScr->Value)
 			{
-				//if (maxScreen > ByteX)
 					step = pScr->Value - ByteX;
-					//step = maxScreen - ByteX;
-				//else
-				//	step = 0;
 			}
 			pScr->Pause=GD.TuneClimate.sc_StepP2Zone;
 		}
@@ -411,8 +420,10 @@ void SetPosScreen(char typScr, char fnTepl)
 			}
 			else
 				step = ByteX - pScr->Value;
-			pScr->Pause=GD.TuneClimate.sc_StepP1Zone;
+			pScr->Pause = GD.TuneClimate.sc_StepP1Zone;
 		}
+		if (pScr->Value == (*(pGD_Hot_Hand+cHSmScrTH+typScr)).Position)
+			pScr->Pause = 0;
 	}
 	if (pScr->Mode == 1)   // закрываем
 	{
@@ -454,7 +465,13 @@ void SetPosScreen(char typScr, char fnTepl)
 				pScr->Pause = GD.TuneClimate.sc_StepP1Zone;
 			}
 		}
+		if (pScr->Value == (*(pGD_Hot_Hand+cHSmScrTH+typScr)).Position)
+			pScr->Pause = 0;
 	}
+
+
+	if ((typScr == 0)&&(fnTepl == 0))
+		fnScreenOut[0] = pScr->Pause;
 
 	IntX=((int)(ByteX))-IntZ;
 	if (IntX>0)					// сворачивание
@@ -465,23 +482,43 @@ void SetPosScreen(char typScr, char fnTepl)
 
 		if (!step) 
 			(*pMech)=0;
+
+
+		if ((typScr == 0)&&(fnTepl == 0))
+		{
+			//fnScreenOut[0] = pScr->Pause;
+			fnScreenOut[1] = pScr->Value;
+			fnScreenOut[2] = pScr->Mode;
+			fnScreenOut[3] = (*(pGD_Hot_Hand+cHSmScrTH+typScr)).Position;
+		}
+
+
 		return;
 	}
 	if (IntX<0) 
 	{	
 		(*pMech)+=step;
-		if (!step) 
+		if (!step)
 			(*pMech)=(char)GD.TuneClimate.sc_StartP2Zone;
+
 		if (((*pMech)>=(char)IntZ)&&(pScr->Mode))
 		{
 			(*pMech)=(char)IntZ;	
 			SetBit(pGD_TControl_Tepl->RCS1,cbSCCorrection);
 		}
+
+
+		if ((typScr == 0)&&(fnTepl == 0))
+		{
+			//fnScreenOut[0] = pScr->Pause;
+			fnScreenOut[1] = pScr->Value;
+			fnScreenOut[2] = pScr->Mode;
+			fnScreenOut[3] = (*(pGD_Hot_Hand+cHSmScrTH+typScr)).Position;
+		}
+
+
 		return;
 	}
-	pScr->Pause=0;
-
-
 }
 
 

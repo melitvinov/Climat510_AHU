@@ -262,8 +262,8 @@ void w_int (void *bu,char frmt)
                         ClrDog;
                         if (frmt==DsMsY) {
                           buf[Ad_Buf]='/';
-                          buf[Ad_Buf+2]=CtrYear%10+'0';
-                          buf[Ad_Buf+1]=CtrYear/10+'0';
+                          buf[Ad_Buf+2]=GD.Hot.time.Year%10+'0';
+                          buf[Ad_Buf+1]=GD.Hot.time.Year/10+'0';
                           Ad_Buf+=3;
                           }
                         break;
@@ -357,7 +357,7 @@ void in_val (void)
                         ClrDog;
                         break;
                 case DsMsY:
-                        CtrYear=(buf[AdinB+6]-'0')*10+buf[AdinB+7]-'0';
+                        GD.Hot.time.Year = (buf[AdinB+6]-'0')*10+buf[AdinB+7]-'0';
                 case SSsSS:
                         ValSize=(buf[AdinB]-'0')*10+buf[AdinB+1]-'0'; /*день мес€ца*/
                         vre=(buf[AdinB+3]-'0')*10+buf[AdinB+4]-'0'; /*мес€ц*/

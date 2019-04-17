@@ -255,6 +255,8 @@ typedef struct eeTepl	{
 				} eTepl;				
 
 
+
+
 typedef struct eeHot {
 //0
 				uchar 		News;
@@ -280,9 +282,8 @@ typedef struct eeHot {
 				int16_t		MidlWind;
 				int16_t		PozFluger;
 
-				uint16_t 	Time;
-				uint16_t 	Data;
-				uchar 		Year;
+                eTime       time;
+
 				uchar 		Demo;
 /***************************************/				
 				eTepl 		Tepl[cSTepl];
@@ -468,7 +469,8 @@ typedef struct eeTuneClimate
 		int8_t		ahu_PressCellValue;		//ƒавление камеры снижает скорость AHU до
 		int8_t		nouse1;		// не используетс€
 		int8_t		nouse2;		// не используетс€
-		int8_t		nouse3;		// не используетс€
+		//int8_t		nouse3;		// не используетс€
+		int8_t      sc_LineSunVol;
 
         int16_t     s_PowFactor;        /*‘рамуги - —олнце увеличивает на*/
         int16_t     sc_StartP2Zone;		/*Ёкран закрывать шагами по*/
@@ -593,9 +595,11 @@ typedef struct eeTuneClimate
 		int8_t		sc_TCorrMax;		// Ёкран термический - (Tзад-Tизм) вли€ет на минимум ( до 10,типовое 2∞C)
 		int8_t		sc_TMinOpenCorrect;	// Ёкран термический - (Tзад-Tизм) увеличивает минимум на ( до 100,типовое 100%)
 
-		int8_t      sc_LineSunVol;
 
-		//int8_t      Rez[1];
+		// переносим в другое место
+		//int8_t      sc_LineSunVol;
+
+		int8_t      crc;
 
 //280		
        }
@@ -763,11 +767,11 @@ typedef struct eeRegsSettings
 
 typedef struct eeScreen
 	{
-		int16_t				Value;
-		int8_t				Mode;
-		int8_t				OldMode;
-		int16_t				Pause;
-		int16_t				PauseMode;
+		volatile int16_t			Value;
+		volatile int8_t				Mode;
+		volatile int8_t				OldMode;
+		volatile int16_t			Pause;
+		volatile int16_t			PauseMode;
 //		int16_t				TimeChangeMode;
 //		int16_t				TempStart;
 	} eScreen;
@@ -944,7 +948,7 @@ typedef struct eeTControl
 		int8_t			PrevPozFluger;
 		int8_t			Delay;
 		int32_t			MidlSR;
-		int16_t			Data;
+		int16_t			prevDate;
 //		int16_t			OutTemp;
 //		int8_t			OutPause;
 //		int16_t			OutSR;
@@ -954,6 +958,9 @@ typedef struct eeTControl
 		int8_t			bSnow;
 		uint8_t			NowCod;
 		uchar			tCodTime;
+
+
+        
 	} eTControl;	
 
 
@@ -975,9 +982,7 @@ typedef struct eeFanBlock
 
 
 
-#define CtrTime	GD.Hot.Time
-#define CtrData	GD.Hot.Data
-#define CtrYear	GD.Hot.Year
+
 
 /* ======== √лобальный блок данных=============*/
 struct  eGData{
@@ -997,6 +1002,8 @@ struct  eGData{
         int16_t         uInTeplSens[cSTepl][cConfSSens];
         int16_t         uMeteoSens[cConfSMetSens];
         } GD;
+
+eTime ControlTime;
 
 eKontur xdata *pGD_Hot_Tepl_Kontur; 
 eTControlKontur xdata *pGD_TControl_Tepl_Kontur; 

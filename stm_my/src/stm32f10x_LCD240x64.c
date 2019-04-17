@@ -297,15 +297,19 @@ void clear_d(void) {
 //        Вывод буфера в индикатор
 //---------------------------------------------------
 void TimeToBuf(void) {
+	uint32_t ts = rtc_get();
+	const datetime_t *dt = rtc_dt_from_ts(ts);
+	eTime tm;
+    datetime_to_control_time(&tm, dt);
 	BlkW=1;
 	Ad_Buf=PozTime;
 //    buf[Ad_Buf++]=' ';
-	w_int(&CtrTime,SSdSS);
+	w_int(&tm.Time,SSdSS);
     buf[Ad_Buf++]=':';
-    buf[Ad_Buf++]=Second/10+'0';
-    buf[Ad_Buf++]=Second%10+'0';
+    buf[Ad_Buf++]=dt->sec/10+'0';
+    buf[Ad_Buf++]=dt->sec%10+'0';
 	Ad_Buf++;
-	w_int(&CtrData,DsMsY);
+	w_int(&tm.Date,DsMsY);
 }
 void VideoSost(void) {
 int ic;

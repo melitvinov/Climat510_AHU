@@ -1064,10 +1064,8 @@ ClrDog;
 
 		GD.Timer[0].crc = 0xAA;
 
+
         /* Установка данных по умолчанию */
-        GD.Hot.Year=01;
-        GD.Hot.Data=257;
-        GD.Hot.Time=8*60;
         GD.Hot.News|=bReset;
         OutR[0]=0;
         OutR[1]=0;
@@ -1087,6 +1085,7 @@ ClrDog;
         /* Установка реле по умолчанию */
 		for (IntX=0;IntX<(sizeof(NameConst)/3);IntX++)
 			GD.TuneClimate.s_TStart[IntX]=NameConst[IntX].StartZn;
+		GD.TuneClimate.crc = 0x0A;
 
 
 		GD.Control.NFCtr=NumCtr;
@@ -1138,6 +1137,7 @@ ClrDog;
 			}
 		    for (IntX=0;IntX<(sizeof(DefControl)/2);IntX++)
 				pGD_Control_Tepl->c_MaxTPipe[IntX]=DefControl[IntX];
+
 		    for (IntX=0;IntX<cSRegCtrl;IntX++)
 			{
 				pGD_ConstMechanic->ConstMixVal[IntX].v_TimeMixVal=DefMechanic[0];

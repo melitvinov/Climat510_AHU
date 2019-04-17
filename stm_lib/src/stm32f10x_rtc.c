@@ -132,9 +132,13 @@ void RTC_ExitConfigMode(void)
   */
 uint32_t RTC_GetCounter(void)
 {
-  uint16_t tmp = 0;
-  tmp = RTC->CNTL;
-  return (((uint32_t)RTC->CNTH << 16 ) | tmp) ;
+	  while (1)
+	    {
+		  	uint16_t high = RTC->CNTH;
+		  	uint16_t low = RTC->CNTL;
+	        if (RTC->CNTH == high)
+	            return (high << 16) | low;
+	    }
 }
 
 /**
@@ -145,10 +149,14 @@ uint32_t RTC_GetCounter(void)
 void RTC_SetCounter(uint32_t CounterValue)
 { 
   RTC_EnterConfigMode();
+
+  __disable_irq();
+  /* Set RTC COUNTER LSB word */
+  RTC->CNTL = CounterValue & RTC_LSB_MASK;
   /* Set RTC COUNTER MSB word */
   RTC->CNTH = CounterValue >> 16;
-  /* Set RTC COUNTER LSB word */
-  RTC->CNTL = (CounterValue & RTC_LSB_MASK);
+  __enable_irq();
+
   RTC_ExitConfigMode();
 }
 

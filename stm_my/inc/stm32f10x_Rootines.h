@@ -1,5 +1,17 @@
 //---------------------- Подпрограммы для функционирования STM32 -------------------------------
 
+#ifndef _STM_MY_ROOTINES_H_
+#define _STM_MY_ROOTINES_H_
+
+#include "stm32f10x_clock.h"
+
+
+typedef  struct __attribute__ ((packed))
+{
+    uint16_t 	Time;
+    uint16_t 	Date;
+    uchar 		Year;
+} eTime;
 
 #define PORT_KEYB_IN	GPIOA
 #define PORT_KEYB_OUT	GPIOC
@@ -28,10 +40,6 @@ void Keyboard_Init(void);
 
 char CheckKeyboardSTM();
 
-void WriteDateTime();
-
-char ReadDateTime();
-
 void SendBlockFRAM(uint16_t fStartAddr,uint8_t* AdrBlock,uint16_t sizeBlock);
 
 void RecvBlockFRAM(uint16_t fStartAddr,uint8_t* AdrBlock,uint16_t sizeBlock);
@@ -53,3 +61,9 @@ void OutReg();
 
 void Measure();
 void CheckInputConfig();
+
+
+void datetime_to_control_time(eTime *dst, const datetime_t *src);
+
+void control_time_to_datetime(datetime_t *dst, eTime *src, int second);
+#endif 

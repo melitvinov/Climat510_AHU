@@ -240,7 +240,6 @@ void TestMem(uchar TipReset) {
 	   TestFRAM(TipReset);
        ClrDog;
        ButtonReset();
-       GetRTC();
 }
 
 
