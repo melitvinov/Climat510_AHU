@@ -1163,7 +1163,7 @@ int8_t GetOffSet(int8_t fnSys)
 		case cSysHeadPipe: 	//2
 			return cHSmMixVal+cSmKontur2;
 		case cSysAHUPipe: 	//0
-			return cHSmMixVal+cSmKontur3;
+			return cHSmMixVal+cSmKonturAHU;
 //		case cSysTHose: //3
 //			return cSmScreen;
 		case cSysAHUSpeed:  //7
@@ -2354,12 +2354,7 @@ void __sCalcKonturs(void)
 			pGD_TControl_Tepl_Kontur->Manual=0;
 			ClrDog;
 
-//#ifdef KUBO
 			if ((ByteX==cSmKontur3)||(ByteX==cSmKonturAHU)) continue;
-//#endif
-//#ifdef RICHEL
-//			if ((ByteX==cSmKontur3)) continue;
-//#endif
 
 			if 	(YesBit(pGD_Hot_Tepl_Kontur->RCS,cbNoWorkKontur)) continue;
 			if 	(pGD_Hot_Tepl_Kontur->Do)
