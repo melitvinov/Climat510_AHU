@@ -46,6 +46,9 @@
 #define	DS18B20_FILL_EEPROM	0x48
 #define	DS18B20_SKIP_ROM	0xCC
 
+//uint16_t cSmKonturAHU_DoTemp = 15;
+//#define cSmKonturAHU_MinTemp 15
+
 int32_t OldHotSun  = 0;
 
 int16_t teplTmes[8][30];

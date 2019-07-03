@@ -470,6 +470,7 @@ void SetPosScreen(char typScr, char fnTepl)
 	}
 
 
+
 	if ((typScr == 0)&&(fnTepl == 0))
 		fnScreenOut[0] = pScr->Pause;
 

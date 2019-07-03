@@ -10,401 +10,6 @@
 /**************************************************/
 /*------------------------------------------------*/
 
-/*------------------------------------------
-Вычисление значения задаваемой величины
---------------------------------------------*/
-/*----------------------------------------*/
-
-/*!
-\brief Авария датчика температуры воздуха вентиляции в зависимости от выбранного значение в Параметрах управления
-*/
-/*void controlGetTempVentAlarm(char fnTepl)
-{
-		switch (pGD_Control_Tepl->sensT_vent)
-		{
-			case 0: // sensor temp 1
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			break;
-			case 1: // sensor temp 2
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 2: // sensor temp 3
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 3: // sensor temp 4
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 4: // sensor temp 5
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens5].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 5: // sensor temp 6
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens6].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 6: // min
-			{
-				if ((pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens5].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens6].RCS != 0))
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			}
-			break;
-			case 7: // max
-			{
-				if ((pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens5].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens6].RCS != 0))
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			}
-			break;
-			case 8: // average
-			{
-				if ((pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens5].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens6].RCS != 0))
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			}
-			break;
-		}
-}
-
-/*!
-\brief Авария датчика температуры воздуха обогрева в зависимости от выбранного значение в Параметрах управления
-*/
-/*void controlGetTempHeatAlarm(char fnTepl)
-{
-		switch (pGD_Control_Tepl->sensT_heat)
-		{
-			case 0: // sensor temp 1
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			break;
-			case 1: // sensor temp 2
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 2: // sensor temp 3
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 3: // sensor temp 4
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 4: // sensor temp 5
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens5].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 5: // sensor temp 6
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens6].RCS != 0)
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-
-			break;
-			case 6: // min
-			{
-				if ((pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens5].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens6].RCS != 0))
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			}
-			break;
-			case 7: // max
-			{
-				if ((pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens5].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens6].RCS != 0))
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			}
-			break;
-			case 8: // average
-			{
-				if ((pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens5].RCS != 0)
-					&&(pGD_Hot_Tepl->InTeplSens[cSmTSens6].RCS != 0))
-				{
-					__SetBitOutReg(fnTepl,cHSmAlarm,0,0);
-					pGD_TControl_Tepl->bAlarm=100;
-				}
-			}
-			break;
-		}
-}
-
-/*!
-\brief Температура воздуха для вентиляци в зависимости от выбранного значение в Параметрах управления
-@return int16_t Температура
-*/
-/*int16_t controlGetTempVent()
-{
-	int16_t	tempVent;
-	int16_t temp = 0;
-	int16_t i;
-		switch (pGD_Control_Tepl->sensT_vent)
-		{
-			case 0: // sensor temp 1
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS == 0)
-					tempVent = CURRENT_TEMP1_VALUE;
-			break;
-			case 1: // sensor temp 2
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS == 0)
-					tempVent = CURRENT_TEMP2_VALUE;
-			break;
-			case 2: // sensor temp 3
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS == 0)
-					tempVent = CURRENT_TEMP3_VALUE;
-			break;
-			case 3: // sensor temp 4
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS == 0)
-					tempVent = CURRENT_TEMP4_VALUE;
-			break;
-			case 4: // sensor temp 5
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens5].RCS == 0)
-					tempVent = CURRENT_TEMP5_VALUE;
-			break;
-			case 5: // sensor temp 6
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens6].RCS == 0)
-					tempVent = CURRENT_TEMP6_VALUE;
-			break;
-			case 6: // min
-			{
-				for (i=0;i<6;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-						return;
-					}
-				}
-				for (i=0;i<6;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						if (temp > pGD_Hot_Tepl->InTeplSens[i].Value)
-							temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-					}
-				}
-				tempVent = temp;
-			}
-			break;
-			case 7: // max
-			{
-				for (i=0;i<6;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-						return;
-					}
-				}
-				for (i=0;i<6;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						if (temp < pGD_Hot_Tepl->InTeplSens[i].Value)
-							temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-					}
-				}
-				tempVent = temp;
-			}
-			break;
-			case 8: // average
-			{
-				int16_t count = 0;
-				for (i=0;i<6;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = temp + pGD_Hot_Tepl->InTeplSens[i].Value;
-						count++;
-					}
-				}
-				temp = temp / count;
-				tempVent = temp;
-			}
-			break;
-		}
-		return tempVent;
-}
-
-/*!
-\brief Температура воздуха для обогрева в зависимости от выбранного значение в Параметрах управления
-@return int16_t Температура
-*/
-/*int16_t controlGetTempHeat()
-{
-	int16_t	tempHeat;
-	int16_t temp = 0;
-	int16_t i=0;
-		switch (pGD_Control_Tepl->sensT_heat)
-		{
-			case 0: // sensor temp 1
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens1].RCS == 0)
-					tempHeat = CURRENT_TEMP1_VALUE;
-			break;
-			case 1: // sensor temp 2
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens2].RCS == 0)
-					tempHeat = CURRENT_TEMP2_VALUE;
-			break;
-			case 2: // sensor temp 3
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens3].RCS == 0)
-					tempHeat = CURRENT_TEMP3_VALUE;
-			break;
-			case 3: // sensor temp 4
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens4].RCS == 0)
-					tempHeat = CURRENT_TEMP4_VALUE;
-			break;
-			case 4: // sensor temp 5
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens5].RCS == 0)
-					tempHeat = CURRENT_TEMP5_VALUE;
-			break;
-			case 5: // sensor temp 6
-				if (pGD_Hot_Tepl->InTeplSens[cSmTSens6].RCS == 0)
-					tempHeat = CURRENT_TEMP6_VALUE;
-			break;
-			case 6: // min
-			{
-				for (i=0;i<6;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-						return;
-					}
-				}
-				for (i=0;i<6;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						if (temp > pGD_Hot_Tepl->InTeplSens[i].Value)
-							temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-					}
-				}
-				tempHeat = temp;
-			}
-			break;
-			case 7: // max
-			{
-				for (i=0;i<6;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-						return;
-					}
-				}
-				for (i=0;i<6;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						if (temp < pGD_Hot_Tepl->InTeplSens[i].Value)
-							temp = pGD_Hot_Tepl->InTeplSens[i].Value;
-					}
-				}
-				tempHeat = temp;
-			}
-			break;
-			case 8: // average
-			{
-				int16_t count = 0;
-				for (i=0;i<6;i++)
-				{
-					if (pGD_Hot_Tepl->InTeplSens[i].RCS == 0)
-					{
-						temp = temp + pGD_Hot_Tepl->InTeplSens[i].Value;
-						count++;
-					}
-				}
-				temp = temp / count;
-				tempHeat = temp;
-			}
-			break;
-		}
-		return tempHeat;
-}*/
-
 /*----------------------------------------------------
                 Находим нужную программу
 ------------------------------------------------------*/
@@ -505,6 +110,10 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	(*pGD_Hot_Tepl).AllTask.DoTVent=JumpNext(tVal,pGD_NextTimer->TVentAir,1,1);
 //	(*pGD_Hot_Tepl).AllTask.DoTCool=JumpNext(pGD_CurrTimer->TCool,pGD_NextTimer->TCool,1,1);
 
+	// изменение 127
+	(*pGD_Hot_Tepl).AllTask.PresMaxTask = JumpNext(pGD_CurrTimer->PresMaxTaskLine,pGD_NextTimer->PresMaxTaskLine,1,1);
+	(*pGD_Hot_Tepl).AllTask.AHUTempTask = JumpNext(pGD_CurrTimer->AHUTempTaskLine,pGD_NextTimer->AHUTempTaskLine,1,1);
+
 	// изменеине 86
 	(*pGD_Hot_Tepl).AllTask.TminAHU = pGD_CurrTimer->MinTPipe3;
 	(*pGD_Hot_Tepl).AllTask.SIO=pGD_CurrTimer->SIO;
@@ -537,10 +146,11 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	(*pGD_Hot_Tepl).Kontur[cSmAHUSpd].MinCalc=(*pGD_Hot_Tepl).AllTask.AHUVent;
 	(*pGD_Hot_Tepl).Kontur[cSmKontur3].Do=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur4].Do=JumpNext(pGD_CurrTimer->TPipe4,pGD_NextTimer->TPipe4,1,10);
-#ifdef RICHEL
-	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].Do = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
-	//(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MinTask = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
-#endif
+
+//#ifdef RICHEL
+//	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].Do = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
+//	cSmKonturAHU_DoTemp = (*pGD_Hot_Tepl).Kontur[cSmKonturAHU].Do;
+//#endif
 }
 
 
@@ -761,40 +371,7 @@ void __cNextTCalc(char fnTepl)
 	{	
 		SetIfReset();
 	}
-#warning task 61
-/*Расчитываем Тизмерения-Тзадания*/
-	/*
-	pGD_Level_Tepl[cSmTSens1][cSmUpAlarmLev]=0;
-	pGD_Level_Tepl[cSmTSens2][cSmUpAlarmLev]=0;
-	pGD_Level_Tepl[cSmTSens3][cSmUpAlarmLev]=0;
-	pGD_Level_Tepl[cSmTSens4][cSmUpAlarmLev]=0;
-	pGD_Level_Tepl[cSmTSens5][cSmUpAlarmLev]=0;
-	pGD_Level_Tepl[cSmTSens6][cSmUpAlarmLev]=0;
-	pGD_Level_Tepl[cSmTSens1][cSmDownAlarmLev]=0;
-	pGD_Level_Tepl[cSmTSens2][cSmDownAlarmLev]=0;
-	pGD_Level_Tepl[cSmTSens3][cSmDownAlarmLev]=0;
-	pGD_Level_Tepl[cSmTSens4][cSmDownAlarmLev]=0;
-	pGD_Level_Tepl[cSmTSens5][cSmDownAlarmLev]=0;
-	pGD_Level_Tepl[cSmTSens6][cSmDownAlarmLev]=0;
-	if (GD.TuneClimate.c_MaxDifTUp)
-	{
-		pGD_Level_Tepl[cSmTSens1][cSmUpAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat+GD.TuneClimate.c_MaxDifTUp;
-		pGD_Level_Tepl[cSmTSens2][cSmUpAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat+GD.TuneClimate.c_MaxDifTUp;
-		pGD_Level_Tepl[cSmTSens3][cSmUpAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat+GD.TuneClimate.c_MaxDifTUp;
-		pGD_Level_Tepl[cSmTSens4][cSmUpAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat+GD.TuneClimate.c_MaxDifTUp;
-		pGD_Level_Tepl[cSmTSens5][cSmUpAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat+GD.TuneClimate.c_MaxDifTUp;
-		pGD_Level_Tepl[cSmTSens6][cSmUpAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat+GD.TuneClimate.c_MaxDifTUp;
-	}
-	if (GD.TuneClimate.c_MaxDifTDown)
-	{
-		pGD_Level_Tepl[cSmTSens1][cSmDownAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat-GD.TuneClimate.c_MaxDifTDown;
-		pGD_Level_Tepl[cSmTSens2][cSmDownAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat-GD.TuneClimate.c_MaxDifTDown;
-		pGD_Level_Tepl[cSmTSens3][cSmDownAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat-GD.TuneClimate.c_MaxDifTDown;
-		pGD_Level_Tepl[cSmTSens4][cSmDownAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat-GD.TuneClimate.c_MaxDifTDown;
-		pGD_Level_Tepl[cSmTSens5][cSmDownAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat-GD.TuneClimate.c_MaxDifTDown;
-		pGD_Level_Tepl[cSmTSens6][cSmDownAlarmLev]=(*pGD_Hot_Tepl).AllTask.DoTHeat-GD.TuneClimate.c_MaxDifTDown;
-	}
-	*/
+
 	(*pGD_Hot_Tepl).NextTCalc.DifTAirTDo=(*pGD_Hot_Tepl).AllTask.NextTAir-getTempHeat(fnTepl);
 /**********************************************/
 /*СУПЕР АЛГОРИТМ ДЛЯ РАСЧЕТА*/
@@ -832,19 +409,6 @@ void __cNextTCalc(char fnTepl)
 		GD.TuneClimate.c_OutFactor,0);
 	(*pGD_Hot_Tepl).NextTCalc.LowOutWinWind+=IntZ;
 	
-//	if (YesBit((*pGD_Hot_Tepl).DiskrSens[0],cSmLightDiskr))
-
-	// понижение температуры контура при вкл досветки
-	// 46 правка. Компенсация досветки по входу от досветки 50 и 100
-	// было
-	//  (*pGD_Hot_Tepl).NextTCalc.UpLight=(  ((long)GD.TuneClimate.c_LightFactor)*((*(pGD_Hot_Hand+cHSmLight)).Position) ) / 100;
-	// стало
-
-	//if ((GD.Hot.Tepl[fnTepl].Light50 > 0) || (GD.Hot.Tepl[fnTepl].Light100 > 0))
-	//	(*pGD_Hot_Tepl).NextTCalc.UpLight = ( (GD.TuneClimate.c_LightFactor/2) * (GD.Hot.Tepl[fnTepl].Light50*10)) / 100;
-	//if ((GD.Hot.Tepl[fnTepl].Light50 > 0) && (GD.Hot.Tepl[fnTepl].Light100 > 0))
-	//	(*pGD_Hot_Tepl).NextTCalc.UpLight = ((long)GD.TuneClimate.c_LightFactor * (GD.Hot.Tepl[fnTepl].Light100*10)) / 100;
-
 	// 117 правка. Если нет сигналов обратной связи досветки работаем по состоянию
 	int lightSignals = 1;
 	if ((GD.MechConfig[fnTepl].RNum[48] == 0) && (GD.MechConfig[fnTepl].RNum[49] == 0))
@@ -864,22 +428,6 @@ void __cNextTCalc(char fnTepl)
 				(*pGD_Hot_Tepl).NextTCalc.UpLight = ((long)GD.TuneClimate.c_LightFactor * (GD.Hot.Tepl[fnTepl].Light100*10)) / 100;
 			break;
 	}
-
-
-
-
-
-
-
-	//(*pGD_Hot_Tepl).NextTCalc.UpLight= GD.TuneClimate.c_LightFactor *  LightIn  / 100;
-	// стало
-
-//******************** NOT NEEDED
-//	IntY=1;
-//	IntY<<=fnTepl;
-//	if (YesBit(GD.Hot.isLight,IntY))
-//		(*pGD_Hot_Tepl).NextTCalc.UpLight=GD.TuneClimate.c_LightFactor;
-//********************************************************
 
 /*Считаем сумму поправок*/
 	(*pGD_Hot_Tepl).NextTCalc.dSumCalc=
@@ -1076,20 +624,31 @@ void __cNextTCalc(char fnTepl)
 	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=(int)(pGD_TControl_Tepl->IntegralVent/100);
 	IntX=(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent+(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent;//+(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
 
+//#ifdef KUBO
 	//Проверка на максимум расчета пока константа + 3 градуса
-	int tempPipe3 = GD.Control.Tepl[fnTepl].tempPipe3 * 100;
-
+//	int tempPipe3 = GD.Control.Tepl[fnTepl].tempPipe3 * 100;
+//	if (startFlag)
+//		tempPipe3 = 0;
+//	if (pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3<IntX)
+//	{
+//		pGD_TControl_Tepl->IntegralVent=pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
+//		pGD_TControl_Tepl->IntegralVent*=100;
+//		IntX=pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3;
+//	}
+//#endif
+//#ifdef RICHEL
+	//Проверка на максимум расчета пока константа + 3 градуса
+	int vAHUTempTask = pGD_Hot_Tepl->AllTask.AHUTempTask * 100;
 	if (startFlag)
-		tempPipe3 = 0;
-
-	//if (pGD_Hot_Tepl->AllTask.DoTVent+300<IntX)  // old
-
-	if (pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3<IntX)
+		vAHUTempTask = 0;
+	if (pGD_Hot_Tepl->AllTask.DoTVent+vAHUTempTask<IntX)
 	{
-		pGD_TControl_Tepl->IntegralVent=pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
+		pGD_TControl_Tepl->IntegralVent=pGD_Hot_Tepl->AllTask.DoTVent+vAHUTempTask-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
 		pGD_TControl_Tepl->IntegralVent*=100;
-		IntX=pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3;
+		IntX=pGD_Hot_Tepl->AllTask.DoTVent+vAHUTempTask;
 	}
+//#endif
+
 	// 41 изменение ставим т рукава как тепмпература для отопления. Было так:
 	// изменение 86
 	// было
@@ -1625,9 +1184,12 @@ void DoMechanics(char fnTepl)
 
 		// изменение 01.11  Выключим коррекцию по положению датчика
 		// Клапан AHU допустимое отклонение от датчика
-		/*
-		if ((!YesBit(MBusy->RCS,cMSAlarm))&&(MBusy->Sens)&&(!YesBit(MBusy->Sens->RCS,cbNoWorkSens))&&(GD.TuneClimate.f_MaxAngle))   // TuneClimate.f_MaxAngle - о
+
+
+		if ((ByteX==cHSmScrTH)||(ByteX==cHSmUCValve))
 		{
+			if ((!YesBit(MBusy->RCS,cMSAlarm))&&(MBusy->Sens)&&(!YesBit(MBusy->Sens->RCS,cbNoWorkSens))&&(GD.TuneClimate.f_MaxAngle))   // TuneClimate.f_MaxAngle - о
+			{
 			MBusy->PauseMech=10;
 			if (YesBit(MBusy->RCS,cMSFreshSens))
 			{
@@ -1635,10 +1197,11 @@ void DoMechanics(char fnTepl)
 				ClrBit(MBusy->RCS,cMSFreshSens);
 //				if ((MBusy->PrevDelta>10)&&(MBusy->Sens->Value-MBusy->PrevTask>10))
 //					MBusy->CalcTime=(((long)MBusy->CalcTime)*MBusy->PrevDelta/(MBusy->Sens->Value-MBusy->PrevTask));
-				//(MBusy->PrevPosition-MBusy->CurrPosition)
+//				(MBusy->PrevPosition-MBusy->CurrPosition)
 				if 	(MBusy->TryMove>4)
 				{
 					SetBit(MBusy->RCS,cMSAlarm);
+					fnMKeepParamOut[fnTepl][0] = MBusy->TryMove;
 					continue;
 				}
 				if (MBusy->PrevTask==pGD_Hot_Hand_Kontur->Position*10)
@@ -1682,8 +1245,9 @@ void DoMechanics(char fnTepl)
 				MBusy->PrevTask=pGD_Hot_Hand_Kontur->Position*10;
 			}
 			//else return;
+			}
 		}
-		*/
+		// ==========================================================================
 
 
 //Выход из паузы при блокировке на крайних положениях

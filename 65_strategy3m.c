@@ -56,14 +56,14 @@ void __sMinMaxWater(char fnKontur)
 		pGD_Hot_Tepl_Kontur->MinCalc=pGD_Hot_Tepl_Kontur->MinTask;
 	}
 
-#ifdef RICHEL
-	if (fnKontur==cSmKonturAHU)
-	{
-		pGD_Hot_Tepl_Kontur->MinTask=pGD_Control_Tepl->c_MinTPipe[1];
-		pGD_Hot_Tepl_Kontur->Optimal=pGD_Control_Tepl->c_OptimalTPipe[1];
-		pGD_Hot_Tepl_Kontur->MinCalc=pGD_Hot_Tepl_Kontur->MinTask;
-	}
-#endif
+//#ifdef RICHEL
+//	if (fnKontur==cSmKonturAHU)
+//	{
+//		pGD_Hot_Tepl_Kontur->MinTask = cSmKonturAHU_DoTemp;
+//		pGD_Hot_Tepl_Kontur->Optimal = cSmKonturAHU_DoTemp;
+//		pGD_Hot_Tepl_Kontur->MinCalc = cSmKonturAHU_MinTemp;
+//	}
+//#endif
 
 
 //------------------------------------------------------------------------
@@ -509,7 +509,10 @@ void CheckMistSystemNew(char fnTepl)
 */
 
 	pGD_TControl_Tepl->Systems[cSysMist].Min=0;
-	if (pGD_TControl_Tepl->Systems[cSysUCValve].Value<30)	// минимальное открытие клапана для работы панели 30
+
+
+	// изменение 126
+	if (pGD_TControl_Tepl->Systems[cSysUCValve].Value < GD.Control.Tepl[fnTepl].AHUPadOnVal) // было просто 30	// минимальное открытие клапана для работы панели 30
 	{
 		pGD_TControl_Tepl->Systems[cSysMist].Max=0;
 	}
@@ -808,6 +811,10 @@ int KeepFanSystem(char fnTepl)
 	volatile int16_t minSpeedT = GD.TuneClimate.AHUspeed_Tmin * 100;
 	volatile int16_t maxSpeedT = GD.TuneClimate.AHUspeed_Tmax * 100;
 	volatile int16_t maxSpeedTcorr = GD.TuneClimate.AHUspeed_Corr;
+	// изменение 127
+	volatile int16_t RHmes = getRH(fnTepl);
+	volatile int16_t RHset = pGD_Hot_Tepl->AllTask.DoRHAir;
+
 
 	if ((minT != 0) && (maxT != 0))
 		mode = 1;
@@ -909,9 +916,24 @@ int KeepFanSystem(char fnTepl)
 			break;
 		}
 	}
-// правки в мониторе, Т контроля вместо Источника для Т вент
+	// измение 127. Вместо изменения скорости по Т делаем по RH
+	// правки в мониторе, Т контроля вместо Источника для Т вент
 	// изменение 100. коррекция скорости вент по Т и Тконтр
-	if ((Theat>0)&&(Tcont>0)&&(minSpeedT)&&(maxSpeedT)&&(maxSpeedTcorr))
+	if ((RHmes>0)&&(RHset>0)&&(minSpeedT)&&(maxSpeedT)&&(maxSpeedTcorr))
+		{
+			if (RHmes >= RHset)
+				RHmes = RHmes - RHset;
+			else if (RHset > RHmes)
+				RHmes = RHset - RHmes;
+			if ((RHmes >= minSpeedT) && (RHmes <= maxSpeedT))
+			{
+				IntY = RHmes;
+				CorrectionRule(minSpeedT, maxSpeedT, maxSpeedTcorr,0);
+				tempKeep = tempKeep + IntZ;
+			} else if (RHmes > minSpeedT)
+				tempKeep = tempKeep + maxSpeedTcorr;
+		}
+	/*if ((Theat>0)&&(Tcont>0)&&(minSpeedT)&&(maxSpeedT)&&(maxSpeedTcorr))
 	{
 		if (Theat >= Tcont)
 			Theat = Theat - Tcont;
@@ -924,8 +946,9 @@ int KeepFanSystem(char fnTepl)
 			tempKeep = tempKeep + IntZ;
 		} else if (Theat > minSpeedT)
 			tempKeep = tempKeep + maxSpeedTcorr;
-	}
-	// -----------------------------
+	}*/
+
+
 
 
 	// итоговая проверка на мин и мак скорость
@@ -1131,7 +1154,6 @@ void PutCritery(int16_t dT, int16_t dRH)
 	}*/
 }
 
-
 int8_t GetOffSet(int8_t fnSys)
 {
 	switch (fnSys)
@@ -1141,7 +1163,7 @@ int8_t GetOffSet(int8_t fnSys)
 		case cSysHeadPipe: 	//2
 			return cHSmMixVal+cSmKontur2;
 		case cSysAHUPipe: 	//0
-			return cHSmMixVal+cSmKonturAHU;
+			return cHSmMixVal+cSmKontur3;
 //		case cSysTHose: //3
 //			return cSmScreen;
 		case cSysAHUSpeed:  //7
@@ -1218,7 +1240,8 @@ int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 
 	pGD_TControl_Tepl->Systems[fnMSys].Keep = SetPID(((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
 
-	/*if (fnMSys == cSysUCValve)     // вывод стратегии
+	/*
+	if (fnMSys == cSysUCValve)     // вывод стратегии
 	{
 		fnMKeepParamOut[fnTepl][0] = (int32_t)fnCritery;
 		fnMKeepParamOut[fnTepl][1] = 1;//pGD_TControl_Tepl->Systems[fnMSys].Power/1000;
@@ -1227,6 +1250,7 @@ int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 		fnMKeepParamOut[fnTepl][4] = pGD_TControl_Tepl->Systems[fnMSys].Min;
 	}
 	*/
+
 	GD.Hot.Tepl[fnTepl].CurrentStratSys = fnMSys * 10;   // вывод в hot блок текущей системы
 	//fnMKeepOut[fnTepl][fnMSys] = pGD_TControl_Tepl->Systems[fnMSys].Keep;    // вывод стратегии
 	for (fnSys=0;fnSys<cSUCSystems;fnSys++)
@@ -1646,121 +1670,8 @@ void __sRegulKontur(char fnKontur)
 	if ((IntZ>cv_ResetMidlWater)&&(YesBit(pGD_TControl_Tepl->MechBusy[fnKontur].RCS,cMSBlockRegs)))
 		SetBit((*pGD_Hot_Tepl_Kontur).ExtRCS,cbResetErrKontur);
 
-
-	
 }
-/*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
-/****************************************************************************/
-/*Процедура опредления возможно ли работать экраном в данных условиях*/
-/****************************************************************************/
-/*void __sWorkableScreen(void)
-{
-//------------------------------------------------------------------------
-//Если надо охлаждать
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
-//Установить возможности регулирования
-//------------------------------------------------------------------------
-	if (pGD_Hot_Tepl_Kontur->Do<pGD_Hot_Tepl_Kontur->MaxCalc)
-		SetBit(pGD_Hot_Tepl_Kontur->ExtRCS,cbReadyRegDownKontur);
-	else
-		SetBit(pGD_Hot_Tepl_Kontur->RCS,cbYesMaxKontur);
-//------------------------------------------------------------------------
-//Если надо нагревать
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
-//Установить возможности регулирования
-//------------------------------------------------------------------------
-	if (pGD_Hot_Tepl_Kontur->Do>pGD_Hot_Tepl_Kontur->MinCalc)
-		SetBit(pGD_Hot_Tepl_Kontur->ExtRCS,cbReadyRegUpKontur);
-	else
-		SetBit(pGD_Hot_Tepl_Kontur->RCS,cbYesMinKontur);
 
-
-	
-}  */
-/*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
-
-
-
-/****************************************************************************/
-/*Процедура опредления возможно ли работать фрамугами в данных условиях*/
-/****************************************************************************/
-/*void __sWorkableWindow(void)
-{
-//------------------------------------------------------------------------
-//Если надо охлаждать
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
-//Установить возможности регулирования
-//------------------------------------------------------------------------
-	if ((pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do<pGD_Hot_Tepl->Kontur[cSmWindowUnW].MaxCalc)
-	  ||(pGD_Hot_Tepl->Kontur[cSmWindowOnW].Do<pGD_Hot_Tepl->Kontur[cSmWindowOnW].MaxCalc))
-	  SetBit(pGD_Hot_Tepl->Kontur[cSmWindowUnW].ExtRCS,cbReadyRegDownKontur);
-	else
-		SetBit(pGD_Hot_Tepl->Kontur[cSmWindowUnW].RCS,cbYesMaxKontur);
-
-//------------------------------------------------------------------------
-//Если надо нагревать
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
-//Установить возможности регулирования
-//------------------------------------------------------------------------
-	if ((pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do>pGD_Hot_Tepl->Kontur[cSmWindowUnW].MinCalc)
-	  ||(pGD_Hot_Tepl->Kontur[cSmWindowOnW].Do>pGD_Hot_Tepl->Kontur[cSmWindowOnW].MinCalc))
-		SetBit(pGD_Hot_Tepl->Kontur[cSmWindowUnW].ExtRCS,cbReadyRegUpKontur);
-	else
-		SetBit(pGD_Hot_Tepl->Kontur[cSmWindowUnW].RCS,cbYesMinKontur);
-
-	
-}
-  */
-/*************************************************************************/
-/*-*-*-*-*-*-*-*-*--Потенциальный приоритет для контура--*-*-*-*-*-*-*-*-*/
-/*************************************************************************/
-/*#warning don't use now
-void __sPotentialPosibilityKontur(char fInv)
-{	
-	int* pRealPower;
-	pRealPower=&(pGD_TControl_Tepl_Kontur->RealPower[fInv]);
-//------------------------------------------------------------------------
-//Приоритет по температуре воздуха в теплице
-//------------------------------------------------------------------------
-	
-//------------------------------------------------------------------------
-//Приоритет по влажности воздуха в теплице
-//------------------------------------------------------------------------
-	IntY=10;//(int)pGD_Strategy_Kontur->RHPower;
-	IntX=-DefRH();
-
-	IntZ=(int)(((long)IntY)*IntX/1000);
-//------------------------------------------------------------------------
-//Приоритет по оптимальный температуре
-//------------------------------------------------------------------------
-	IntX=0;
-	if ((*pGD_Hot_Tepl_Kontur).Optimal)
-	{
-		IntX=((*pGD_Hot_Tepl_Kontur).Optimal-(*pGD_Hot_Tepl_Kontur).Do);
-//------------------------------------------------------------------------
-//Если контур выключен то оптимальня температура сравнивается с минимумом контура
-//------------------------------------------------------------------------
-		IntY=0;//(int)pGD_Strategy_Kontur->OptimalPower;
-		IntX=(int)(((long)IntY*IntX/100));
-	}
-	
-//------------------------------------------------------------------------
-//Приоритет с экономичностью
-//------------------------------------------------------------------------
-	
-	(*pRealPower)=pGD_Strategy_Kontur->TempPower+IntX+IntZ;
-	if ((*pRealPower)<1) (*pRealPower)=1; 
-	if (!fInv)
-	{
-		(*pRealPower)=100-pGD_Strategy_Kontur->TempPower-IntX-IntZ;
-		if ((*pRealPower)<1) (*pRealPower)=1; 
-	}	
-}
-*/
 
 int16_t getValueKonturStrategy(int16_t dT, int16_t dRH, int16_t dSystem)
 {
@@ -1815,13 +1726,6 @@ int16_t getValueKonturStrategy(int16_t dT, int16_t dRH, int16_t dSystem)
 	}
 	return 0;
 }
-
-//void SetPriorityHeating(int16_t dT, int16_t dRH, int *dRealPower, int16_t kontur)
-//{
-//	int res =0;
-//	res = getValueKonturStrategy(dT, dRH, kontur);
-//	*dRealPower = res;
-//}
 
 int SetPriorityHeating(int16_t dT, int16_t dRH, int16_t kontur)
 {
@@ -2450,13 +2354,12 @@ void __sCalcKonturs(void)
 			pGD_TControl_Tepl_Kontur->Manual=0;
 			ClrDog;
 
-#ifdef KUBO
+//#ifdef KUBO
 			if ((ByteX==cSmKontur3)||(ByteX==cSmKonturAHU)) continue;
-#endif
-#ifdef RICHEL
-			if ((ByteX==cSmKontur3)) continue;
-#endif
-
+//#endif
+//#ifdef RICHEL
+//			if ((ByteX==cSmKontur3)) continue;
+//#endif
 
 			if 	(YesBit(pGD_Hot_Tepl_Kontur->RCS,cbNoWorkKontur)) continue;
 			if 	(pGD_Hot_Tepl_Kontur->Do)
@@ -2842,9 +2745,19 @@ void __sMechWindows(void)
 		//	volatile int16_t vPresMax = pGD_Control_Tepl->PresMax * 100;
 		//	pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(vPresMax,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
 		//}
-		//  стало
-		volatile int16_t vPresMax = pGD_Control_Tepl->PresMax * 100;
-		pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(vPresMax,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
+
+
+
+
+//#ifdef RICHEL
+		volatile int16_t vPresMaxTask = pGD_Hot_Tepl->AllTask.PresMaxTask * 100;
+		pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(vPresMaxTask,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
+//#endif
+//#ifdef KUBO
+//		//  стало
+//		volatile int16_t vPresMax = pGD_Control_Tepl->PresMax * 100;
+//		pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(vPresMax,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
+//#endif
 		// -----------
 
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN2].RCS,cbManMech)))

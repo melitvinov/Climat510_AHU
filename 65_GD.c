@@ -80,9 +80,12 @@ typedef struct  eeTimer
 		uint16_t	MistRHstop;
 
         uchar   	MinTPipeAHU;		// richel
-		uchar		XXX;			// richel
+		uchar		XXX;				// richel
 
-		uint16_t	Rez[7];
+		uint16_t 	PresMaxTaskLine;	// richel
+		uint16_t 	AHUTempTaskLine;	// richel
+
+		uint16_t	Rez[5];
 		uint16_t	crc;
         }
         eTimer;
@@ -158,8 +161,10 @@ typedef struct eeClimTask {
 				// изменение 86.
 				int16_t		TminAHU;
 
-				// изменение 86.
-				int16_t		Rez[9];   // 10
+				int16_t 	PresMaxTask;
+				int16_t 	AHUTempTask;
+
+				int16_t		Rez[7];   // 10
 				} eClimTask; 
 
 typedef struct eeNextTCalc {
@@ -610,7 +615,7 @@ typedef struct eeTeplControl
         int16_t     f_MaxOpenUn;   /*Фрамуги_Максимально допустимое открытие*/
         int16_t     f_MaxAHUSpd;   /*Фрамуги_Максимум при подкормке СО2*/
 		int16_t 	c_MinTPipe[2];
-		int16_t		c_DoPres;
+		int16_t		c_DoPres;			// не используется
 		int16_t 	c_OptimalTPipe[2];
 		int16_t		f_IFactor;
 		int16_t		c_PFactor;  /*Контур 1 - Динамика(Тзад-Тизм)влияет до*/
@@ -625,20 +630,19 @@ typedef struct eeTeplControl
 		uint16_t	sLight;
 		int8_t		sensT_heat;
 		int8_t		sensT_vent;
-		uint16_t	tempPipe3;
+		uint16_t	tempPipe3;		// используется для KUBO  // температура рукава выше температуры задания
 		uint16_t	InRHMax;
 		uint16_t	InRHMin;
 		uint16_t    MistMax;
-		uint16_t    PresMax;
-
+		uint16_t    PresMax;		// используется для только для KUBO
 		// изменеие 100. Добавляем два новых параметра
 		int16_t		sensRH;
-
 		// изменеие 104. Делаем расчет влажности выключаемым
 		int16_t		DDWP_RH_OnOff;
+		// изменеие 126. Увлажнение панели вкл при заданном открытии клапана
+		int16_t		AHUPadOnVal;
 
-
-		int16_t		Rez[11];  //12
+		int16_t		Rez[10];  //11
 
 		uint16_t 	crc;
 

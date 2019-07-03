@@ -36,6 +36,9 @@
 
 #define cSmOverPSens	15   // датчик избыточного давления
 #define cSmOverPSensAHU	16	 // датчик избыточного давления камеры AHU  // был датчик крыши
+
+// 17 пропущенный датик это датчик положения Клапана циркуляции
+
 #define cSmGlassSens	18
 #define cSmCOSens		11
 //#define cSmTCSens		1
@@ -110,7 +113,7 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 {"CO2 AHU#CO2 AHU \311\310o\263e\275\304",							SSSS,   cuPpm,	cTypeRH,	0,	0,	100,  2000,		0,  	5000,	0,   	2000,	50,  	5000,	c3MidlSens,		80}, /*Концентрация СО2*/
 //{"Humidit\311 4#B\273a\266\275oc\277\304 4",						SSpS0,  cuPr,	cTypeRH,	0,	0,	200,  9800,		878, 	3097,	0,		7530,	800, 	5000,	cExpMidlSens,	1000}, /* Влажность воздуха 2*/
 {"Inside light#B\275\311\277 c\263e\277",							SSSS, 	cuBt,	cTypeAnal,	11,	0,	0,	  1500,		15,  	2250,	0,   	1000, 	0,   	5000,	c3MidlSens,		100}, /* Внутренний свет*/
-{"CO2#CO2 \311\310o\263e\275\304",									SSSS,   cuPpm,	cTypeRH,	0,	0,	100,  2000,		0,  	5000,	0,   	2000,	50,  	5000,	c3MidlSens,		80}, /*Концентрация СО2*/
+{"CO2#CO2 \311\310o\263e\275\304",									SSSS,   cuPpm,	cTypeRH,	0,	0,	100,  2000,		0,  	5000,	0,   	2000,	50,  	5000,	cExpMidlSens,	80}, /*Концентрация СО2*/
 //12
 {"Tem\310 panel#Te\274\276 \276a\275e\273\270",						SSpS0,  cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Температура вход воздуха 1*/
 {"Humidit AHU\311 3#B\273a\266\275oc\277\304  AHU",					SSpS0,  cuPr,	cTypeRH,	0,	0,	200,  9800,		878,	3097,	0,		7530,	800, 	5000,	cExpMidlSens,	1000}, /* Влажность воздуха AHU*/
@@ -118,8 +121,17 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 {"Tem\310 cool #Te\274\276 ox\273a\266\343e\275",					SSpS0,  cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Температура охлаждающей воды*/
 {"Over\310ressure#\245\267\262\303\277 \343a\263\273e\275",			SSpS0,  cuPa,	cTypeAnal,	0,	0,	1,	  9900,		0,		3000,	0,		3000,	0,		5000,	c3MidlSens,		80}, /* Избыточное давление*/
 //16
+#ifdef RICHEL
+{"Over\310ressure AHU#\245\267\262\303\277 AHU",					SSpS0,  cuPa,	cTypeAnal,	0,	0,	1,	  9900,		0,		3000,	0,		3000,	0,		5000,	c3MidlSens,		80},  /* Избыточное давление AHU*/
+{"Position circ#Position circ",										SSSpS,	cuPr,	cTypeScreen,1,	0,	0,	  1000, 	0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,		400}, /*Сокодвижение*/
+//{"Position circ#Position circ",										SSSpS,	cuPr,	cTypeAnal,	1,	0,	0,	  1000, 	0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,		400}, /*Положение циркл клапана*/
+																	//SSSS,   cuT,	cTypeAnal,	3,	0,	0,	  1000,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Температура почвы*/
+#endif
+#ifdef KUBO
 {"Tem\310 roof#Te\274\276 \272\310o\263\273\270",					SSpS0,  cuT,	cTypeAnal,	3,	0,	0,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Температура кровли*/
 {"Tem\310 soil#Te\274\276 \276o\300\263\303",						SSpS0,  cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Температура почвы*/
+#endif
+//{"Tem\310 soil#Te\274\276 \276o\300\263\303",						SSpS0,  cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Температура почвы*/
 {"Tem\310 glass#Te\274\276 c\277e\272\273a",						SSpS0,  cuT,	cTypeAnal,	3,	0,	-2000,9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Температура стекла*/
 {"Tem\310 in AHU#Te\274\276 \263xo\343a AHU",						SSpS0,	cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Т входа в AHU*/
 {"Tem\310 out AHU#Te\274\276 \263\303xo\343a AHU",					SSpS0,	cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /*Т выхода из AHU*/
@@ -228,12 +240,15 @@ eNameConfig NameOutputConfig[cConfSOutput]={
 /*2 Клапан 3*/			{"Mixing valve 3#C\274ec \272\273a\276a\275 3",tpRELAY,0,MAX_SUM_RELAY},
 /*3 Клапан 4*/ 			{"Mixing valve 4#C\274ec \272\273a\276a\275 4",tpRELAY,0,MAX_SUM_RELAY},
 /*4 Клапан 5*/			{"Mixing valve 5#C\274ec \272\273a\276a\275 5",tpRELAY,0,MAX_SUM_RELAY},
-#ifdef RICHEL
-/*5 Клапан AHU*/		{"Mixing valve 6#C\274ec \272\273a\276a\275 6",tpRELAY,0,MAX_SUM_RELAY},
-#endif
-#ifdef KUBO
+
+//#ifdef RICHEL
+///*5 Клапан AHU*/		{"Mixing valve 6#C\274ec \272\273a\276a\275 6",tpRELAY,0,MAX_SUM_RELAY},
+//#endif
+
+//#ifdef KUBO
 /*10 Фрамуга СЕВЕР*/	{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
-#endif
+//#endif
+
 /*6 Фрамуга СЕВЕР*/		{"Window 1#\252\310a\274\311\264a 1",tpRELAY,0,MAX_SUM_RELAY},
 ///*7 Фрамуга ЮГ*/		{"Window SOUTH#\252\310a\274\311\264a \260\241",tpRELAY,0,MAX_SUM_RELAY},
 /*7 Фрамуга ЮГ*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
