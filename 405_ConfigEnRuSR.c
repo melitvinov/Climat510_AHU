@@ -240,14 +240,9 @@ eNameConfig NameOutputConfig[cConfSOutput]={
 /*2 Клапан 3*/			{"Mixing valve 3#C\274ec \272\273a\276a\275 3",tpRELAY,0,MAX_SUM_RELAY},
 /*3 Клапан 4*/ 			{"Mixing valve 4#C\274ec \272\273a\276a\275 4",tpRELAY,0,MAX_SUM_RELAY},
 /*4 Клапан 5*/			{"Mixing valve 5#C\274ec \272\273a\276a\275 5",tpRELAY,0,MAX_SUM_RELAY},
+/*5 Клапан AHU*/		{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
 
-//#ifdef RICHEL
-///*5 Клапан AHU*/		{"Mixing valve 6#C\274ec \272\273a\276a\275 6",tpRELAY,0,MAX_SUM_RELAY},
-//#endif
-
-//#ifdef KUBO
-/*10 Фрамуга СЕВЕР*/	{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
-//#endif
+/*10 Фрамуга СЕВЕР*///	{"Rezerv#He \270c\276o\273\304\267",tpRELAY,0,MAX_SUM_RELAY},
 
 /*6 Фрамуга СЕВЕР*/		{"Window 1#\252\310a\274\311\264a 1",tpRELAY,0,MAX_SUM_RELAY},
 ///*7 Фрамуга ЮГ*/		{"Window SOUTH#\252\310a\274\311\264a \260\241",tpRELAY,0,MAX_SUM_RELAY},
