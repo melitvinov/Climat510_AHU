@@ -49,12 +49,13 @@ void __sMinMaxWater(char fnKontur)
 	//	if  ((GD.Hot.MidlSR<GD.TuneClimate.f_MinSun)&&(pGD_Hot_Tepl->AllTask.NextTAir-GD.TControl.OutTemp>GD.TuneClimate.f_DeltaOut))
 //		SetBit(pGD_Hot_Tepl->Kontur[cSmKontur1].ExtRCS,cbBlockPumpKontur);
 
-	if (fnKontur==cSmKontur4)
-	{
-		pGD_Hot_Tepl_Kontur->MinTask=pGD_Control_Tepl->c_MinTPipe[1];
-		pGD_Hot_Tepl_Kontur->Optimal=pGD_Control_Tepl->c_OptimalTPipe[1];
-		pGD_Hot_Tepl_Kontur->MinCalc=pGD_Hot_Tepl_Kontur->MinTask;
-	}
+#warning Убрал есть подозрения что это мешает работе нормальной
+//	if (fnKontur==cSmKontur4)
+//	{
+//		pGD_Hot_Tepl_Kontur->MinTask=pGD_Control_Tepl->c_MinTPipe[1];
+//		pGD_Hot_Tepl_Kontur->Optimal=pGD_Control_Tepl->c_OptimalTPipe[1];
+//		pGD_Hot_Tepl_Kontur->MinCalc=pGD_Hot_Tepl_Kontur->MinTask;
+//	}
 
 //#ifdef RICHEL
 //	if (fnKontur==cSmKonturAHU)
@@ -922,16 +923,16 @@ int KeepFanSystem(char fnTepl)
 	if ((RHmes>0)&&(RHset>0)&&(minSpeedT)&&(maxSpeedT)&&(maxSpeedTcorr))
 		{
 			if (RHmes >= RHset)
-				RHmes = RHmes - RHset;
-			else if (RHset > RHmes)
-				RHmes = RHset - RHmes;
-			if ((RHmes >= minSpeedT) && (RHmes <= maxSpeedT))
 			{
-				IntY = RHmes;
-				CorrectionRule(minSpeedT, maxSpeedT, maxSpeedTcorr,0);
-				tempKeep = tempKeep + IntZ;
-			} else if (RHmes > minSpeedT)
-				tempKeep = tempKeep + maxSpeedTcorr;
+				RHmes = RHmes - RHset;
+				if ((RHmes >= minSpeedT) && (RHmes <= maxSpeedT))
+				{
+					IntY = RHmes;
+					CorrectionRule(minSpeedT, maxSpeedT, maxSpeedTcorr,0);
+					tempKeep = tempKeep + IntZ;
+				} else if (RHmes > minSpeedT)
+					tempKeep = tempKeep + maxSpeedTcorr;
+			}
 		}
 	/*if ((Theat>0)&&(Tcont>0)&&(minSpeedT)&&(maxSpeedT)&&(maxSpeedTcorr))
 	{
@@ -1257,6 +1258,7 @@ int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 	{
 		if ((fnSys==cSysRailPipe)||(fnSys==cSysHeadPipe))
 			continue;
+
 		if (fnSys!=fnMSys)
 			KeepPID(pGD_TControl_Tepl->Systems[fnSys].Keep,((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnSys].Power/1000, GetOffSet(fnSys));
 	}
@@ -2354,7 +2356,8 @@ void __sCalcKonturs(void)
 			pGD_TControl_Tepl_Kontur->Manual=0;
 			ClrDog;
 
-			if ((ByteX==cSmKontur3)||(ByteX==cSmKonturAHU)) continue;
+			//if ((ByteX==cSmKontur3)||(ByteX==cSmKonturAHU)) continue;
+			if (ByteX==cSmKontur3) continue;
 
 			if 	(YesBit(pGD_Hot_Tepl_Kontur->RCS,cbNoWorkKontur)) continue;
 			if 	(pGD_Hot_Tepl_Kontur->Do)
@@ -2644,7 +2647,8 @@ void __sMechScreen(void)
 //Изменения от 13.05.2014
 int16_t __SetIntWin(uint8_t fSens,uint8_t fNFram,uint16_t fOffset,uint16_t fStartPoint, char fnTepl)
 {
-	int16_t* IntVal;
+#warning !!!
+//	int16_t* IntVal;
 
 
 	if (!fStartPoint)
@@ -2668,7 +2672,8 @@ int16_t __SetIntWin(uint8_t fSens,uint8_t fNFram,uint16_t fOffset,uint16_t fStar
 //Изменения от 13.05.2014
 int16_t __SetWinPress(uint16_t DoPres,uint8_t fNFram,uint16_t fOffset)
 {
-	int16_t* IntVal;
+#warning !!!
+	//	int16_t* IntVal;
 
 
 //#warning то сейчас из-за этого фрамуга постоянно прыгает вниз-вверх. И похоже разбегается. Может Серега был и прав – дело реально в прошивке может быть
@@ -2687,23 +2692,6 @@ int16_t __SetWinPress(uint16_t DoPres,uint8_t fNFram,uint16_t fOffset)
 	return IntZ;
 
 }
-
-
-/*
-int16_t __SetPad(char fnTepl)
-{
-	int16_t* IntVal;
-
-
-	if (!(pGD_Hot_Tepl->AllTask.DoTCool))
-		return 0;
-#warning CHECK THIS
-	IntX=getTempHeat(fnTepl)-pGD_Hot_Tepl->AllTask.DoTCool;
-	IntZ=SetPID(IntX,cHSmAHUPad,pGD_TControl_Tepl->Systems[cSysMist].Max,0);
-	return IntZ;
-
-}
-*/
 
 //Процедура устанавливает регулировку фрамуг от головного клапана
 //Изменения от 13.05.2014

@@ -122,14 +122,11 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinTask=JumpNext(pGD_CurrTimer->MinTPipe1,pGD_NextTimer->MinTPipe1,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinTask=JumpNext(pGD_CurrTimer->MinTPipe2,pGD_NextTimer->MinTPipe2,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinTask=JumpNext(pGD_CurrTimer->MinTPipe3,pGD_NextTimer->MinTPipe3,1,10);
-
 	(*pGD_Hot_Tepl).Kontur[cSmKontur3].MaxCalc=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
-
 	(*pGD_Hot_Tepl).Kontur[cSmKontur5].MinTask=JumpNext(pGD_CurrTimer->MinTPipe5,pGD_NextTimer->MinTPipe5,1,10);
 //#ifdef RICHEL
 //	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MinTask=JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
 //#endif
-
 
 	// коррекци€ не реальзована до конца // изменене 119.  онтур AHU инерполтруем, держать и минимум
 	//(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MaxCalc = JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
@@ -147,10 +144,9 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	(*pGD_Hot_Tepl).Kontur[cSmKontur3].Do=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur4].Do=JumpNext(pGD_CurrTimer->TPipe4,pGD_NextTimer->TPipe4,1,10);
 
-//#ifdef RICHEL
-//	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].Do = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
-//	cSmKonturAHU_DoTemp = (*pGD_Hot_Tepl).Kontur[cSmKonturAHU].Do;
-//#endif
+	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].Do = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
+
+	//	cSmKonturAHU_DoTemp = (*pGD_Hot_Tepl).Kontur[cSmKonturAHU].Do;
 }
 
 
@@ -462,12 +458,15 @@ void __cNextTCalc(char fnTepl)
 /*¬етер и фрамуги увеличивают эту разницу*/
 	//IntY=GD.Hot.MidlWind;
 	IntY=MidlWindCalc;
+
 	CorrectionRule(GD.TuneClimate.c_WindStart,GD.TuneClimate.c_WindEnd,
 		GD.TuneClimate.f_WindFactor,0);	
 	IntY=(*pGD_Hot_Tepl).AllTask.NextTAir-GD.TControl.MeteoSensing[cSmOutTSens]-IntZ;
 	CorrectionRule(GD.TuneClimate.c_OutStart,GD.TuneClimate.c_OutEnd,
 		GD.TuneClimate.f_OutFactor,0);
 	pGD_Hot_Tepl->NextTCalc.dSumCalcF+=IntZ;
+
+
 /*********************************************************************
 ***********************************************************************
 ***********************************************************************/
@@ -755,18 +754,16 @@ void __cNextTCalc(char fnTepl)
 	// стало
 }
 
-
-
-
 /*------------------------------------------------------*/
-void    SetMixValvePosition(void)
+
+void    SetMixValvePosition(char Tepl)
 {
 	int16_t	*IntVal;
 	ClrDog;
 	for (ByteX=0;ByteX<cSWaterKontur;ByteX++)
 	{
 		SetPointersOnKontur(ByteX);
-		if (YesBit((*(pGD_Hot_Hand_Kontur+cHSmMixVal)).RCS,(/*cbNoMech+*/cbManMech))) continue;
+		if (YesBit((*(pGD_Hot_Hand_Kontur+cHSmMixVal)).RCS,(cbManMech))) continue;
 		if (!pGD_TControl_Tepl_Kontur->PumpStatus)
 		{
 			(*(pGD_Hot_Hand_Kontur+cHSmMixVal)).Position=0;
@@ -780,16 +777,13 @@ void    SetMixValvePosition(void)
 			continue;
 		}
 		pGD_TControl_Tepl_Kontur->TPause=cMinPauseMixValve;
-		
 		IntX=pGD_Hot_Tepl_Kontur->Do-pGD_TControl_Tepl_Kontur->SensValue;
-		//(*IntVal)=(*IntVal)+IntX;
 
-		(*(pGD_Hot_Hand_Kontur+cHSmMixVal)).Position=SetPID(IntX,cHSmMixVal+ByteX,100,0);
+		//(*(pGD_Hot_Hand_Kontur+cHSmMixVal)).Position = SetPID(IntX,cHSmMixVal+ByteX,100,0);
+		(*(pGD_Hot_Hand_Kontur+cHSmMixVal)).Position = SetPIDforKonturs(Tepl,IntX,cHSmMixVal+ByteX,100,0);
 
 	}
 }
-
-
 
 void	DoPumps(void)
 {
@@ -972,7 +966,7 @@ void SetDiskr(char fnTepl)
 
 	for(ByteX=cHSmPump;ByteX<cHSmRegs;ByteX++)
 	{
-		if ((ByteX==cHSmSIOVals)||(ByteX==cHSmLight)||(ByteX==cHSmAHUPad)||(ByteX==cHSmInRH)||(ByteX==cHSmAHUPump) ) continue;
+		if ((ByteX==cHSmSIOVals)||(ByteX==cHSmLight)||(ByteX==cHSmAHUPad)||(ByteX==cHSmInRH)||(ByteX==cHSmAHUPump)||(ByteX==cHSmAlarmVent)||(ByteX==cHSmCO2request) ) continue;
 		__SetBitOutReg(fnTepl,ByteX,1,0);
 		if (YesBit((*(pGD_Hot_Hand+ByteX)).Position,0x01))
 			__SetBitOutReg(fnTepl,ByteX,0,0);
@@ -1053,6 +1047,16 @@ ClrDog;
 		&&(pGD_Control_Tepl->co_model))
 		__SetBitOutReg(fnTepl,cHSmCO2,0,ByteX);
 
+	if ( GD.Hot.Tepl[fnTepl].AlarmVentPosition > 0 )
+		__SetBitOutReg(fnTepl,cHSmAlarmVent,0,0);	// вкл       0.0 вкл реле которое назначено, 0.1 - вкл следующее реле. Ёто было закрытие и следующее открытие
+	else
+		__SetBitOutReg(fnTepl,cHSmAlarmVent,1,0);   // выкл
+
+	if ( GD.Hot.Tepl[fnTepl].NextTCalc.DiffCO2 )
+		__SetBitOutReg(fnTepl,cHSmCO2request,0,0);	// вкл       0.0 вкл реле которое назначено, 0.1 - вкл следующее реле. Ёто было закрытие и следующее открытие
+	else
+		__SetBitOutReg(fnTepl,cHSmCO2request,1,0);  // выкл
+
 // ahuPad
 	int8_t PadPosition;
 	int8_t InRHPosition;
@@ -1061,7 +1065,7 @@ ClrDog;
 	{
 		PadPosition = (PadPosition * pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_TimeMixVal) / 100;
 		fPadWorkTime = pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_TimeMixVal;//(pGD_Control_Tepl->f_MaxOpenUn * pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_TimeMixVal) / 100;
-		//fPadWorkTime = pGD_ConstMechanic->ConstMixVal[cHSmAHUPad].v_TimeMixVal;
+		//fPadWorkTime = pGD_ConstMechanic->CostMixVal[cHSmAHUPad].v_TimeMixVal;
 		fPadPause++;
 		if ( fPadPause <= PadPosition )
 			fPadOnPad = 1;
@@ -1670,7 +1674,7 @@ void loadSettings(char tCTepl)
 
 void Control(void) 
 	{
-char tCTepl,ttTepl;
+	char tCTepl,ttTepl;
 	Configuration();
 	SetDiskrSens();
 	if (DemoMode!=9)
@@ -1692,7 +1696,6 @@ char tCTepl,ttTepl;
 		SetAlarm();
 		for (tCTepl=0;tCTepl<cSTepl;tCTepl++)
 		{
-
 			SetPointersOnTepl(tCTepl);
 			SetSensOnMech();
 			DoMechanics(tCTepl);
@@ -1710,7 +1713,7 @@ char tCTepl,ttTepl;
 #endif
 		}
 		ResumeOutIPCDigit();
-		
+
 	}
 //	if (Second==12)
 //	{
@@ -1741,8 +1744,9 @@ char tCTepl,ttTepl;
 		for (tCTepl=0;tCTepl<cSTepl;tCTepl++)
 		{
 			SetPointersOnTepl(tCTepl);
-			SetMixValvePosition();
+			SetMixValvePosition(tCTepl);
 		}
+
 		if (Second==20)
 		{
 
@@ -1763,18 +1767,23 @@ char tCTepl,ttTepl;
     	    ClrDog;
 			SetMeteo();
 
-
-
-
 		}
 		if ((Second==40)||(GD.TControl.Delay))
 		{
+
+//			if (GD.Hot.Tepl[0].HandCtrl[3].Position == 0)
+//			{
+//				volatile int i = 0;
+//				i++;
+//			}
+
 			if (GD.SostRS==WORK_UNIT)
 			{
 			   GD.TControl.Delay=1;
 			}
 			else
 			{
+
 			    PORTNUM=0;
 				vNFCtr=0;
 				CheckMidlSr();
@@ -1803,6 +1812,8 @@ char tCTepl,ttTepl;
 				__sCalcKonturs();
 				__sMechWindows();
 				__sMechScreen();
+
+
 				for (tCTepl=0;tCTepl<cSTepl;tCTepl++)
 				{
 					if (GD.Hot.MaxReqWater<GD.Hot.Tepl[tCTepl].MaxReqWater)
@@ -1857,6 +1868,7 @@ char tCTepl,ttTepl;
 	ClrDog;
 //	w1_test();
 //	ds18b20_ConvertTemp();
+
 
 	if(TimeReset)
 		TimeReset--;

@@ -79,7 +79,7 @@ typedef struct  eeTimer
 		//uint16_t	TCool;
 		uint16_t	MistRHstop;
 
-        uchar   	MinTPipeAHU;		// richel
+        uchar   	MinTPipeAHU;
 		uchar		XXX;				// richel
 
 		uint16_t 	PresMaxTaskLine;	// richel
@@ -252,7 +252,9 @@ typedef struct eeTepl	{
 
 				int16_t 	DDWP;
 
-				int16_t		Rez1[23];  // 26
+				int16_t		AlarmVentPosition;
+
+				int16_t		Rez1[22];  // 23
 
 				int16_t		MaxReqWater;
 				int16_t		Rez[9];

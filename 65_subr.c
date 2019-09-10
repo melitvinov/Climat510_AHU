@@ -545,11 +545,13 @@ void MidlWindAndSr(void)
 		if (startFlag < 0) startFlag = 0;
 		return;
 	}
-	GD.TControl.SumSun+=((long int)GD.TControl.MeteoSensing[cSmFARSens]);
+
+	//GD.TControl.SumSun+=((long int)GD.TControl.MeteoSensing[cSmFARSens]);
+	GD.TControl.SumSun+=((long int)GD.Hot.MeteoSensing[cSmFARSens].Value);
+
 	if (GD.Control.MidlSunCalc)
 	{
 		int Sun;
-		//MidlSunCalc = (int)((((long int)MidlSunCalc)*(1000-o_MidlSRFactor)+((long int)GD.TControl.MeteoSensing[cSmFARSens])*o_MidlSRFactor)/1000);
 		Sun = GD.Hot.MeteoSensing[cSmFARSens].Value;
 		if ((Sun < 2000) && (Sun > 0))
 		{
@@ -560,9 +562,7 @@ void MidlWindAndSr(void)
 	}
 	else
 	{
-		GD.TControl.MidlSR=((((long int)GD.TControl.MidlSR)*(1000-o_MidlSRFactor))/1000
-		+((long int)GD.TControl.MeteoSensing[cSmFARSens])*o_MidlSRFactor);
-		GD.Hot.MidlSR=(int)(GD.TControl.MidlSR/1000);
+		//GD.Hot.MidlSR = (int)((((long int)MidlSunCalc)*(1000-o_MidlSRFactor)+((long int)GD.Hot.MeteoSensing[cSmFARSens].Value)*o_MidlSRFactor)/1000);
 		MidlSunCalc = GD.Hot.MidlSR;
 	}
 
@@ -570,15 +570,15 @@ void MidlWindAndSr(void)
 	{
 		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
 	}
+
 	if (GD.Control.MidlWindCalc)
 	{
-		//MidlWindCalc = (int)((((long int)MidlWindCalc)*(1000-o_MidlWindFactor)+((long int)GD.TControl.MeteoSensing[cSmVWindSens])*o_MidlWindFactor)/1000);
 		MidlWindCalc = (int)((((long int)MidlWindCalc)*(1000-o_MidlWindFactor)+((long int)GD.Hot.MeteoSensing[cSmVWindSens].Value)*o_MidlWindFactor)/1000);
 		GD.Hot.MidlWind = MidlWindCalc;
 	}
-	else
+	else  // если на контроллере стоит 0
 	{
-		GD.Hot.MidlWind=(int)((((long int)GD.Hot.MidlWind)*(1000-o_MidlWindFactor)+((long int)GD.TControl.MeteoSensing[cSmVWindSens])*o_MidlWindFactor)/1000);
+		//GD.Hot.MidlWind=(int)((((long int)GD.Hot.MidlWind)*(1000-o_MidlWindFactor)+((long int)GD.Hot.MeteoSensing[cSmVWindSens].Value)*o_MidlWindFactor)/1000);
 		MidlWindCalc = GD.Hot.MidlWind;
 	}
 }
@@ -588,7 +588,6 @@ void CheckMidlSr(void)
 	if (GetMetSensConfig(cSmFARSens))
 	{
 		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
-		//GD.Hot.MidlSR=(int)(GD.TControl.MidlSR);//;/1000);
 	}
 }
 
@@ -1315,7 +1314,7 @@ uint16_t RelHum(uint16_t fTemp, uint16_t AbsRH)
 	return tRez;
 }
 
-void KeepPID(uint16_t fKeep,uint16_t fDelta,uint8_t fNMech)
+void KeepPID(uint16_t fKeep, int16_t fDelta,uint8_t fNMech)
 {
 	int32_t	*IntVal;
 	ClrDog;
@@ -1334,14 +1333,18 @@ void KeepPID(uint16_t fKeep,uint16_t fDelta,uint8_t fNMech)
 
 }
 
+volatile long OlDPOS[8][6];
 
-int16_t	SetPID(uint16_t fDelta,uint8_t fNMech,int16_t fMax, int16_t fMin)
+int16_t	SetPIDforKonturs(const int16_t Tepl, const int16_t fDelta, const  uint8_t fNMech, const  int16_t fMax, const  int16_t fMin)
 {
 	int32_t	*IntVal;
 	ClrDog;
-
-//	if (YesBit(pGD_Hot_Hand[fNMech].RCS,(/*cbNoMech+*/cbManMech))) continue;
 	IntVal=&(pGD_TControl_Tepl->IntVal[fNMech]);
+
+	if ((startFlag == 0) &&  (OlDPOS[Tepl][fNMech] != (*IntVal)) )
+	{
+		(*IntVal) = OlDPOS[Tepl][fNMech];
+	}
 
 	IntX=fDelta;
 		//(*IntVal)=(*IntVal)+IntX;
@@ -1369,6 +1372,38 @@ int16_t	SetPID(uint16_t fDelta,uint8_t fNMech,int16_t fMax, int16_t fMin)
 	if (!pGD_ConstMechanic->ConstMixVal[fNMech].v_IFactor)
 		*IntVal=0;
 
+	OlDPOS[Tepl][fNMech] = (*IntVal);
+
+	return LngX;
+}
+
+int16_t	SetPID(const int16_t fDelta, const  uint8_t fNMech, const  int16_t fMax, const  int16_t fMin)
+{
+	int32_t	*IntVal;
+	ClrDog;
+	IntVal=&(pGD_TControl_Tepl->IntVal[fNMech]);
+	IntX=fDelta;
+	LngY=pGD_ConstMechanic->ConstMixVal[fNMech].v_PFactor;
+	LngY=LngY*IntX;//(*IntVal);
+	IntY=(int16_t)(LngY/10000);
+	LngX=(*IntVal)/100;
+	LngX+=IntY;
+	if (LngX>fMax)
+	{
+		(*IntVal)=(fMax-IntY)*100;
+		LngX=fMax;
+	}
+	else
+		if (LngX<fMin)
+		{
+			(*IntVal)=(fMin-IntY)*100;
+			LngX=fMin;
+		}
+		else
+			(*IntVal)+=(int32_t)((((long)IntX)*pGD_ConstMechanic->ConstMixVal[fNMech].v_IFactor)/100);
+
+	if (!pGD_ConstMechanic->ConstMixVal[fNMech].v_IFactor)
+		*IntVal=0;
 	return LngX;
 }
 

@@ -294,7 +294,6 @@ main()
           WriteDateTime(&dt);}*/
 
     start:
-
     change_of_second = false;
     uint32_t ts = RTC_GetCounter();
     if (ts != prev_ts) {
@@ -376,6 +375,7 @@ main()
 
         update_time_for_monitor();
     }
+
     if (change_of_second) {
 
 #ifdef STM32_UNIT
@@ -403,6 +403,7 @@ main()
             const datetime_t *dt = rtc_dt_from_ts(ts);
             datetime_to_control_time(&ControlTime, dt);
         }
+
         Control();
 
         ClrDog;
@@ -412,8 +413,8 @@ main()
             UDPSend();
         }
         // IMOD_WriteOutput(0,1,0xf0f0f0f0);
-
     }
+
     if (BITKL) {
         ClrDog;
         GD.Hot.News|=bOperator;
@@ -431,6 +432,5 @@ main()
         B_video=0;
     }
     simple_servercycle(); //Перенесено в прерывание клавиатуры
-
     goto start;
 }

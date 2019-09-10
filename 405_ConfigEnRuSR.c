@@ -205,11 +205,10 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 #define cHSmAHUPad		18
 #define cHSmLight		19
 
-#warning NEW Mech
+#warning NEW Mech							!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Изменение
 #define cHSmInRH		20
-//#define cHSmRez1		20
-#define cHSmRez2		21
-#define cHSmRez3		22
+#define cHSmAlarmVent	21
+#define cHSmCO2request	22
 #define cHSmRez4		23
 
 #define cHSmPump		24
@@ -221,6 +220,18 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 #define cHSmAHUPump		35
 #define cHSmAlarm		36
 #define cHSmRegs		37
+
+
+#warning new mech
+
+#define cHSmRegs1		38
+#define cHSmRegs2		39
+#define cHSmRegs3		40
+#define cHSmRegs4		41
+
+
+
+#define cHSmAlarmVentPosition	47
 
 #define cHSmLight50		48
 #define cHSmLight100	49

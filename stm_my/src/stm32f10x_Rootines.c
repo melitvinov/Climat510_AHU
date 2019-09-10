@@ -942,6 +942,12 @@ void Measure()
 
 	for (tTepl=0;tTepl<cSTepl;tTepl++)
 	{
+		tSensVal=GetInIPC(GD.MechConfig[tTepl].RNum[47],&ErrModule);
+		if ((ErrModule>=0) && (tSensVal > 3000))
+			GD.Hot.Tepl[tTepl].AlarmVentPosition = 10;
+		else
+			GD.Hot.Tepl[tTepl].AlarmVentPosition = 0;
+
 		tSensVal=GetInIPC(GD.MechConfig[tTepl].RNum[48],&ErrModule);
 		if ((ErrModule>=0) && (tSensVal > 4600))
 			GD.Hot.Tepl[tTepl].Light50 = 10;
@@ -957,6 +963,14 @@ void Measure()
         for(nSens=0;nSens<cConfSSens;nSens++)
 		{
         	tSensVal=GetInIPC(GetSensConfig(tTepl,nSens),&ErrModule);
+
+#ifdef DS18B20ERRORFLAG
+        	if (GD.Cal.InTeplSens[tTepl][nSens].Type == 3)   // 3- DS18B20
+        	{
+        		if (tSensVal % 10 == 5)
+        			GD.Hot.Tepl[tTepl].InTeplSens[0].RCS=cbNoWorkSens;
+        	}
+#endif
         	if (ErrModule<0)
         	{
         		GD.Hot.Tepl[tTepl].InTeplSens[nSens].RCS=cbNoWorkSens;
