@@ -224,7 +224,7 @@
 #define sio_ValPause		6
 #endif
 
-#define o_MidlSRFactor		400
+#define o_MidlSRFactor		200
 #define o_MidlWindFactor	200
 #define o_DeltaTime			21
 #define c_SnowIfOut			400

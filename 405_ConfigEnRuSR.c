@@ -209,12 +209,12 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 #define cHSmInRH		20
 #define cHSmAlarmVent	21
 #define cHSmCO2request	22
-#define cHSmRez4		23
+#define cHSmHeaterCable	23			// new
 
 #define cHSmPump		24
 #define cHSmVent		30
 #define cHSmHeat		31
-#define cHSmCool		32
+#define cHSmCool		32				// not use
 #define cHSmSIOPump		33
 #define cHSmSIOVals		34
 #define cHSmAHUPump		35

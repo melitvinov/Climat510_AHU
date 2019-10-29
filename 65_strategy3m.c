@@ -1241,8 +1241,8 @@ int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 
 	pGD_TControl_Tepl->Systems[fnMSys].Keep = SetPID(((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
 
-	/*
-	if (fnMSys == cSysUCValve)     // вывод стратегии
+
+	if (fnMSys == cSysAHUPipe)     // вывод стратегии
 	{
 		fnMKeepParamOut[fnTepl][0] = (int32_t)fnCritery;
 		fnMKeepParamOut[fnTepl][1] = 1;//pGD_TControl_Tepl->Systems[fnMSys].Power/1000;
@@ -1250,7 +1250,7 @@ int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 		fnMKeepParamOut[fnTepl][3] = pGD_TControl_Tepl->Systems[fnMSys].Max;
 		fnMKeepParamOut[fnTepl][4] = pGD_TControl_Tepl->Systems[fnMSys].Min;
 	}
-	*/
+
 
 	GD.Hot.Tepl[fnTepl].CurrentStratSys = fnMSys * 10;   // вывод в hot блок текущей системы
 	//fnMKeepOut[fnTepl][fnMSys] = pGD_TControl_Tepl->Systems[fnMSys].Keep;    // вывод стратегии
@@ -2356,7 +2356,8 @@ void __sCalcKonturs(void)
 			pGD_TControl_Tepl_Kontur->Manual=0;
 			ClrDog;
 
-			//if ((ByteX==cSmKontur3)||(ByteX==cSmKonturAHU)) continue;
+//			if ((ByteX==cSmKontur3)||(ByteX==cSmKonturAHU)) continue;
+
 			if (ByteX==cSmKontur3) continue;
 
 			if 	(YesBit(pGD_Hot_Tepl_Kontur->RCS,cbNoWorkKontur)) continue;

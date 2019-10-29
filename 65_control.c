@@ -122,7 +122,9 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinTask=JumpNext(pGD_CurrTimer->MinTPipe1,pGD_NextTimer->MinTPipe1,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinTask=JumpNext(pGD_CurrTimer->MinTPipe2,pGD_NextTimer->MinTPipe2,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinTask=JumpNext(pGD_CurrTimer->MinTPipe3,pGD_NextTimer->MinTPipe3,1,10);
+
 	(*pGD_Hot_Tepl).Kontur[cSmKontur3].MaxCalc=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
+
 	(*pGD_Hot_Tepl).Kontur[cSmKontur5].MinTask=JumpNext(pGD_CurrTimer->MinTPipe5,pGD_NextTimer->MinTPipe5,1,10);
 //#ifdef RICHEL
 //	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].MinTask=JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
@@ -141,7 +143,9 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	(*pGD_Hot_Tepl).AllTask.Screen[2]=pGD_CurrTimer->Screen[2];
 	(*pGD_Hot_Tepl).AllTask.AHUVent=pGD_CurrTimer->AHUVent;
 	(*pGD_Hot_Tepl).Kontur[cSmAHUSpd].MinCalc=(*pGD_Hot_Tepl).AllTask.AHUVent;
+
 	(*pGD_Hot_Tepl).Kontur[cSmKontur3].Do=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
+
 	(*pGD_Hot_Tepl).Kontur[cSmKontur4].Do=JumpNext(pGD_CurrTimer->TPipe4,pGD_NextTimer->TPipe4,1,10);
 
 	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].Do = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
