@@ -2694,6 +2694,16 @@ int16_t __SetWinPress(uint16_t DoPres,uint8_t fNFram,uint16_t fOffset)
 
 }
 
+void __sMechDiodLight(void)
+{
+	char xdata fnTepl;
+	for(fnTepl=0;fnTepl<cSTepl;fnTepl++)
+		{
+			SetPointersOnTepl(fnTepl);
+			pGD_Hot_Tepl->HandCtrl[cHSmDiodLight].Position = (*pGD_Hot_Tepl).AllTask.DiodLight;
+		}
+}
+
 //Процедура устанавливает регулировку фрамуг от головного клапана
 //Изменения от 13.05.2014
 void __sMechWindows(void)

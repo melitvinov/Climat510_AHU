@@ -150,7 +150,8 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 
 	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].Do = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
 
-	//	cSmKonturAHU_DoTemp = (*pGD_Hot_Tepl).Kontur[cSmKonturAHU].Do;
+	// изменение 132
+	(*pGD_Hot_Tepl).AllTask.DiodLight = pGD_CurrTimer->DiodLightTask;
 }
 
 
@@ -970,7 +971,7 @@ void SetDiskr(char fnTepl)
 
 	for(ByteX=cHSmPump;ByteX<cHSmRegs;ByteX++)
 	{
-		if ((ByteX==cHSmSIOVals)||(ByteX==cHSmLight)||(ByteX==cHSmAHUPad)||(ByteX==cHSmInRH)||(ByteX==cHSmAHUPump)||(ByteX==cHSmAlarmVent)||(ByteX==cHSmCO2request) ) continue;
+		if ((ByteX==cHSmSIOVals)||(ByteX==cHSmLight)||(ByteX==cHSmAHUPad)||(ByteX==cHSmInRH)||(ByteX==cHSmAHUPump)||(ByteX==cHSmAlarmVent)||(ByteX==cHSmCO2request)||(ByteX==cHSmDiodLight) ) continue;
 		__SetBitOutReg(fnTepl,ByteX,1,0);
 		if (YesBit((*(pGD_Hot_Hand+ByteX)).Position,0x01))
 			__SetBitOutReg(fnTepl,ByteX,0,0);
@@ -1087,6 +1088,13 @@ ClrDog;
 		__SetBitOutReg(fnTepl,cHSmAHUPad,1,0);  // выкл
 		fPadOnPad = 0;
 	}
+
+//изменение 132 Diod
+	if ((*(pGD_Hot_Hand+cHSmDiodLight)).Position)
+		__SetBitOutReg(fnTepl,cHSmDiodLight,0,0);	// вкл
+	else
+		__SetBitOutReg(fnTepl,cHSmDiodLight,1,0);	// вкл
+
 
 // InRH
 	InRHPosition = ((*(pGD_Hot_Hand+cHSmInRH)).Position);
@@ -1816,6 +1824,7 @@ void Control(void)
 				__sCalcKonturs();
 				__sMechWindows();
 				__sMechScreen();
+				__sMechDiodLight();
 
 
 				for (tCTepl=0;tCTepl<cSTepl;tCTepl++)

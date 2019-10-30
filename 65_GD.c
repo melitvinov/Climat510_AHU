@@ -85,7 +85,9 @@ typedef struct  eeTimer
 		uint16_t 	PresMaxTaskLine;	// richel
 		uint16_t 	AHUTempTaskLine;	// richel
 
-		uint16_t	Rez[5];
+		uint16_t	DiodLightTask;		// изменение 132
+
+		uint16_t	Rez[4];
 		uint16_t	crc;
         }
         eTimer;
@@ -164,7 +166,11 @@ typedef struct eeClimTask {
 				int16_t 	PresMaxTask;
 				int16_t 	AHUTempTask;
 
-				int16_t		Rez[7];   // 10
+				// изменение 132
+				int16_t 	DiodLight;
+				int16_t		HeaterCable;
+
+				int16_t		Rez[5];   // 7
 				} eClimTask; 
 
 typedef struct eeNextTCalc {

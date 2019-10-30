@@ -1,8 +1,8 @@
-//#define DEBUG
+#define DEBUG
 #define DS18B20ERRORFLAG
 
-#define RICHEL
-//#define KUBO
+//#define RICHEL
+#define KUBO
 
 //#define DEMO  // работа контуров будет разрешена, даже если смесительные клапана открыты на 100%
 #define AHU
