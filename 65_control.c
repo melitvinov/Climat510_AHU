@@ -358,58 +358,39 @@ void SetIfReset(void)
 
 }
 
-/**********************************************************************/
-/*-*-*-*-*--Нахождение прогнозируемого изменения температуры--*-*-*-*-*/
-/**********************************************************************/
-void __cNextTCalc(char fnTepl)
+void __cNextTCalcDisturbances(char fnTepl)
 {
-	int	xdata CalcAllKontur;
-
-	if(!(*pGD_Hot_Tepl).AllTask.NextTAir) return;
-
-
-	if (bWaterReset[fnTepl]) 
-	{	
-		SetIfReset();
-	}
-
-	(*pGD_Hot_Tepl).NextTCalc.DifTAirTDo=(*pGD_Hot_Tepl).AllTask.NextTAir-getTempHeat(fnTepl);
 /**********************************************/
 /*СУПЕР АЛГОРИТМ ДЛЯ РАСЧЕТА*/
 	pGD_Hot_Tepl->AllTask.Rez[0]=getTempHeat(fnTepl);
 	IntX=(*pGD_Hot_Tepl).AllTask.DoTHeat-getTempHeat(fnTepl);
-
-/**********************************************/	
-/*Вычиляем увеличение от солнечной радиации*/
-
-	//IntY=GD.Hot.MidlSR;
+/**********************************************/
 	IntY=MidlSunCalc;
-
 	if ((!YesBit(pGD_Hot_Tepl->InTeplSens[cSmInLightSens].RCS,cbNoWorkSens)))
 		IntY=pGD_Hot_Tepl->InTeplSens[cSmInLightSens].Value;
 
 	CorrectionRule(GD.TuneClimate.c_SRStart,GD.TuneClimate.c_SREnd,
-		GD.TuneClimate.c_SRFactor,0);	
+		GD.TuneClimate.c_SRFactor,0);
 	(*pGD_Hot_Tepl).NextTCalc.UpSR=IntZ;
-/*Вычиляем увеличение от разницы температуры задания и стекла*/	
+/*Вычиляем увеличение от разницы температуры задания и стекла*/
 	IntY=(*pGD_Hot_Tepl).AllTask.NextTAir-(*pGD_Hot_Tepl).InTeplSens[cSmGlassSens].Value;
 	CorrectionRule(GD.TuneClimate.c_GlassStart,GD.TuneClimate.c_GlassEnd,
-		GD.TuneClimate.c_GlassFactor,0);	
+		GD.TuneClimate.c_GlassFactor,0);
 	(*pGD_Hot_Tepl).NextTCalc.LowGlass=IntZ;
 
 	ClrDog;
 /*Вычисляем корректировки ветра фрамуг и разницы между температурой задания
-и внешней температуры соответственно*/		
+и внешней температуры соответственно*/
 /*Ветер и фрамуги увеличивают эту разницу*/
 	//IntY=GD.Hot.MidlWind;
 	IntY=MidlWindCalc;
 	CorrectionRule(GD.TuneClimate.c_WindStart,GD.TuneClimate.c_WindEnd,
-		GD.TuneClimate.c_WindFactor,0);	
+		GD.TuneClimate.c_WindFactor,0);
 	IntY=(*pGD_Hot_Tepl).AllTask.NextTAir-GD.TControl.MeteoSensing[cSmOutTSens]-IntZ;
 	CorrectionRule(GD.TuneClimate.c_OutStart,GD.TuneClimate.c_OutEnd,
 		GD.TuneClimate.c_OutFactor,0);
 	(*pGD_Hot_Tepl).NextTCalc.LowOutWinWind+=IntZ;
-	
+
 	// 117 правка. Если нет сигналов обратной связи досветки работаем по состоянию
 	int lightSignals = 1;
 	if ((GD.MechConfig[fnTepl].RNum[48] == 0) && (GD.MechConfig[fnTepl].RNum[49] == 0))
@@ -441,12 +422,11 @@ void __cNextTCalc(char fnTepl)
 	if (GD.TControl.bSnow)
 		(*pGD_Hot_Tepl).NextTCalc.dSumCalc-=GD.TuneClimate.c_CloudFactor;
 /*********************************************************************
-******* СЧИТАЕМ СУММУ ВЛИЯНИЙ ДЛЯ ФРАМУГ *******************************
+******* СЧИТАЕМ СУММУ ВЛИЯНИЙ ДЛЯ ФРАМУГ *******************************		// вообще не используется
 ***********************************************************************/
 	pGD_Hot_Tepl->NextTCalc.dSumCalcF=0;
 /*Вычиляем увеличение от солнечной радиации*/
 
-	//IntY=GD.Hot.MidlSR;
 	IntY=MidlSunCalc;
 /*if work on internal light sensor, then change IntY*/
 
@@ -454,164 +434,73 @@ void __cNextTCalc(char fnTepl)
 		IntY=pGD_Hot_Tepl->InTeplSens[cSmInLightSens].Value;
 
 	CorrectionRule(GD.TuneClimate.c_SRStart,GD.TuneClimate.c_SREnd,
-		GD.TuneClimate.f_SRFactor,0);	
+		GD.TuneClimate.f_SRFactor,0);
 	pGD_Hot_Tepl->NextTCalc.dSumCalcF+=IntZ;
 
 	ClrDog;
 /*Вычисляем корректировки ветра фрамуг и разницы между температурой задания
-и внешней температуры соответственно*/		
+и внешней температуры соответственно*/
 /*Ветер и фрамуги увеличивают эту разницу*/
 	//IntY=GD.Hot.MidlWind;
 	IntY=MidlWindCalc;
 
 	CorrectionRule(GD.TuneClimate.c_WindStart,GD.TuneClimate.c_WindEnd,
-		GD.TuneClimate.f_WindFactor,0);	
+		GD.TuneClimate.f_WindFactor,0);
 	IntY=(*pGD_Hot_Tepl).AllTask.NextTAir-GD.TControl.MeteoSensing[cSmOutTSens]-IntZ;
 	CorrectionRule(GD.TuneClimate.c_OutStart,GD.TuneClimate.c_OutEnd,
 		GD.TuneClimate.f_OutFactor,0);
 	pGD_Hot_Tepl->NextTCalc.dSumCalcF+=IntZ;
 
+}
 
-/*********************************************************************
-***********************************************************************
-***********************************************************************/
+typedef struct
+{
+	int prev_err;
+	int prev_disturb;
+} master_pi_mem_t;
 
-	IntY=(*pGD_Hot_Tepl).NextTCalc.DifTAirTDo;
-	if ((GD.TuneClimate.c_MullDown>10)&&(IntY<0)&&(GD.TuneClimate.c_MullDown<30))
-		IntY=(((long)IntY)*GD.TuneClimate.c_MullDown)/10;
-	(*pGD_Hot_Tepl).NextTCalc.PCorrection=((int)((((long)(IntY))*((long)pGD_Control_Tepl->c_PFactor))/100));
-	if (pGD_TControl_Tepl->StopI<2)
-	 	(*pGD_TControl_Tepl).Integral+=((((long)(pGD_Hot_Tepl->NextTCalc.DifTAirTDo))*((long)pGD_Control_Tepl->c_IFactor))/10);
-	if ((*pGD_TControl_Tepl).Integral>2000000)
-		(*pGD_TControl_Tepl).Integral=2000000;
-	if ((*pGD_TControl_Tepl).Integral<-2000000)
-		(*pGD_TControl_Tepl).Integral=-2000000;
-	if (!pGD_Control_Tepl->c_IFactor)
-		(*pGD_TControl_Tepl).Integral=0;
+static master_pi_mem_t master_pi_mems[8];
 
-	(*pGD_Hot_Tepl).NextTCalc.ICorrection=(int)(pGD_TControl_Tepl->Integral/100);			
+/**********************************************************************/
+/*-*-*-*-*--Нахождение прогнозируемого изменения температуры--*-*-*-*-*/
+/**********************************************************************/
+void __cNextTCalc(char fnTepl)
+{
+	int	xdata CalcAllKontur;
 
-	// вывод параметров
-	(*pGD_TControl_Tepl).Critery=(*pGD_Hot_Tepl).NextTCalc.PCorrection+(*pGD_Hot_Tepl).NextTCalc.ICorrection-(*pGD_Hot_Tepl).NextTCalc.dSumCalc;
-
-	fnMSysOut[fnTepl] = (*pGD_Hot_Tepl).NextTCalc.PCorrection;  // вывод
-	fnMPriorOut[fnTepl] = (*pGD_Hot_Tepl).NextTCalc.ICorrection;   // вывод
-	CriterT1Out[fnTepl] = (*pGD_Hot_Tepl).NextTCalc.dSumCalc;   // вывод
-
-	CalcAllKontur =__sCalcTempKonturs();
-	CriterT2Out[fnTepl] = CalcAllKontur;   // вывод
-	// вывод параметров
-
-
-
-	// 45 изменение-*=-4
-	// было
-	(*pGD_TControl_Tepl).Critery-=CalcAllKontur;
-	CriterT3Out[fnTepl] = (*pGD_TControl_Tepl).Critery;   // вывод
-
-	// стало
-/*	int CriteryLevel;
-	CriteryLevel = 3;
-	//if (GD.TuneClimate.CriteryLevel != 0)
-	if (CriteryLevel != 0)
+	if(!(*pGD_Hot_Tepl).AllTask.NextTAir)
 	{
-		int CritP, CritM;
-		CritP = CriteryLevel * 100;
-		CritM = -1 * CriteryLevel * 100;
-		if ((*pGD_TControl_Tepl).Critery > 0)
-		{
-		  (*pGD_TControl_Tepl).Critery-=CalcAllKontur;
-		  if ((*pGD_TControl_Tepl).Critery >= CritP)
-			(*pGD_TControl_Tepl).Critery = CritP;
-	    }
-		if ((*pGD_TControl_Tepl).Critery < 0)
-		{
-		  if ( (*pGD_TControl_Tepl).Critery <= CritM )
-		  {
-			(*pGD_TControl_Tepl).Critery = CritM;
-		  }
-		  else
-			(*pGD_TControl_Tepl).Critery-=CalcAllKontur;
-		}
-	} */
-	// 45 изменение
-
-	if (pGD_TControl_Tepl->StopI>4)
-	{
-		(*pGD_TControl_Tepl).Integral=(*pGD_TControl_Tepl).SaveIntegral;	
+		master_pi_mems[fnTepl].prev_disturb = 0;
+		master_pi_mems[fnTepl].prev_err = 0;
+		return;
 	}
-
-
-	int CriteryLevel;
-	CriteryLevel = 3;
-
-#warning	// изменеие 60    // работало но не понятно нужно ли. Убрано пока. Вместо нее два параметра коррекция работы Mist по влажности
-	//if ((pGD_TControl_Tepl->StopI>3)&&(abs(IntY)<cResetDifTDo))  // было
-	if ((pGD_TControl_Tepl->StopI>3)&&(abs(IntY)>cResetDifTDo))
-	{
-		// изменеие 60
-		int16_t CriterO;
-		//if (GD.TuneClimate.CriteryLevel == 0)
-		if (CriteryLevel == 0)
-			CriterO = cResetCritery;
-		else
-			//CriterO = GD.TuneClimate.CriteryLevel;
-			CriterO = CriteryLevel;
-		// 60 изменеие вместо CriterO везде было cResetCritery
-		if ((*pGD_TControl_Tepl).Critery>CriterO)
-		{
-			(*pGD_TControl_Tepl).SaveIntegral
-				=CriterO+CalcAllKontur
-				-(*pGD_Hot_Tepl).NextTCalc.PCorrection+(*pGD_Hot_Tepl).NextTCalc.dSumCalc;
-		    (*pGD_TControl_Tepl).SaveIntegral*=100;
-		}
-		if ((*pGD_TControl_Tepl).Critery<-CriterO)
-		{
-			(*pGD_TControl_Tepl).SaveIntegral
-				=-CriterO+CalcAllKontur
-				-(*pGD_Hot_Tepl).NextTCalc.PCorrection+(*pGD_Hot_Tepl).NextTCalc.dSumCalc;
-		    (*pGD_TControl_Tepl).SaveIntegral*=100;
-		}
+	if (bWaterReset[fnTepl]) 
+	{	
+		SetIfReset();
 	}
-	if ((pGD_TControl_Tepl->StopI>3)&&(!SameSign(IntY,(*pGD_TControl_Tepl).Critery)))
-	{
-			(*pGD_TControl_Tepl).SaveIntegral
-				=IntY+CalcAllKontur
-				-(*pGD_Hot_Tepl).NextTCalc.PCorrection+(*pGD_Hot_Tepl).NextTCalc.dSumCalc;
-		    (*pGD_TControl_Tepl).SaveIntegral*=100;
-	}
-	if (!(*pGD_TControl_Tepl).Critery)
-	{
-		(*pGD_TControl_Tepl).Critery=1;
-		if ((*pGD_Hot_Tepl).NextTCalc.DifTAirTDo<0)
-			(*pGD_TControl_Tepl).Critery=-1;
+	(*pGD_Hot_Tepl).NextTCalc.DifTAirTDo=(*pGD_Hot_Tepl).AllTask.NextTAir-getTempHeat(fnTepl);
+	__cNextTCalcDisturbances(fnTepl);
 
-	}
+	int err = (*pGD_Hot_Tepl).NextTCalc.DifTAirTDo;
+	int prev_err = master_pi_mems[fnTepl].prev_err;
+	int Dprev = master_pi_mems[fnTepl].prev_disturb;
 
-	// было
-	pGD_Hot_Tepl->NextTCalc.Critery=(*pGD_TControl_Tepl).Critery;
-	// стало
-/*	//if (GD.TuneClimate.CriteryLevel != 0)
+	int kp = pGD_Control_Tepl->c_PFactor;
+	int ki = pGD_Control_Tepl->c_IFactor;
+	int kd = 0; //100
+	int D = (*pGD_Hot_Tepl).NextTCalc.dSumCalc;
 
-	if (CriteryLevel != 0)
-	{
-		int CritP, CritM;
-		//CritP = GD.TuneClimate.CriteryLevel * 100;
-		CritP = CriteryLevel * 100;
-		//CritM = -1 * GD.TuneClimate.CriteryLevel * 100;
-		CritM = -1 * CriteryLevel * 100;
-		if (pGD_Hot_Tepl->NextTCalc.Critery > 0)
-		{
-		  if (pGD_Hot_Tepl->NextTCalc.Critery >= CritP)
-			  pGD_Hot_Tepl->NextTCalc.Critery = CritP;
-	    }
-		if (pGD_Hot_Tepl->NextTCalc.Critery < 0)
-		{
-		  if ( pGD_Hot_Tepl->NextTCalc.Critery <= CritM )
-			  pGD_Hot_Tepl->NextTCalc.Critery = CritM;
-		}
-	}
-*/
+
+	int change = (err - prev_err) * kp/100 + err*ki/10 - kd * (D - Dprev) / 100;
+
+	(*pGD_TControl_Tepl).Critery = change;
+	(*pGD_Hot_Tepl).NextTCalc.ICorrection = err*ki/10/100;
+	(*pGD_Hot_Tepl).NextTCalc.PCorrection = (err - prev_err) * kp/100;
+
+	master_pi_mems[fnTepl].prev_disturb = D;
+	master_pi_mems[fnTepl].prev_err = err;
+
+
 
 /******************************************************************
 		Далее расчет критерия для фрамуг
@@ -1825,6 +1714,7 @@ void Control(void)
 				__sMechWindows();
 				__sMechScreen();
 				__sMechDiodLight();
+				__sMechCabelHeat();
 
 
 				for (tCTepl=0;tCTepl<cSTepl;tCTepl++)

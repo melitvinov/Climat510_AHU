@@ -2108,7 +2108,13 @@ void __sLastCheckKontur(char fnKontur,int* fnCorCritery)
 		ogrMax(&(pGD_Hot_Tepl_Kontur->Do),(*pGD_Hot_Tepl_Kontur).MaxCalc);
 		TempDo=pGD_Hot_Tepl_Kontur->Do*10;
 		pGD_TControl_Tepl_Kontur->SErr=0;
+
+
+
 		pGD_TControl_Tepl->Integral-=__sThisToFirst((int)((OldDoT-TempDo)))*100;
+
+
+
 	//	(*pGD_TControl_Tepl).SaveIntegral-=__sThisToFirst((int)((OldDoT-TempDo)))*100;
 		pGD_TControl_Tepl_Kontur->DoT=TempDo;
 		return;
@@ -2691,7 +2697,44 @@ int16_t __SetWinPress(uint16_t DoPres,uint8_t fNFram,uint16_t fOffset)
 	if (IntZ>100) IntZ=100;
 	if (IntZ<0) IntZ=0;
 	return IntZ;
+}
 
+void __sMechCabelHeat(void)
+{
+	char xdata fnTepl;
+	int CabelTemp = GD.TuneClimate.CabelHeatTemp;
+	int CabelWork = GD.TuneClimate.CabelHeatWork;
+	int CabelPaus = GD.TuneClimate.CabelHeatPaus;
+	int Tout = GD.TControl.MeteoSensing[cSmOutTSens];
+
+	for(fnTepl=0;fnTepl<cSTepl;fnTepl++)
+	{
+		SetPointersOnTepl(fnTepl);
+		if (CabelPauseCalc[fnTepl])
+			CabelPauseCalc[fnTepl]--;
+		if ((CabelWorkCalc[fnTepl])&&(CabelPauseCalc[fnTepl] == 0))
+		{
+			CabelWorkCalc[fnTepl]--;
+			if (CabelWorkCalc[fnTepl] == 0)
+			{
+				pGD_Hot_Tepl->HandCtrl[cHSmDiodLight].Position = 0;
+				CabelPauseCalc[fnTepl] = CabelPaus;
+			}
+		}
+		if (Tout < CabelTemp)			// вкл кабель
+		{
+			if ((CabelWorkCalc[fnTepl] == 0)&&(CabelPauseCalc[fnTepl] == 0))
+			{
+				pGD_Hot_Tepl->HandCtrl[cHSmDiodLight].Position = 1;
+				CabelWorkCalc[fnTepl] = CabelWork;
+			}
+		} else
+		{
+			pGD_Hot_Tepl->HandCtrl[cHSmDiodLight].Position = 0;
+			CabelWorkCalc[fnTepl] = 0;
+			CabelPauseCalc[fnTepl] = CabelPaus;
+		}
+	}
 }
 
 void __sMechDiodLight(void)

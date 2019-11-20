@@ -67,3 +67,6 @@ int8_t		ToLowTime;
 char		fLightOn;
 int16_t		fLightPause;
 
+char CabelPauseCalc[8];			// изменение 132	расчетная пауза для нагревательного кабеля
+char CabelWorkCalc[8];			// изменение 132	расчетное время работы нагревательного кабеля
+
