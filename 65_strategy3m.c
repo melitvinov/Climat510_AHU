@@ -238,6 +238,7 @@ void CheckAHUPipeSystem(void)
 //установить минимумы, максимумы, возможность вверх, возможность вниз для клапана AHU
 void CheckUCValveSystem(int Tmes, int Tset)			// отрабатывает
 {
+	int Tout = GD.TControl.MeteoSensing[cSmOutTSens];
 	pGD_TControl_Tepl->Systems[cSysUCValve].Max=(*pGD_Hot_Tepl).Kontur[cSmWindowUnW].MaxCalc;
 	// изменение 96 если после коррекции минимума клапана он стал больше чем макс
 	//открытия из параметров, то не корректируем
@@ -260,6 +261,14 @@ void CheckUCValveSystem(int Tmes, int Tset)			// отрабатывает
 
 	if (pGD_TControl_Tepl->Systems[cSysUCValve].Keep>pGD_TControl_Tepl->Systems[cSysUCValve].Max)
 		pGD_TControl_Tepl->Systems[cSysUCValve].Keep=pGD_TControl_Tepl->Systems[cSysUCValve].Max;
+
+	if (Tout < GD.TuneClimate.f_MinTFreeze)
+	{
+		(*pGD_Hot_Tepl).Kontur[cSmWindowUnW].MinCalc = 0;
+		pGD_TControl_Tepl->Systems[cSysUCValve].Min = 0;
+		pGD_TControl_Tepl->Systems[cSysUCValve].Max = 0;
+		pGD_TControl_Tepl->Systems[cSysUCValve].Keep = 0;
+	}
 
 	if	(!pGD_TControl_Tepl->Systems[cSysUCValve].RCS)
 	{
@@ -2702,7 +2711,7 @@ int16_t __SetWinPress(uint16_t DoPres,uint8_t fNFram,uint16_t fOffset)
 void __sMechCabelHeat(void)
 {
 	char xdata fnTepl;
-	int CabelTemp = GD.TuneClimate.CabelHeatTemp;
+	int CabelTemp = GD.TuneClimate.CabelHeatTemp*100;
 	int CabelWork = GD.TuneClimate.CabelHeatWork;
 	int CabelPaus = GD.TuneClimate.CabelHeatPaus;
 	int Tout = GD.TControl.MeteoSensing[cSmOutTSens];
@@ -2717,7 +2726,7 @@ void __sMechCabelHeat(void)
 			CabelWorkCalc[fnTepl]--;
 			if (CabelWorkCalc[fnTepl] == 0)
 			{
-				pGD_Hot_Tepl->HandCtrl[cHSmDiodLight].Position = 0;
+				pGD_Hot_Tepl->HandCtrl[cHSmHeaterCable].Position = 0;
 				CabelPauseCalc[fnTepl] = CabelPaus;
 			}
 		}
@@ -2725,12 +2734,12 @@ void __sMechCabelHeat(void)
 		{
 			if ((CabelWorkCalc[fnTepl] == 0)&&(CabelPauseCalc[fnTepl] == 0))
 			{
-				pGD_Hot_Tepl->HandCtrl[cHSmDiodLight].Position = 1;
+				pGD_Hot_Tepl->HandCtrl[cHSmHeaterCable].Position = 1;
 				CabelWorkCalc[fnTepl] = CabelWork;
 			}
 		} else
 		{
-			pGD_Hot_Tepl->HandCtrl[cHSmDiodLight].Position = 0;
+			pGD_Hot_Tepl->HandCtrl[cHSmHeaterCable].Position = 0;
 			CabelWorkCalc[fnTepl] = 0;
 			CabelPauseCalc[fnTepl] = CabelPaus;
 		}

@@ -28,8 +28,18 @@
 #include "enc28j60.h"
 #include "ip_arp_udp_tcp.h"
 #include "net.h"
-#include "simple_server.h"
 
+#pragma pack(4)
+#include "test.h"
+#pragma pack(pop)
+/*
+#pragma pack(4)
+#include "mcast.pb.h"
+#include "pb.h"
+#include "pb_decode.h"
+#include "pb_encode.h"
+#pragma pack(pop)
+*/
 
 
 eAdrGD	*pADRGD;
@@ -37,6 +47,7 @@ uint8_t* EthSost;
 uint8_t* EthBlock;
 uint16_t* PORTNUMBER;
 uint8_t* IPAddr;
+uint8_t* IPAddrMultyCast;
 uint8_t* MACAddr;
 
 
@@ -45,6 +56,11 @@ unsigned int dat_p;
 unsigned char ffi=0;
 unsigned char fcmd_pos=0;
 unsigned char fcmd;
+
+unsigned char cmd_pos=0;
+unsigned char cmd;
+char str[30];
+
 unsigned char payloadlen=0;
 char fstr[30];
 char cmdval;
@@ -243,6 +259,7 @@ switch (Sockets[nSock].IP_PHASE)
 int simple_servercycle(void)
 {
 	uchar tIPAddr[4];
+	uint32_t mcport = GD.Control.PortMCast;
 	char i,nS,freeSlot;
 	unsigned int	j;
 //		OSTimeDlyHMSM(0, 0, 0, 50);
@@ -270,7 +287,6 @@ int simple_servercycle(void)
         	{
             return;
         	}
-
         
         if(fbuf[IP_PROTO_P]==IP_PROTO_ICMP_V && fbuf[ICMP_TYPE_P]==ICMP_TYPE_ECHOREQUEST_V)
         	{
@@ -281,7 +297,54 @@ int simple_servercycle(void)
         	}
                // tcp port www start, compare only the lower byte
 
-		if (fbuf[IP_PROTO_P]==IP_PROTO_TCP_V&&fbuf[TCP_DST_PORT_H_P]==(*PORTNUMBER)/256&&fbuf[TCP_DST_PORT_L_P]==(*PORTNUMBER)%256)
+        // **********************************************************************************
+        if (fbuf[IP_PROTO_P]==IP_PROTO_UDP_V&&fbuf[UDP_DST_PORT_H_P]==mcport/256&&fbuf[UDP_DST_PORT_L_P]==mcport%256)
+        {
+        	payloadlen=fbuf[UDP_LEN_L_P]-UDP_HEADER_LEN;
+
+        	Enc((u8*)&fbuf[UDP_DATA_P+64], payloadlen-64);
+
+/*
+        	u8 *dst = (u8*)&fbuf[UDP_DATA_P+400];
+        	uint maxsize = 100;
+            mcast_meteo_msg msg = mcast_meteo_msg_init_zero;
+            pb_ostream_t en_stream = pb_ostream_from_buffer(dst, maxsize);
+            msg.temperature = 1233;
+            msg.has_temperature = true;
+            msg.sun_intensity = 1245;
+            msg.has_sun_intensity = true;
+            msg.wind_direction = 150;
+            msg.has_wind_direction = true;
+            msg.wind_speed = 1000;
+            msg.has_wind_speed = true;
+            msg.rain = 1000;
+            msg.has_rain = true;
+            msg.rh = 8540;
+            msg.has_rh = true;
+            status = pb_encode(&en_stream, mcast_meteo_msg_fields, &msg);
+
+            //const u8 *src = (u8*)&fbuf[UDP_DATA_P+64];
+            //uint size = payloadlen - 64;
+            const u8 *src = (u8*)&fbuf[UDP_DATA_P+400];
+            uint size = en_stream.bytes_written;
+
+            //u8 c[] = {0x08, 0xdc, 0x29, 0x10, 0xc2, 0x03};
+            //const u8 *src = (u8*)&c[0];
+
+
+            mcast_meteo_msg msg1 = mcast_meteo_msg_init_zero;
+            pb_istream_t de_stream = pb_istream_from_buffer(src, size);
+            status = pb_decode(&de_stream, mcast_meteo_msg_fields, &msg1);
+            if ( status )
+            {
+            	SetMeteo(msg1);
+            };
+            */
+          }
+
+        //***********************************************************************************
+
+        if (fbuf[IP_PROTO_P]==IP_PROTO_TCP_V&&fbuf[TCP_DST_PORT_H_P]==(*PORTNUMBER)/256&&fbuf[TCP_DST_PORT_L_P]==(*PORTNUMBER)%256)
 			{
 			nS=101;
 			freeSlot=9;
@@ -347,8 +410,6 @@ int simple_servercycle(void)
 				}
 			}
 	// tcp port www end
-	//
-
 }
 
 int simple_server(eAdrGD* fADRGD,uint8_t* fSostEth,uint8_t* nBlock, uint8_t* fIPAddr,uint8_t* fMACAddr,uint8_t* fPORTNUMBER)
@@ -523,7 +584,7 @@ void send_udp_transmit(uint8_t *buf,uint16_t datalen)
         buf[UDP_CHECKSUM_H_P]=tmp16>>8;
         enc28j60PacketSend(UDP_HEADER_LEN+IP_HEADER_LEN+ETH_HEADER_LEN+datalen,buf);
 }
-
+/*
 int simple_client(eAdrGD* fADRGD,uint8_t* fSostEth,uint8_t* nBlock, uint8_t* fIPAddr,uint8_t* fMACAddr,uint8_t* fPORTNUMBER)
 	{
 	SPI1_Init();
@@ -536,7 +597,10 @@ int simple_client(eAdrGD* fADRGD,uint8_t* fSostEth,uint8_t* nBlock, uint8_t* fIP
 	enc28j60Init(MACAddr);
 	enc28j60PhyWrite(PHLCON,0x476);
 	init_ip_arp_udp_tcp(MACAddr,fIPAddr,*PORTNUMBER);
+
+
 	//dat_p=packetloop_arp_icmp_tcp(buf,enc28j60PacketReceive(BUFFER_SIZE, buf));
+
 
 	buf[UDP_DATA_P]='H';
 	buf[UDP_DATA_P+1]='E';
@@ -574,8 +638,8 @@ void UDPStartSend(void)
 {
 	UDPstartSend =1;
 }
-
-void UDPSend(void)
+*/
+/*void UDPSend(void)
 {
 	int countSensorInPack = 0;
 	if (UDPstartSend == 0) return;
@@ -615,17 +679,7 @@ void UDPSend(void)
     	UDPstartSend = 0;
     }
 
-/*	buf[UDP_DATA_P]='H';
-	buf[UDP_DATA_P+1]='E';
-	buf[UDP_DATA_P+2]='L';
-	buf[UDP_DATA_P+3]='L';
-	buf[UDP_DATA_P+4]='O';
-	buf[UDP_DATA_P+5]=' ';
-	buf[UDP_DATA_P+6]='W';
-	buf[UDP_DATA_P+7]='O';
-	buf[UDP_DATA_P+8]='R';
-	buf[UDP_DATA_P+9]='L';
-	buf[UDP_DATA_P+10]='D';  */
 	send_udp_prepare(buf,5001,dis_ip,5001,dis_mac);
 	send_udp_transmit(buf,len);
 }
+*/

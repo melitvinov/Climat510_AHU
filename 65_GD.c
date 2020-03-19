@@ -6,6 +6,8 @@ int16_t fnScreenOut[4];
 
 int16_t fnInRHOut[2];
 
+char MeteoRecv;
+
 volatile int16_t MidlSunCalc;
 volatile int16_t MidlWindCalc;
 
@@ -630,8 +632,12 @@ typedef struct eeControl
 
 		uint8_t			MidlSunCalc;
 		uint8_t			MidlWindCalc;
-		int8_t     		Rez[8];
-		//int16_t     		Rez[5];
+
+		// изменение 135
+		uint8_t			IPAddrMCast[4];
+		uint16_t 		PortMCast;
+
+		int8_t     		Rez[2];		// 8
 	
 	} eControl;
 
@@ -1000,7 +1006,7 @@ void InitBlockEEP(void){
 т.е порядки структур должны быть строго одинаковы
 и все несохраняеьые в EEP должны быть в конце AdrGD*/
         BlockEEP[0].AdrCopyRAM=&GD.Control.Tepl[0];
-        BlockEEP[0].Size=sizeof(eTeplControl)*cSTepl+15;
+        BlockEEP[0].Size=sizeof(eTeplControl)*cSTepl + 20;//15;		// изменение 135
 
 		ClrDog;
         BlockEEP[1].AdrCopyRAM=&GD.Timer[0];

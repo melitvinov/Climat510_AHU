@@ -1091,6 +1091,7 @@ ClrDog;
 
 
 		GD.Control.NFCtr=NumCtr;
+
 		GD.Control.IPAddr[0]=192;
 		GD.Control.IPAddr[1]=168;
 		GD.Control.IPAddr[2]=1;
@@ -1104,6 +1105,13 @@ ClrDog;
 		GD.Control.Screener=40;
 		GD.Control.MidlSunCalc = 1;
 		GD.Control.MidlWindCalc = 1;
+		// изменение 135
+		GD.Control.IPAddrMCast[0] = 239;
+		GD.Control.IPAddrMCast[1] = 255;
+		GD.Control.IPAddrMCast[2] = 0;
+		GD.Control.IPAddrMCast[3] = 110;
+		GD.Control.PortMCast = 2000;
+
 
         GD.Control.NFCtr=NumCtr;
 

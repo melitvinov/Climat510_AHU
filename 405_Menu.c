@@ -431,7 +431,7 @@ void pmParam() {
     ByteZ--;  //if (!GD.Config[cfReturn1Val] && !GD.Config[cfRegulRetEC]) 
     if (!ByteZ) {
         //Y_menu2%=8;
-        Y_menu2%=10;
+        Y_menu2%=15;
         w_txt(Mes126); //Controller num~
         w_int(&GD.Control.NFCtr,SS);
         if (!Y_menu2) BlkW=1;
@@ -439,9 +439,7 @@ void pmParam() {
         Ad_Buf=Str3;
         w_txt(Mes127); //Language~
         w_int(&GD.Control.Language,oS);
-        // w_int(&PowerOfLineRS,SSSS);
         if (Y_menu2==1) BlkW=1;
-
         Ad_Buf=Str4;
         w_txt(Mes65); //Access code~
         w_int(&GD.Control.Cod,SSS);
@@ -471,14 +469,37 @@ void pmParam() {
             Ad_Buf=Str5;
         }
 
-        if ((Y_menu2>=8)&&(Y_menu2<=9)) {
+        if ( (Y_menu2>=8) && (Y_menu2<=12) ) {
+            w_txt("IP MC:");
+            w_int(&GD.Control.IPAddrMCast[0],SSS);
+            if (Y_menu2==8) BlkW=1;
+            w_txt(".");
+            w_int(&GD.Control.IPAddrMCast[1],SSS);
+            if (Y_menu2==9) BlkW=1;
+            w_txt(".");
+            w_int(&GD.Control.IPAddrMCast[2],SSS);
+            if (Y_menu2==10) BlkW=1;
+            w_txt(".");
+            w_int(&GD.Control.IPAddrMCast[3],SSS);
+            if (Y_menu2==11) BlkW=1;
+            Ad_Buf=Str5;
+        }
+        if ((Y_menu2>=12)&&(Y_menu2<=13)) {
+
+            w_txt("MC Port:");
+            w_int(&GD.Control.PortMCast,SSSS);
+            w_txt("                     ");
+            if (Y_menu2==12) BlkW=1;
+            Ad_Buf=Str5;
+        }
+        if ((Y_menu2>=13)&&(Y_menu2<=14)) {
 
             w_txt("Midl Sun calc: ");
             w_int(&GD.Control.MidlSunCalc,SSS);
-            if (Y_menu2==8) BlkW=1;
+            if (Y_menu2==12) BlkW=1;
             Ad_Buf=Str5;
         }
-        if (Y_menu2>=9) {
+        if (Y_menu2>=14) {
             w_txt("Midl Wind calc: ");
             w_int(&GD.Control.MidlWindCalc,SSS);
             //Ad_Buf=Str5;
@@ -603,7 +624,7 @@ void pmHand(void) {
 
         if (ByteW == cHSmScrTH) {
             buf[Ad_Buf++]='(';
-            w_int(&fnScreenOut[0],SSSS);                            //
+            w_int(&fnScreenOut[0],SSSS);                            		//
             buf[Ad_Buf++]=',';                                              //
             w_int(&fnScreenOut[1],SSSS);
             buf[Ad_Buf++]=',';                                              //
@@ -1039,9 +1060,6 @@ void    pmProgClimate(void)
     return;
 }
 
-//#define K1 "Kontur1: #Kontur1: "
-//#define K2 "Kontur2: #Kontur2: "
-
 void pmVersion(void)
 {
     if ((Y_menu2%4)==2) BlkW=1;
@@ -1059,6 +1077,7 @@ void pmVersion(void)
     return;
 }
 
+/*
 void pmEtherConnect(void)
 {
     char* OutStr;
@@ -1203,7 +1222,7 @@ void pmEtherConnect(void)
 //						else
     //{
     //Y_menu2%=8;
-    if (Y_menu2==0) BlkW=1;
+/*    if (Y_menu2==0) BlkW=1;
     w_txt("IP:");
     w_int(&dis_ip[0],SSS);
     if (Y_menu2==1) BlkW=1;
@@ -1215,12 +1234,12 @@ void pmEtherConnect(void)
     if (Y_menu2==3) BlkW=1;
     w_txt(".");
     w_int(&dis_ip[3],SSS);
-
+*/
 
     //w_txt(Mes206);
     //w_int(&GD.Control.Screener,SSS);
 //						}
-    return;
+//    return;
 //				}
 //                if(ByteZ > 1)	x_menu=0;
 //				pmReset();
@@ -1247,7 +1266,7 @@ void pmEtherConnect(void)
     buf[Ad_Buf++]=')';
 
     return;*/
-}
+//}
 
 void YMenu(char vPozY) {
     char pozY;
@@ -1278,9 +1297,9 @@ void YMenu(char vPozY) {
     if (!(--pozY)) {
         pmVersion();  return;
     }
-    if (!(--pozY)) {
-        pmEtherConnect(); return;
-    }
+//    if (!(--pozY)) {					// изменение 135
+//        pmEtherConnect(); return;
+//    }
     SumYMenu=vPozY-pozY;
     if (Y_menu > SumYMenu) Y_menu=SumYMenu;
 }

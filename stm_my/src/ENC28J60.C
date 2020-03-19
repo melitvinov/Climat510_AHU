@@ -167,13 +167,24 @@ void enc28j60Init(unsigned char* macaddr)
         // 06 08 -- ff ff ff ff ff ff -> ip checksum for theses bytes=f7f9
         // in binary these poitions are:11 0000 0011 1111
         // This is hex 303F->EPMM0=0x3f,EPMM1=0x30
-	enc28j60Write(ERXFCON, ERXFCON_UCEN|ERXFCON_CRCEN|ERXFCON_PMEN);
+	enc28j60Write(ERXFCON, ERXFCON_UCEN|ERXFCON_CRCEN|ERXFCON_PMEN  | ERXFCON_HTEN|ERXFCON_MCEN);
 	enc28j60Write(EPMM0, 0x3f);
 	enc28j60Write(EPMM1, 0x30);
 	enc28j60Write(EPMCSL, 0xf9);
 	enc28j60Write(EPMCSH, 0xf7);
         //
         //
+
+//	u32 flags;
+//    u8 val = ERXFCON_UCEN | ERXFCON_CRCEN | ERXFCON_HTEN;
+//    if (flags & MAC_ACCEPT_ANY_MULTICAST)
+//        val |= ERXFCON_MCEN;
+//    if (flags & MAC_ACCEPT_BROADCAST)
+//        val |= ERXFCON_BCEN;
+//    enc28j60Write(ERXFCON, val);
+
+
+
 	// do bank 2 stuff
 	// enable MAC receive
 	enc28j60Write(MACON1, MACON1_MARXEN|MACON1_TXPAUS|MACON1_RXPAUS);

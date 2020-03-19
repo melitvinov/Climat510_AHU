@@ -10,6 +10,8 @@
 /**************************************************/
 /*------------------------------------------------*/
 
+#include "mcast.pb.h"
+
 /*----------------------------------------------------
                 Ќаходим нужную программу
 ------------------------------------------------------*/
@@ -487,7 +489,7 @@ void __cNextTCalc(char fnTepl)
 
 	int kp = pGD_Control_Tepl->c_PFactor;
 	int ki = pGD_Control_Tepl->c_IFactor;
-	int kd = 0; //100
+	int kd = 100;		// 100 значит внешние факторы вкл
 	int D = (*pGD_Hot_Tepl).NextTCalc.dSumCalc;
 
 
@@ -507,7 +509,12 @@ void __cNextTCalc(char fnTepl)
 *******************************************************************/
 	//IntY=(*pGD_Hot_Tepl).AllTask.DoTVent-getTempVent(fnTepl);
 	// изменеие 100. ¬место getTempVent делаем getTempHeat
-	IntY=(*pGD_Hot_Tepl).AllTask.DoTVent-getTempHeat(fnTepl);
+
+	// изменение 136
+	// было
+	//IntY=(*pGD_Hot_Tepl).AllTask.DoTVent-getTempHeat(fnTepl);
+	// стало
+	IntY=((*pGD_Hot_Tepl).AllTask.DoTVent-getTempHeat(fnTepl)) * 2;
 
 	(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent=((int)((((long)(IntY))*((long)pGD_Control_Tepl->f_PFactor))/100));
  	(*pGD_TControl_Tepl).IntegralVent+=((((long)(IntY))*((long)pGD_Control_Tepl->f_IFactor))/10);
@@ -517,19 +524,6 @@ void __cNextTCalc(char fnTepl)
 	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=(int)(pGD_TControl_Tepl->IntegralVent/100);
 	IntX=(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent+(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent;//+(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
 
-//#ifdef KUBO
-	//ѕроверка на максимум расчета пока константа + 3 градуса
-//	int tempPipe3 = GD.Control.Tepl[fnTepl].tempPipe3 * 100;
-//	if (startFlag)
-//		tempPipe3 = 0;
-//	if (pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3<IntX)
-//	{
-//		pGD_TControl_Tepl->IntegralVent=pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3-(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent;//-(*pGD_Hot_Tepl).NextTCalc.dSumCalcF;
-//		pGD_TControl_Tepl->IntegralVent*=100;
-//		IntX=pGD_Hot_Tepl->AllTask.DoTVent+tempPipe3;
-//	}
-//#endif
-//#ifdef RICHEL
 	//ѕроверка на максимум расчета пока константа + 3 градуса
 	int vAHUTempTask = pGD_Hot_Tepl->AllTask.AHUTempTask * 100;
 	if (startFlag)
@@ -540,8 +534,6 @@ void __cNextTCalc(char fnTepl)
 		pGD_TControl_Tepl->IntegralVent*=100;
 		IntX=pGD_Hot_Tepl->AllTask.DoTVent+vAHUTempTask;
 	}
-//#endif
-
 	// 41 изменение ставим т рукава как тепмпература дл€ отоплени€. Ѕыло так:
 	// изменение 86
 	// было
@@ -551,10 +543,6 @@ void __cNextTCalc(char fnTepl)
 
 	if (startFlag)
 	{
-		//pGD_TControl_Tepl->TVentCritery = GD.Hot.Tepl[fnTepl].AllTask.DoTHeat;
-		//(*pGD_TControl_Tepl).TVentCritery = GD.Hot.Tepl[fnTepl].AllTask.DoTHeat;
-		//minMinPipeTemp = GD.Hot.Tepl[fnTepl].AllTask.DoTHeat;
-
 		// изменеие 59
 		pGD_TControl_Tepl->IntegralVent= GD.Hot.Tepl[fnTepl].AllTask.DoTHeat * 100;
 		startFlag--;
@@ -624,16 +612,6 @@ void __cNextTCalc(char fnTepl)
 
 
 	(*pGD_Hot_Tepl).NextTCalc.TVentCritery=(*pGD_TControl_Tepl).TVentCritery;
-	// 54 изменение
-	// было
-	//(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent,pGD_Hot_Tepl->AllTask.DoRHAir);
-	//(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=RelHum(pGD_TControl_Tepl->TVentCritery,(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent);
-	//if ((*pGD_Hot_Tepl).NextTCalc.ICorrectionVent>9500)
-	//	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=9500;
-
-	// стало  last
-	//(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent,pGD_Hot_Tepl->AllTask.DoRHAir);
-
 	// изменеие 100. RH выводим как Theat
 	//(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent, 4*pGD_Hot_Tepl->AllTask.DoRHAir-(3*GD.Hot.Tepl[fnTepl].InTeplSens[cSmRHSens].Value));
 	(*pGD_Hot_Tepl).NextTCalc.ICorrectionVent=AbsHum(pGD_Hot_Tepl->AllTask.DoTVent, 4*pGD_Hot_Tepl->AllTask.DoRHAir-(3*getRH(fnTepl)));
@@ -716,7 +694,19 @@ void 	SetSensOnMech(void)
 	for (ByteX=0;ByteX<cSRegCtrl;ByteX++)
 		pGD_TControl_Tepl->MechBusy[ByteX].Sens=0;
 	pGD_TControl_Tepl->MechBusy[cHSmWinN].Sens=&pGD_Hot_Tepl->InTeplSens[cSmWinNSens];
-	pGD_TControl_Tepl->MechBusy[cHSmWinS].Sens=&pGD_Hot_Tepl->InTeplSens[cSmWinSSens];
+
+	// изменение NEW
+	// было
+	//pGD_TControl_Tepl->MechBusy[cHSmWinS].Sens=&pGD_Hot_Tepl->InTeplSens[cSmWinSSens];
+	// стало
+	pGD_TControl_Tepl->MechBusy[cHSmUCValve].Sens=&pGD_Hot_Tepl->InTeplSens[cSmAHUSens];
+
+
+	// изменение 135
+	pGD_TControl_Tepl->MechBusy[cHSmUCOutValve].Sens=&pGD_Hot_Tepl->InTeplSens[cSmCirculValve];
+
+	// *************** конец изменение NEW
+
 	pGD_TControl_Tepl->MechBusy[cHSmScrTH].Sens=&pGD_Hot_Tepl->InTeplSens[cSmScreenSens];
 /*	if ((YesBit((*(pGD_Hot_Hand+cHSmWinS)).RCS,(cbManMech))))
 	{
@@ -860,7 +850,7 @@ void SetDiskr(char fnTepl)
 
 	for(ByteX=cHSmPump;ByteX<cHSmRegs;ByteX++)
 	{
-		if ((ByteX==cHSmSIOVals)||(ByteX==cHSmLight)||(ByteX==cHSmAHUPad)||(ByteX==cHSmInRH)||(ByteX==cHSmAHUPump)||(ByteX==cHSmAlarmVent)||(ByteX==cHSmCO2request)||(ByteX==cHSmDiodLight) ) continue;
+		if ((ByteX==cHSmSIOVals)||(ByteX==cHSmLight)||(ByteX==cHSmAHUPad)||(ByteX==cHSmInRH)||(ByteX==cHSmAHUPump)||(ByteX==cHSmAlarmVent)||(ByteX==cHSmCO2request)||(ByteX==cHSmDiodLight)||(ByteX==cHSmHeaterCable) ) continue;
 		__SetBitOutReg(fnTepl,ByteX,1,0);
 		if (YesBit((*(pGD_Hot_Hand+ByteX)).Position,0x01))
 			__SetBitOutReg(fnTepl,ByteX,0,0);
@@ -978,6 +968,13 @@ ClrDog;
 		fPadOnPad = 0;
 	}
 
+//изменение 132 Cabel
+	if ((*(pGD_Hot_Hand+cHSmHeaterCable)).Position)
+		__SetBitOutReg(fnTepl,cHSmHeaterCable,0,0);	// вкл
+	else
+		__SetBitOutReg(fnTepl,cHSmHeaterCable,1,0);	// вкл
+
+
 //изменение 132 Diod
 	if ((*(pGD_Hot_Hand+cHSmDiodLight)).Position)
 		__SetBitOutReg(fnTepl,cHSmDiodLight,0,0);	// вкл
@@ -1091,7 +1088,7 @@ void DoMechanics(char fnTepl)
 		//  лапан AHU допустимое отклонение от датчика
 
 
-		if ((ByteX==cHSmScrTH)||(ByteX==cHSmUCValve))
+		if ((ByteX==cHSmScrTH)||(ByteX==cHSmUCValve)||(ByteX==cHSmUCOutValve)||(ByteX==cHSmWinN))
 		{
 			if ((!YesBit(MBusy->RCS,cMSAlarm))&&(MBusy->Sens)&&(!YesBit(MBusy->Sens->RCS,cbNoWorkSens))&&(GD.TuneClimate.f_MaxAngle))   // TuneClimate.f_MaxAngle - о
 			{
@@ -1124,12 +1121,9 @@ void DoMechanics(char fnTepl)
 							}
 							else continue;
 					}
-
-
 					LngX=MBusy->Sens->Value;
 					LngX*=pGD_ConstMechanic_Mech->v_TimeMixVal;//MBusy->CalcTime;
 					LngX/=1000;
-
 					if (abs(MBusy->Sens->Value-MBusy->PrevTask)<=IntY)
 					{
 						MBusy->TryMove=0;
@@ -1251,9 +1245,12 @@ void DoMechanics(char fnTepl)
 	}
 }
 
+#ifdef MONITOR_METEO
 void SetMeteo(void)		// выполн€етс€ каждые 20 сек
 {
 	uint16_t tMes,i;
+	fnScreenOut[2] = GD.Hot.MeteoSensing[cSmOutTSens].Value;
+	fnScreenOut[3] = GD.TControl.MeteoSensing[cSmOutTSens];
 	for (i=0;i<cConfSMetSens;i++)
 	{
 		tMes=GD.Hot.MeteoSensing[i].Value;
@@ -1287,6 +1284,107 @@ void SetMeteo(void)		// выполн€етс€ каждые 20 сек
 		GD.TControl.Tepl[0].TimeSumSens=0;
 	}
 }
+#endif
+
+#ifdef MULTICAST_METEO
+void SetMeteo(uint msg[], uint size)
+{
+	uint16_t tMes,i;
+
+	fnScreenOut[2] = GD.Hot.MeteoSensing[cSmOutTSens].Value;
+	fnScreenOut[3] = GD.TControl.MeteoSensing[cSmOutTSens];
+
+    if (msg[0])
+    {
+        GD.Hot.MeteoSensing[cSmOutTSens].RCS = 0;
+        GD.Hot.MeteoSensing[cSmOutTSens].Value = msg[1];
+    } else
+    {
+        GD.Hot.MeteoSensing[cSmOutTSens].RCS = 1;
+        GD.Hot.MeteoSensing[cSmOutTSens].Value = 0;
+    }
+    if (msg[2])
+    {
+        GD.Hot.MeteoSensing[cSmFARSens].RCS = 0;
+        GD.Hot.MeteoSensing[cSmFARSens].Value = msg[3];
+    }else
+    {
+        GD.Hot.MeteoSensing[cSmFARSens].RCS = 1;
+        GD.Hot.MeteoSensing[cSmFARSens].Value = 0;
+    }
+    if (msg[4])
+    {
+        GD.Hot.MeteoSensing[cSmVWindSens].RCS = 0;
+        GD.Hot.MeteoSensing[cSmVWindSens].Value = msg[5];
+    }else
+    {
+    	GD.Hot.MeteoSensing[cSmVWindSens].RCS = 1;
+    	GD.Hot.MeteoSensing[cSmVWindSens].Value = 0;
+    }
+    if (msg[6])
+    {
+        GD.Hot.MeteoSensing[cSmDWindSens].RCS = 0;
+        GD.Hot.MeteoSensing[cSmDWindSens].Value = msg[7];
+    }else
+    {
+    	GD.Hot.MeteoSensing[cSmDWindSens].RCS = 1;
+    	GD.Hot.MeteoSensing[cSmDWindSens].Value = 0;
+    }
+    if (msg[8])
+    {
+        GD.Hot.MeteoSensing[cSmRainSens].RCS = 0;
+        GD.Hot.MeteoSensing[cSmRainSens].Value = msg[9];
+    }else
+    {
+        GD.Hot.MeteoSensing[cSmRainSens].RCS = 1;
+        GD.Hot.MeteoSensing[cSmRainSens].Value = 0;
+    }
+    if (msg[10])
+    {
+        GD.Hot.MeteoSensing[cSmOutRHSens].RCS = 0;
+        GD.Hot.MeteoSensing[cSmOutRHSens].Value = msg[11];
+    }else
+    {
+        GD.Hot.MeteoSensing[cSmOutRHSens].RCS = 1;
+        GD.Hot.MeteoSensing[cSmOutRHSens].Value = 0;
+    }
+
+	for (i=0;i<cConfSMetSens;i++)
+	{
+		if (GD.Hot.MeteoSensing[i].RCS != 0) continue;
+		tMes=GD.Hot.MeteoSensing[i].Value;
+		if (((tMes<=GD.TControl.MeteoSensing[i]+NameSensConfig[cConfSSens+i].DigitMidl)&&(tMes>=GD.TControl.MeteoSensing[i]-NameSensConfig[cConfSSens+i].DigitMidl))||(GD.TControl.TimeMeteoSensing[i]>20))
+		{
+			GD.TControl.TimeMeteoSensing[i]=0;
+			GD.TControl.MeteoSensing[i]=tMes;
+		}
+		else if (GD.TControl.TimeMeteoSensing[i]<30) GD.TControl.TimeMeteoSensing[i]++;
+	}
+	if (GD.TControl.Tepl[0].SnowTime>=GD.TuneClimate.MinRainTime)
+			GD.TControl.bSnow=!GD.TControl.bSnow;
+	if (((GD.TControl.MeteoSensing[cSmRainSens]<cMinRain)&&(GD.TControl.bSnow))
+		||((GD.TControl.MeteoSensing[cSmRainSens]>cMinRain)&&(!GD.TControl.bSnow)))
+	{
+		GD.TControl.Tepl[0].SnowTime++;
+//		GD.TControl.Tepl[0].SnowTime=10;
+	}
+	else
+		GD.TControl.Tepl[0].SnowTime=0;
+
+	if  ((GD.TControl.MeteoSensing[cSmOutTSens]<c_SnowIfOut)&&(GD.TControl.bSnow))
+			SetBit(GD.TControl.bSnow,0x02);
+	GD.TControl.Tepl[0].SumSens+=GD.TControl.MeteoSensing[cSmFARSens];//GD.Hot.MeteoSens[cSmFARSens].Value;
+	GD.TControl.Tepl[0].TimeSumSens++;
+	if (GD.TControl.Tepl[0].TimeSumSens>=15)
+	{
+		GD.TControl.Tepl[0].SensHourAgo=GD.TControl.Tepl[0].SensHalfHourAgo;
+		GD.TControl.Tepl[0].SensHalfHourAgo=GD.TControl.Tepl[0].SumSens/GD.TControl.Tepl[0].TimeSumSens;
+		GD.TControl.Tepl[0].SumSens=0;
+		GD.TControl.Tepl[0].TimeSumSens=0;
+	}
+}
+#endif
+
 
 // досветку перенес и обычного климата т.к. там она провер€лась и работает корректно
 void SetLighting(void)
@@ -1650,23 +1748,12 @@ void Control(void)
 
 		if (Second==20)
 		{
-
-
-						//fnScreenOut[0] = GD.Hot.MeteoSensing[cSmOutTSens].Value;
-						//fnScreenOut[1] = GD.Hot.MeteoSensing[cSmFARSens].Value;
-
-//						fnScreenOut[0] = GD.TControl.MeteoSensing[cSmOutTSens];
-//						fnScreenOut[1] = GD.TControl.MeteoSensing[cSmFARSens];
-
-//						fnScreenOut[2] = MidlSunCalc;
-//						fnScreenOut[3] = GD.Hot.MidlSR;
-
-
-
 	        InitLCD();
-//	        GD.Control.ConfSTepl=10;
     	    ClrDog;
+
+#ifdef MONITOR_METEO
 			SetMeteo();
+#endif
 
 		}
 		if ((Second==40)||(GD.TControl.Delay))

@@ -156,6 +156,9 @@ volatile char crc1;
 volatile char size;
 volatile char numB;
 
+uint32_t HotBlockDateTime;
+
+
 char CheckSumMain(void)
 {
     char Bl;
@@ -215,6 +218,22 @@ static void update_time_for_monitor(void)
     datetime_to_control_time(&GD.Hot.time, dt);
 }
 
+int RestoreMeteoSensing[cConfSMetSens];
+
+void saveMeteoSens()
+{
+	int i = 0;
+	for (i=0;i<cConfSMetSens;i++)
+		RestoreMeteoSensing[i] = GD.Hot.MeteoSensing[i].Value;
+}
+
+void loadMeteoSens()
+{
+	int i = 0;
+	for (i=0;i<cConfSMetSens;i++)
+		GD.Hot.MeteoSensing[i].Value = RestoreMeteoSensing[i];
+}
+
 uint32_t prev_ts;
 
 main()
@@ -271,7 +290,7 @@ main()
     ClrDog;
     ClrDog;  /* разрешение прерываний RS и T0 из init8051()*/
     ClearAllAlarms();
-    UDPSendDataInit();
+//    UDPSendDataInit();
     AHUPadInit();
     InRHInit();
 
@@ -350,10 +369,17 @@ main()
         if ( (NumBlock == 0) && (size == 60) ) {
             crc1 = 55-CheckSumMainMeteo();
             if (crc != crc1) {
-                //fnScreenOut[0] = fnScreenOut[0]++;
-                //if (fnScreenOut[0] == 100)
-                //	fnScreenOut[0] = 0;
-                ReadFromFRAM();
+                fnScreenOut[1] = GD.Hot.MeteoSensing[cSmOutTSens].Value;
+            	fnScreenOut[0] = fnScreenOut[0]++;
+                if (fnScreenOut[0] == 100)
+                	fnScreenOut[0] = 0;
+                MeteoRecv = 1;	// не работает
+                loadMeteoSens();
+            }
+            else
+            {
+            	MeteoRecv = 1;
+            	saveMeteoSens();
             }
         }
 
@@ -385,7 +411,7 @@ main()
             // ress = GetDDWP(2300, 7000);
             //ress = GetDDWP(2000, 6000);
 
-            UDPStartSend();
+            //UDPStartSend();
             CheckWithoutPC();
             CheckInputConfig();
         }
@@ -410,7 +436,7 @@ main()
         B_video=1;
         if (!(Second%9)) {
             Measure();
-            UDPSend();
+//            UDPSend();
         }
         // IMOD_WriteOutput(0,1,0xf0f0f0f0);
     }

@@ -6,6 +6,11 @@
 #ifndef __ENC28J60_H
 #define __ENC28J60_H
 
+// MAC flags are in bits 31-16
+#define MAC_ACCEPT_BROADCAST        (1 << 16)
+#define MAC_ACCEPT_ANY_MULTICAST    (1 << 17)
+#define MAC_ACCEPT_ANY_UNICAST      (1 << 18)
+
 // ENC28J60 Control Registers
 // Control register definitions are a combination of address,
 // bank number, and Ethernet/MAC/PHY indicator bits.

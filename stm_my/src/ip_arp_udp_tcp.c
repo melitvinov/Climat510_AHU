@@ -94,6 +94,10 @@ void init_ip_arp_udp_tcp(unsigned char *mymac,unsigned char *myip,unsigned int w
 	unsigned char i=0;
 	myARPport=wwwp;
 	ipaddr=myip;
+
+	ipaddrMC = &GD.Control.IPAddrMCast;
+	portMC = GD.Control.PortMCast;
+
 /*	while(i<4)
 		{
         ipaddr[i]=myip[i];
@@ -142,6 +146,9 @@ unsigned char eth_type_is_arp_and_my_ip(unsigned char *buf,unsigned  int len)
 unsigned char eth_type_is_ip_and_my_ip(unsigned char *buf,unsigned  int len)
 	{
 	unsigned char i=0;
+	bool pack = true;
+	bool packMC = true;
+
 	//eth+ip+udp header is 42
 	if (len<42)
 		{
@@ -156,16 +163,31 @@ unsigned char eth_type_is_ip_and_my_ip(unsigned char *buf,unsigned  int len)
 	    // must be IP V4 and 20 byte header
 	    return(0);
 		}
+
 	while(i<4)
 		{
 	    if(buf[IP_DST_P+i]!=ipaddr[i])
 			{
-	        return(0);
+	    		pack = false;
 	    	}
 	    i++;
 		}
+	i = 0;
+	while(i<4)
+		{
+	    if(buf[IP_DST_P+i]!=ipaddrMC[i])
+			{
+	          packMC = false;
+	    	}
+	    i++;
+		}
+
+	if ((pack == false)&(packMC == false))
+		return(0);
+
 	return(1);
 	}
+
 // make a return eth header from a received eth packet
 void make_eth(unsigned char *buf)
 	{

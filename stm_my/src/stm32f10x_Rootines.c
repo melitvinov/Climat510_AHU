@@ -857,6 +857,13 @@ void CheckSensLevsNew(char fnTepl,uint8_t fnSens,char full,char met,int16_t Mes)
 		if(!YesBit(pGD_TControl_Tepl->MechBusy[fnSens-cSmWinNSens+cHSmWinN].RCS,cMSBusyMech))
 			SetBit(pGD_TControl_Tepl->MechBusy[fnSens-cSmWinNSens+cHSmWinN].RCS,cMSFreshSens);
 
+		if(!YesBit(pGD_TControl_Tepl->MechBusy[cHSmUCValve].RCS,cMSBusyMech))
+			SetBit(pGD_TControl_Tepl->MechBusy[cHSmUCValve].RCS,cMSFreshSens);
+
+		if(!YesBit(pGD_TControl_Tepl->MechBusy[cHSmUCOutValve].RCS,cMSBusyMech))
+			SetBit(pGD_TControl_Tepl->MechBusy[cHSmUCOutValve].RCS,cMSFreshSens);
+
+
 	}
 	if (nameS->TypeSens==cTypeScreen)
 	{

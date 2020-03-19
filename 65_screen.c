@@ -327,8 +327,8 @@ void SetPosScreen(char typScr, char fnTepl)
 		{
 			pScr->Pause--;
 
-			if ((typScr == 0)&&(fnTepl == 0))
-				fnScreenOut[0] = pScr->Pause;
+			//if ((typScr == 0)&&(fnTepl == 0))
+			//	fnScreenOut[0] = pScr->Pause;
 
 			if (pScr->Pause != 0)
 				return;
@@ -471,8 +471,8 @@ void SetPosScreen(char typScr, char fnTepl)
 
 
 
-	if ((typScr == 0)&&(fnTepl == 0))
-		fnScreenOut[0] = pScr->Pause;
+	//if ((typScr == 0)&&(fnTepl == 0))
+	//	fnScreenOut[0] = pScr->Pause;
 
 	IntX=((int)(ByteX))-IntZ;
 	if (IntX>0)					// сворачивание
@@ -488,9 +488,9 @@ void SetPosScreen(char typScr, char fnTepl)
 		if ((typScr == 0)&&(fnTepl == 0))
 		{
 			//fnScreenOut[0] = pScr->Pause;
-			fnScreenOut[1] = pScr->Value;
-			fnScreenOut[2] = pScr->Mode;
-			fnScreenOut[3] = (*(pGD_Hot_Hand+cHSmScrTH+typScr)).Position;
+			//fnScreenOut[1] = pScr->Value;
+			//fnScreenOut[2] = pScr->Mode;
+			//fnScreenOut[3] = (*(pGD_Hot_Hand+cHSmScrTH+typScr)).Position;
 		}
 
 
@@ -512,9 +512,9 @@ void SetPosScreen(char typScr, char fnTepl)
 		if ((typScr == 0)&&(fnTepl == 0))
 		{
 			//fnScreenOut[0] = pScr->Pause;
-			fnScreenOut[1] = pScr->Value;
-			fnScreenOut[2] = pScr->Mode;
-			fnScreenOut[3] = (*(pGD_Hot_Hand+cHSmScrTH+typScr)).Position;
+			//fnScreenOut[1] = pScr->Value;
+			//fnScreenOut[2] = pScr->Mode;
+			//fnScreenOut[3] = (*(pGD_Hot_Hand+cHSmScrTH+typScr)).Position;
 		}
 
 

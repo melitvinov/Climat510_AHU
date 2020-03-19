@@ -38,6 +38,9 @@ static unsigned char seqnum=0xa; // my initial tcp sequence number
 
 unsigned char *ipaddr;
 
+// изменение 315
+unsigned char *ipaddrMC;
+static unsigned int portMC = 2000;
 
 
 // you must call this function once before you use any of the other functions:

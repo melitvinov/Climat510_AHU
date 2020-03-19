@@ -37,7 +37,7 @@
 #define cSmOverPSens	15   // датчик избыточного давления
 #define cSmOverPSensAHU	16	 // датчик избыточного давления камеры AHU  // был датчик крыши
 
-// 17 пропущенный датик это датчик положения Клапана циркуляции
+#define cSmCirculValve	17   // датчик положения Клапана циркуляции
 
 #define cSmGlassSens	18
 #define cSmCOSens		11
@@ -45,9 +45,9 @@
 #define cSmTAHUOutSens	20
 #define cSmRHAHUOutSens	13
 
-#define cSmWinNSens		21
-#define cSmWinSSens		22
-#define cSmScreenSens	23
+#define cSmWinNSens		21		// положение фрамуги Север
+#define cSmAHUSens		22		// положение клапана AHU
+#define cSmScreenSens	23		// положение экрана
 #define cSmWaterSens	24
 #define cSmAHUPipeSens	26
 
@@ -122,7 +122,7 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 {"Over\310ressure#\245\267\262\303\277 \343a\263\273e\275",			SSpS0,  cuPa,	cTypeAnal,	0,	0,	1,	  9900,		0,		3000,	0,		3000,	0,		5000,	c3MidlSens,		80}, /* Избыточное давление*/
 //16
 #ifdef RICHEL
-{"Over\310ressure AHU#\245\267\262\303\277 AHU",					SSpS0,  cuPa,	cTypeAnal,	0,	0,	1,	  9900,		0,		3000,	0,		3000,	0,		5000,	c3MidlSens,		80},  /* Избыточное давление AHU*/
+{"Over\310ressure AHU#\245\267\262\303\277 AHU",					SSSS,  cuPa,	cTypeAnal,	0,	0,	1,	  12500,		0,		3000,	0,		3000,	0,		5000,	c3MidlSens,		80},  /* Избыточное давление AHU*/
 {"Position circ#Position circ",										SSSpS,	cuPr,	cTypeScreen,1,	0,	0,	  1000, 	0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,		400}, /*Сокодвижение*/
 //{"Position circ#Position circ",										SSSpS,	cuPr,	cTypeAnal,	1,	0,	0,	  1000, 	0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,		400}, /*Положение циркл клапана*/
 																	//SSSS,   cuT,	cTypeAnal,	3,	0,	0,	  1000,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Температура почвы*/
@@ -136,8 +136,8 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 {"Tem\310 in AHU#Te\274\276 \263xo\343a AHU",						SSpS0,	cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /* Т входа в AHU*/
 {"Tem\310 out AHU#Te\274\276 \263\303xo\343a AHU",					SSpS0,	cuT,	cTypeAnal,	3,	0,	1,	  9900,		2930,	3230,	2000,	5000,	2000,	5000,	c3MidlSens,		80}, /*Т выхода из AHU*/
 //21
-{"N vent \310os#\250o\273o\266 \344\310a\274\311\264\270 C",		SSSpS,	cuPr,	cTypeFram,	1,	0,	0,	  1000, 	0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,		400}, /*Сокодвижение*/
-{"Rezerv#He \270c\276o\273\304\267",								SSSpS,	cuPr,	cTypeFram,	1,	0,	0,	  1000, 	0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,		400}, /*Размер плода*/
+{"N vent \310os#\250o\273o\266 \344\310a\274\311\264\270",			SSSpS,	cuPr,	cTypeFram,	1,	0,	0,	  1000, 	0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,		400}, /*Сокодвижение*/
+{"Position AHU#\250o\273o\266 AHU",									SSSpS,	cuPr,	cTypeFram,	1,	0,	0,	  1000, 	0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,		400}, /*Размер плода*/
 {"Screen \310os#\250o\273o\266 \305\272\310a\275",					SSSpS,	cuPr,	cTypeScreen,1,	0,	0,	  1000, 	0,		5000,	0,	  	1000, 	0,		5000,	c3MidlSens,		400}, /*Сокодвижение*/
 //20
 {"Tem\310 \310i\310e1#Te\274\276 \272o\275\277\311\310a 1",			SSSpS,	cuT,	cTypeAnal,	3,	0,	10,	  1500,		2930,	3230,	200,	500,	2000,	5000,	c3MidlSens,		100}, /*Т прям контура1*/
@@ -190,9 +190,9 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 #ifdef KUBO
 	#define cHSmWinN4		10
 #endif
-#ifdef RICHEL
+//#ifdef RICHEL
 	#define cHSmUCOutValve	10
-#endif
+//#endif
 
 
 #define cHSmUCValve		11
