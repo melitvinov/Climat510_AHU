@@ -514,7 +514,9 @@ void __cNextTCalc(char fnTepl)
 	// было
 	//IntY=(*pGD_Hot_Tepl).AllTask.DoTVent-getTempHeat(fnTepl);
 	// стало
-	IntY=((*pGD_Hot_Tepl).AllTask.DoTVent-getTempHeat(fnTepl)) * 2;
+	//volatile int speed = GD.TuneClimate.AHUvalveSpeed;
+	//if (speed <= 0) speed = 1;
+	IntY=((*pGD_Hot_Tepl).AllTask.DoTVent-getTempHeat(fnTepl));// * speed;
 
 	(*pGD_Hot_Tepl).NextTCalc.PCorrectionVent=((int)((((long)(IntY))*((long)pGD_Control_Tepl->f_PFactor))/100));
  	(*pGD_TControl_Tepl).IntegralVent+=((((long)(IntY))*((long)pGD_Control_Tepl->f_IFactor))/10);
@@ -1103,7 +1105,6 @@ void DoMechanics(char fnTepl)
 				if 	(MBusy->TryMove>4)
 				{
 					SetBit(MBusy->RCS,cMSAlarm);
-					fnMKeepParamOut[fnTepl][0] = MBusy->TryMove;
 					continue;
 				}
 				if (MBusy->PrevTask==pGD_Hot_Hand_Kontur->Position*10)
@@ -1249,8 +1250,6 @@ void DoMechanics(char fnTepl)
 void SetMeteo(void)		// выполняется каждые 20 сек
 {
 	uint16_t tMes,i;
-	fnScreenOut[2] = GD.Hot.MeteoSensing[cSmOutTSens].Value;
-	fnScreenOut[3] = GD.TControl.MeteoSensing[cSmOutTSens];
 	for (i=0;i<cConfSMetSens;i++)
 	{
 		tMes=GD.Hot.MeteoSensing[i].Value;
@@ -1283,6 +1282,11 @@ void SetMeteo(void)		// выполняется каждые 20 сек
 		GD.TControl.Tepl[0].SumSens=0;
 		GD.TControl.Tepl[0].TimeSumSens=0;
 	}
+
+	fnScreenOut[0] = GD.Hot.MeteoSensing[cSmOutTSens].Value;
+	fnScreenOut[1] = GD.Hot.MeteoSensing[cSmFARSens].Value;
+	fnScreenOut[3] = GD.Hot.MidlSR;
+	fnScreenOut[2] = GD.Hot.MidlWind;
 }
 #endif
 

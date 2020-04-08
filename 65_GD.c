@@ -411,8 +411,15 @@ typedef struct eeTuneClimate
 
 		uchar		CabelHeatWork;		// время работы кабеля								!!!!!!!!!!!!!!!!
 
-		int16_t		c_MaxDifTUp;  		// Клапан AHU		не используется
-		int16_t		f_MinTime;  		// Клапан AHU минимальная пауза между включениями    не используется
+		// изменение 137
+		// было
+		//int16_t		c_MaxDifTUp;  		// Клапан AHU		не используется
+		//int16_t		f_MinTime;  		// Клапан AHU минимальная пауза между включениями    не используется
+		// стало
+		int8_t		sc_ToutStart;		// Разворачиваем экран по внешней температуре. Начало влияния
+		int8_t		sc_ToutEnd;			// Разворачиваем экран по внешней температуре. Конец влияния
+		int8_t		sc_ToutMax;			// Разворачиваем экран по внешней температуре. На сколько
+		int8_t		AHUvalveSpeed;		// тестовый параметр для ускарения Расчета Т рукава ДЕРЖАТЬ
 
 		uchar     	CabelHeatPaus;		// пауза работы кабеля								!!!!!!!!!!!
 		uchar     	XXXX;				// не используется								!!!!!!!!!!!
@@ -519,7 +526,7 @@ typedef struct eeTuneClimate
 		uchar		fAHU_Offset1;
 		uchar		fAHU_Offset2;
 		uchar		fAHU_Offset3;
-		uchar		fAHU_Offset4;		// не используется
+		uchar		fAHU_Offset4;
 
 		uchar		fAHU_Sens1;			// не используется
 		uchar		fAHU_Sens2;

@@ -158,6 +158,72 @@ volatile char numB;
 
 uint32_t HotBlockDateTime;
 
+uint8_t gencrc(void)
+{
+
+    char Bl;
+    switch (numB) {
+    case 2:
+        {
+            Bl = 0;
+            break;
+        }
+    case 4:
+        {
+            Bl = 1;
+            break;
+        }
+    case 6:
+        {
+            Bl = 2;
+            break;
+        }
+    case 9:
+        {
+            Bl = 3;
+            break;
+        }
+
+    }
+
+    int i;
+    volatile int8_t res;
+    volatile int8_t r =0;
+    volatile int8_t data[100];
+    volatile int k = 0;
+/*
+    for (i=0; i<92; i++)
+      data[i]=i;
+    k = 92;
+*/
+    for (i=0; i<cSHandCtrl; i++) {
+        data[k] = GD.Hot.Tepl[Bl].HandCtrl[i].RCS;
+        k = k+1;
+        data[k] = GD.Hot.Tepl[Bl].HandCtrl[i].Position;
+        k = k+1;
+    }
+
+/*
+    k = 5;
+    data[0] = 0x01;
+    data[1] = 0x04;
+    data[2] = 0x03;
+    data[3] = 0x02;
+    data[4] = 0x06;
+*/
+    volatile int j;
+    for (i = 0; i < k; i++) {
+    	res ^= data[i];
+        for (j = 0; j < 8; j++) {
+            if ((res & 0x80) != 0)
+            	res = (uint8_t)((res << 1) ^ 0x07);
+            else
+            	res <<= 1;
+        }
+    }
+    return res;
+}
+
 
 char CheckSumMain(void)
 {
@@ -201,14 +267,32 @@ char CheckSumMain(void)
 char CheckSumMainMeteo(void)
 {
     int i;
-    char res = 0;
-    volatile int8_t r =0;
+    volatile int8_t res;
+    volatile int8_t data[100];
+    volatile int k = 60;
+
+    for (i=0; i<k; i++)
+        data[i] = (*((&(GD.Hot.News))+i));
+
+    volatile int j;
+    for (i = 0; i < k; i++) {
+    	res ^= data[i];
+        for (j = 0; j < 8; j++) {
+            if ((res & 0x80) != 0)
+            	res = (uint8_t)((res << 1) ^ 0x07);
+            else
+            	res <<= 1;
+        }
+    }
+    return res;
+
+/*
     for (i=0; i < 60; i++) {
         //r = (*(uint8_t *)&GD.Hot.News + i);
         r = (*((&(GD.Hot.News))+i));
         res = res + r;
     }
-    return res;
+    return res;*/
 }
 
 static void update_time_for_monitor(void)
@@ -361,18 +445,19 @@ main()
         //checkConfig();
 
         if ( (NumBlock == 0) && (size == 92) ) {
-            crc1 = 55-CheckSumMain();
+            //crc1 = 55-CheckSumMain();
+        	crc1 = gencrc();
             if (crc != crc1)
                 ReadFromFRAM();
         }
 
         if ( (NumBlock == 0) && (size == 60) ) {
-            crc1 = 55-CheckSumMainMeteo();
+            crc1 = CheckSumMainMeteo();
             if (crc != crc1) {
-                fnScreenOut[1] = GD.Hot.MeteoSensing[cSmOutTSens].Value;
-            	fnScreenOut[0] = fnScreenOut[0]++;
-                if (fnScreenOut[0] == 100)
-                	fnScreenOut[0] = 0;
+                //fnScreenOut[1] = GD.Hot.MeteoSensing[cSmOutTSens].Value;
+            	//fnScreenOut[0] = fnScreenOut[0]++;
+                //if (fnScreenOut[0] == 100)
+                //	fnScreenOut[0] = 0;
                 MeteoRecv = 1;	// не работает
                 loadMeteoSens();
             }

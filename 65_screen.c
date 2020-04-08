@@ -61,11 +61,8 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 	switch(chType) 
 	{
 	case 0:
-		
 		if (!bZad)
 		{
-			//if (IntZ>GD.TuneClimate.sc_TOutClose+200) pScr->Mode=1;
-			//if ((IntZ<GD.TuneClimate.sc_TOutClose)||(!GD.TuneClimate.sc_TOutClose)) pScr->Mode=0;
 			if (GD.TuneClimate.sc_TSROpen)
 			{
 				if (MidlSun>GD.TuneClimate.sc_TSROpen) pScr->Mode=0;
@@ -78,42 +75,41 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			//	pScr->Mode=1;
 			if((GD.TuneClimate.sc_ZSRClose)&&(MidlSun>SunZClose)) pScr->Mode=1;
 
-		volatile int CorrRes;
-		volatile int deltaTz;
-		volatile int deltaTi;
-		//volatile int MinusSR;
-		//volatile int MinSC = 0;
-
-		volatile int CurrentPos = GD.Hot.Tepl[fnTepl].HandCtrl[cHSmScrTH].Position;
-		int sc_deltaTstart = GD.TuneClimate.sc_deltaTstart;
-		int sc_deltaTend = GD.TuneClimate.sc_deltaTend;
-		int sc_MaxOpenCorrect = GD.TuneClimate.sc_MaxOpenCorrect;
-		int sc_TCorrMin = GD.TuneClimate.sc_TCorrMin*100;
-		int sc_TCorrMax = GD.TuneClimate.sc_TCorrMax*100;
-		int sc_TMinOpenCorrect = GD.TuneClimate.sc_TMinOpenCorrect;
-		int sc_StartP1Zone = GD.TuneClimate.sc_StartP2Zone;
-		int sc_TOutClose = GD.TuneClimate.sc_TOutClose;
-		volatile int sc_LineSunVol = GD.TuneClimate.sc_LineSunVol*10;
-
-		// изменеие 100. RH выводим как Theat
-		//int sc_RHinTepl = pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value;
-		int sc_RHinTepl = getRH(fnTepl);
-		int sc_RHStart = GD.TuneClimate.sc_RHStart;
-		int sc_RHEnd = GD.TuneClimate.sc_RHEnd;
-		int sc_RHMax = GD.TuneClimate.sc_RHMax;
-
-		int sc_TSROpen = GD.TuneClimate.sc_TSROpen;
-		int sc_ZSRClose = GD.TuneClimate.sc_ZSRClose;
-
-		if (Tz >= Ti)
-			deltaTz = (pGD_Hot_Tepl->AllTask.DoTHeat - getTempHeat(fnTepl));
-		else
-			deltaTz = 0;
-		if (Ti > Tz)
-			deltaTi = (getTempHeat(fnTepl) - pGD_Hot_Tepl->AllTask.DoTHeat);
-		else
-			deltaTi = 0;
-
+			volatile int CorrRes;
+			volatile int deltaTz;
+			volatile int deltaTi;
+			volatile int CurrentPos = GD.Hot.Tepl[fnTepl].HandCtrl[cHSmScrTH].Position;
+			int sc_deltaTstart = GD.TuneClimate.sc_deltaTstart;
+			int sc_deltaTend = GD.TuneClimate.sc_deltaTend;
+			int sc_MaxOpenCorrect = GD.TuneClimate.sc_MaxOpenCorrect;
+			int sc_TCorrMin = GD.TuneClimate.sc_TCorrMin*100;
+			int sc_TCorrMax = GD.TuneClimate.sc_TCorrMax*100;
+			int sc_TMinOpenCorrect = GD.TuneClimate.sc_TMinOpenCorrect;
+			int sc_StartP1Zone = GD.TuneClimate.sc_StartP2Zone;
+			int sc_TOutClose = GD.TuneClimate.sc_TOutClose;
+			volatile int sc_LineSunVol = GD.TuneClimate.sc_LineSunVol*10;
+			// изменение 137
+			volatile int8_t sc_ToutStart = GD.TuneClimate.sc_ToutStart * 100;
+			volatile int8_t sc_ToutEnd = GD.TuneClimate.sc_ToutEnd * 100;
+			volatile int8_t sc_ToutMax = GD.TuneClimate.sc_ToutMax;
+			// изменеие 100. RH выводим как Theat
+			int sc_RHinTepl = getRH(fnTepl);
+			int sc_RHStart = GD.TuneClimate.sc_RHStart;
+			int sc_RHEnd = GD.TuneClimate.sc_RHEnd;
+			int sc_RHMax = GD.TuneClimate.sc_RHMax;
+			int sc_TSROpen = GD.TuneClimate.sc_TSROpen;
+			int sc_ZSRClose = GD.TuneClimate.sc_ZSRClose;
+			int resultMaxOpen = 0;
+			// считаем дельту между заданной и измеренной температурой
+			if (Tz >= Ti)
+				deltaTz = (pGD_Hot_Tepl->AllTask.DoTHeat - getTempHeat(fnTepl));
+			else
+				deltaTz = 0;
+			if (Ti > Tz)
+				deltaTi = (getTempHeat(fnTepl) - pGD_Hot_Tepl->AllTask.DoTHeat);
+			else
+				deltaTi = 0;
+			// если солнца нет, смотрим Внешняя температура разворачивает при.
 			if (MidlSun <= sc_TSROpen)  // суть в том что экран от 0 до МИН должен быть открыть если высокая внешняя температура и закрыт только если
 			{							// если внешняя температура меньше
 				if ( sc_TOutClose < sc_Tout ) // коррекция по внешней температуре с признаком ночи, экран не надо сварачивать
@@ -127,7 +123,6 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 					pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;  // не 100 а макс из парам
 				}
 			}
-
 			if ( (MidlSun > sc_TSROpen)&&(MidlSun < sc_ZSRClose) )
 			{
 				pScr->Mode=1;
@@ -194,48 +189,53 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 					}
 				}
 			}
-
-		if ( (sc_TMinOpenCorrect>0) && (sc_TCorrMax>0) )
-		{
-		// расчет минимального открытия экрана
-			if (deltaTz > 0)
+			if ( (sc_TMinOpenCorrect>0) && (sc_TCorrMax>0) )
 			{
-//				if (deltaTz < sc_TCorrMin)
-//				{
-//					pScr->Mode=1;
-//					pScr->Value = sc_StartP1Zone;
-//				}
-				if ( (deltaTz > sc_TCorrMin)&&(deltaTz < sc_TCorrMax) )
+				// расчет минимального открытия экрана
+				if (deltaTz > 0)
 				{
-					if (sc_TCorrMax > sc_TCorrMin)
-						CorrRes = (deltaTz * sc_TMinOpenCorrect) / ((sc_TCorrMax - sc_TCorrMin));
-					else
-						CorrRes = (deltaTz * sc_TMinOpenCorrect) / ((sc_TCorrMax));
-					pScr->Mode=0;
-					pScr->Value = CorrRes;
-					if (sc_TMinOpenCorrect + sc_StartP1Zone > pGD_Control_Tepl->sc_TMaxOpen)
-						pScr->Value = sc_StartP1Zone;
-				}
-				if (deltaTz >= sc_TCorrMax)
-				{
-					pScr->Mode=0;
-					pScr->Value = sc_TMinOpenCorrect;
-					if (sc_TMinOpenCorrect + sc_StartP1Zone > pGD_Control_Tepl->sc_TMaxOpen)
-						pScr->Value = sc_StartP1Zone;
+					if ( (deltaTz > sc_TCorrMin)&&(deltaTz < sc_TCorrMax) )
+					{
+						if (sc_TCorrMax > sc_TCorrMin)
+							CorrRes = (deltaTz * sc_TMinOpenCorrect) / ((sc_TCorrMax - sc_TCorrMin));
+						else
+							CorrRes = (deltaTz * sc_TMinOpenCorrect) / ((sc_TCorrMax));
+						pScr->Mode=0;
+						pScr->Value = CorrRes;
+						if (sc_TMinOpenCorrect + sc_StartP1Zone > pGD_Control_Tepl->sc_TMaxOpen)
+							pScr->Value = sc_StartP1Zone;
+					}
+					if (deltaTz >= sc_TCorrMax)
+					{
+						pScr->Mode=0;
+						pScr->Value = sc_TMinOpenCorrect;
+						if (sc_TMinOpenCorrect + sc_StartP1Zone > pGD_Control_Tepl->sc_TMaxOpen)
+							pScr->Value = sc_StartP1Zone;
+					}
 				}
 			}
-		}
-
-		// Влияние разницы влажности на открытие экрана
-		if ( (sc_RHinTepl) && (sc_RHStart) && (sc_RHEnd) && (sc_RHMax) )
-		{
-			// изменеие 100. RH выводим как Theat
-			//IntY=pGD_Hot_Tepl->InTeplSens[cSmRHSens].Value-pGD_Hot_Tepl->AllTask.DoRHAir;
-			IntY=getRH(fnTepl)-pGD_Hot_Tepl->AllTask.DoRHAir;
-			CorrectionRule(GD.TuneClimate.sc_RHStart,GD.TuneClimate.sc_RHEnd,GD.TuneClimate.sc_RHMax,0);
-			if (!pGD_Hot_Tepl->AllTask.DoRHAir) IntZ=0;
-				pScr->Value-=IntZ;
-		}
+			resultMaxOpen = pScr->Value;	// положение экрана после расчетов
+			// Влияние разницы влажности на открытие экрана
+			if ( (sc_RHinTepl) && (sc_RHStart) && (sc_RHEnd) && (sc_RHMax) )
+			{
+				// изменеие 100. RH выводим как Theat
+				IntY=sc_RHinTepl - pGD_Hot_Tepl->AllTask.DoRHAir;
+				CorrectionRule(sc_RHStart,sc_RHEnd,sc_RHMax,0);
+				if (!pGD_Hot_Tepl->AllTask.DoRHAir) IntZ=0;
+					pScr->Value-=IntZ;
+			}
+			if (pScr->Value > resultMaxOpen)		// проверяем стало ли положение экрана больше чем было
+				resultMaxOpen = pScr->Value;
+			// изменение 137 Коррекция экрана по внешней температуре
+			if ( sc_ToutMax )
+			{
+				IntY = sc_Tout;
+				CorrectionRule(sc_ToutEnd, sc_ToutStart,sc_ToutMax,0);
+					pScr->Value = sc_ToutMax - IntZ;
+			}
+			if (pScr->Value > resultMaxOpen)		// проверяем стало ли положение экрана больше чем было
+				resultMaxOpen = pScr->Value;
+			pScr->Value = resultMaxOpen;			// в положение экрана устанавливаем максимальное значение после всех коррекций
 		}
 
 		// проверка на максимум

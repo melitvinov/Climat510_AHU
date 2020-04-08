@@ -1087,11 +1087,11 @@ ClrDog;
         /* Установка реле по умолчанию */
 		for (IntX=0;IntX<(sizeof(NameConst)/3);IntX++)
 			GD.TuneClimate.s_TStart[IntX]=NameConst[IntX].StartZn;
+
 		GD.TuneClimate.crc = 0x0A;
 
 
 		GD.Control.NFCtr=NumCtr;
-
 		GD.Control.IPAddr[0]=192;
 		GD.Control.IPAddr[1]=168;
 		GD.Control.IPAddr[2]=1;
@@ -1111,9 +1111,6 @@ ClrDog;
 		GD.Control.IPAddrMCast[2] = 0;
 		GD.Control.IPAddrMCast[3] = 110;
 		GD.Control.PortMCast = 2000;
-
-
-        GD.Control.NFCtr=NumCtr;
 
         for(ByteX=0;ByteX<cConfSMetSens;ByteX++) {
 			eCS=&GD.Cal.MeteoSens[ByteX];

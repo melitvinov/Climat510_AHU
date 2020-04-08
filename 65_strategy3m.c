@@ -1164,6 +1164,8 @@ void PutCritery(int16_t dT, int16_t dRH)
 	}*/
 }
 
+#warning !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NEW
+
 int8_t GetOffSet(int8_t fnSys)
 {
 	switch (fnSys)
@@ -1219,8 +1221,9 @@ int8_t fnMKeepErrorOut[8];
 
 int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 {
+	volatile int32_t CriterNew;
+	volatile int16_t CriterMain;
 	int16_t fnSys,fnMSys,fnMPrior;
-	int32_t CriterNew;
 	fnMSys=-1;
 	fnMPrior=0;
 	for (fnSys=0;fnSys<cSUCSystems;fnSys++)
@@ -1242,22 +1245,37 @@ int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 		GD.Hot.Tepl[fnTepl].CurrentStratSys = 0;
 		return -1;
 	}
-	//pGD_TControl_Tepl->Systems[fnMSys].Keep+=((int32_t)CriterNew)*pGD_TControl_Tepl->Systems[fnMSys].Power/10000; // так было
-	//fnMKeepErrorOut[fnTepl] = 0;  // есть активная система   // вывод стратегии
 	pGD_TControl_Tepl->StopVentI=0;
 	if (pGD_TControl_Tepl->Systems[fnMSys].Power/1000 == 0)
 		pGD_TControl_Tepl->Systems[fnMSys].Power = 1000;
 
-	pGD_TControl_Tepl->Systems[fnMSys].Keep = SetPID(((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
+
+	// изменение 136
+	CriterMain = fnCritery;
+	volatile int speed = GD.TuneClimate.AHUvalveSpeed;
+		if (speed <= 0) speed = 0;
+	if (fnMSys == cSysAHUPipe)
+	{
+		if (fnCritery < 0)
+			CriterNew = SetPID( (((int32_t)CriterMain) - (speed*100)) * pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
+		else
+			CriterNew = SetPID( (((int32_t)CriterMain) + (speed*100)) * pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
+	}
+	else
+		CriterNew = SetPID( ((int32_t)CriterMain) * pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
+
+	pGD_TControl_Tepl->Systems[fnMSys].Keep = CriterNew;
+
+
 
 
 	if (fnMSys == cSysAHUPipe)     // вывод стратегии
 	{
-		fnMKeepParamOut[fnTepl][0] = (int32_t)fnCritery;
-		fnMKeepParamOut[fnTepl][1] = 1;//pGD_TControl_Tepl->Systems[fnMSys].Power/1000;
+		fnMKeepParamOut[fnTepl][0] = (int32_t)fnCritery;// * speed;
+		fnMKeepParamOut[fnTepl][1] = 1;//speed;
 		fnMKeepParamOut[fnTepl][2] = GetOffSet(fnMSys);
-		fnMKeepParamOut[fnTepl][3] = pGD_TControl_Tepl->Systems[fnMSys].Max;
-		fnMKeepParamOut[fnTepl][4] = pGD_TControl_Tepl->Systems[fnMSys].Min;
+		fnMKeepParamOut[fnTepl][3] = pGD_TControl_Tepl->Systems[fnMSys].Min;
+		fnMKeepParamOut[fnTepl][4] = pGD_TControl_Tepl->Systems[fnMSys].Max;
 	}
 
 
@@ -2322,7 +2340,7 @@ void __sCalcKonturs(void)
 	long MinMaxPowerReg[3];
 	long xdata temp;
 	int	 OldCrit;
-	int16_t	CriterT,CriterRH;
+	volatile int16_t CriterT,CriterRH;
 	char isFram;
 	char fnTepl,tTepl;
 	
@@ -2462,8 +2480,11 @@ void __sCalcKonturs(void)
 		pGD_TControl_Tepl->AbsMaxVent=__MaxMechToVentTemp();
 		// изменеие 100. Вместо getTempVent делаем getTempHeat
 		//if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0) && (getTempOutAHU(fnTepl)!=0) )
+
 		if ((getTempHeat(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0) && (getTempOutAHU(fnTepl)!=0) )
 			TakeForSys(CriterT,fnTepl);  // first
+
+
 		//TakeForSys(GD.Hot.Tepl[fnTepl].AllTask.DoTVent - getTempVent(fnTepl));  // last
 		//TakeForSys((*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT);  // было так
 		//if ((((int32_t)pGD_TControl_Tepl->Kontur[cSmWindowUnW].CalcT)*pGD_Hot_Tepl->NextTCalc.TVentCritery)<=0)
@@ -2663,10 +2684,6 @@ void __sMechScreen(void)
 //Изменения от 13.05.2014
 int16_t __SetIntWin(uint8_t fSens,uint8_t fNFram,uint16_t fOffset,uint16_t fStartPoint, char fnTepl)
 {
-#warning !!!
-//	int16_t* IntVal;
-
-
 	if (!fStartPoint)
 		return 0;
 
@@ -2688,10 +2705,6 @@ int16_t __SetIntWin(uint8_t fSens,uint8_t fNFram,uint16_t fOffset,uint16_t fStar
 //Изменения от 13.05.2014
 int16_t __SetWinPress(uint16_t DoPres,uint8_t fNFram,uint16_t fOffset)
 {
-#warning !!!
-	//	int16_t* IntVal;
-
-
 //#warning то сейчас из-за этого фрамуга постоянно прыгает вниз-вверх. И похоже разбегается. Может Серега был и прав – дело реально в прошивке может быть
 
 	// надо протестить

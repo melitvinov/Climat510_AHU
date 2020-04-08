@@ -1,8 +1,8 @@
 //#define DEBUG
 //#define DS18B20ERRORFLAG
 
-#define RICHEL
-//#define KUBO
+//#define RICHEL
+#define KUBO
 
 #define MONITOR_METEO
 //#define MULTICAST_METEO

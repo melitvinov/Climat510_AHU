@@ -207,12 +207,14 @@ switch (Sockets[nSock].IP_PHASE)
 		{
 			if ( (Sockets[nSock].NumBlock == 0) && (info_data_len == 93) )
 			{
-				crc = 55-CheckSum(&f_buf[data_p], info_data_len-1);
+				//crc = 55-CheckSum(&f_buf[data_p], info_data_len-1);
+				crc = f_buf[data_p + info_data_len-1];
 				size = info_data_len-1;
 			}
 			else if ( (Sockets[nSock].NumBlock == 0) && (info_data_len == 61) )
 			{
-				crc = 55-CheckSum(&f_buf[data_p], info_data_len-1);
+				//crc = 55-CheckSum(&f_buf[data_p], info_data_len-1);
+				crc = f_buf[data_p + info_data_len-1];
 				size = info_data_len-1;
 			}
 			else {

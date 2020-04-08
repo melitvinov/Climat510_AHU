@@ -636,17 +636,17 @@ void pmHand(void) {
 
 
         if (ByteW == cHSmUCValve) {
-            buf[Ad_Buf++]='(';
+            buf[Ad_Buf++]=' ';
             w_int(&fnMKeepParamOut[ByteZ][0],SSSS);                         //
             buf[Ad_Buf++]=',';                                              //
-            w_int(&fnMKeepParamOut[ByteZ][1],SSS);
+            w_int(&fnMKeepParamOut[ByteZ][1],SS);
             buf[Ad_Buf++]=',';                                              //
-            w_int(&fnMKeepParamOut[ByteZ][2],SSS);
+            w_int(&fnMKeepParamOut[ByteZ][2],SS);
             buf[Ad_Buf++]=',';                                              //
-            w_int(&fnMKeepParamOut[ByteZ][3],SSS);
+            w_int(&fnMKeepParamOut[ByteZ][3],SSSS);
             buf[Ad_Buf++]=',';                                              //
-            w_int(&fnMKeepParamOut[ByteZ][4],SSS);
-            buf[Ad_Buf++]=')';                                              //
+            w_int(&fnMKeepParamOut[ByteZ][4],SSSS);
+            //buf[Ad_Buf++]=')';                                              //
         }
 
         return;
