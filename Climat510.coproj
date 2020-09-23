@@ -155,8 +155,8 @@
     <File name="stm_my" path="" type="2"/>
     <File name="stm_my/src/I2CSoft.c" path="stm_my/src/I2CSoft.c" type="1"/>
     <File name="pb/pb_encode.h" path="pb/pb_encode.h" type="1"/>
-    <File name="stm_my/inc/stm_Debugs.h" path="stm_my/inc/stm_Debugs.h" type="1"/>
     <File name="stm_lib/inc/stm32f10x_bkp.h" path="stm_lib/inc/stm32f10x_bkp.h" type="1"/>
+    <File name="stm_my/inc/stm_Debugs.h" path="stm_my/inc/stm_Debugs.h" type="1"/>
     <File name="stm_my/src/stm32f10x_i2cRel.c" path="stm_my/src/stm32f10x_i2cRel.c" type="1"/>
     <File name="stm_lib/src/stm32f10x_dma.c" path="stm_lib/src/stm32f10x_dma.c" type="1"/>
     <File name="stm_my/src/ip_arp_udp_tcp.c" path="stm_my/src/ip_arp_udp_tcp.c" type="1"/>
@@ -171,8 +171,8 @@
     <File name="stm_my/src/stm32f10x_Rootines.c" path="stm_my/src/stm32f10x_Rootines.c" type="1"/>
     <File name="405_Menu.c" path="405_Menu.c" type="1"/>
     <File name="stm_lib/src/stm32f10x_rtc.c" path="stm_lib/src/stm32f10x_rtc.c" type="1"/>
-    <File name="pb/pb.h" path="pb/pb.h" type="1"/>
     <File name="main.c" path="main.c" type="1"/>
+    <File name="pb/pb.h" path="pb/pb.h" type="1"/>
     <File name="65_GD.c" path="65_GD.c" type="1"/>
     <File name="stm_my/src/ENC28J60.C" path="stm_my/src/ENC28J60.C" type="1"/>
     <File name="stm_my/src/stm32f10x_LCD240x64.c" path="stm_my/src/stm32f10x_LCD240x64.c" type="1"/>
@@ -183,8 +183,8 @@
     <File name="cmsis_boot/startup" path="" type="2"/>
     <File name="pb/pb_encode.c" path="pb/pb_encode.c" type="1"/>
     <File name="time_utils.c" path="time_utils.c" type="1"/>
-    <File name="stm_lib/src/stm32f10x_spi.c" path="stm_lib/src/stm32f10x_spi.c" type="1"/>
     <File name="stm_lib/src/stm32f10x_iwdg.c" path="stm_lib/src/stm32f10x_iwdg.c" type="1"/>
+    <File name="stm_lib/src/stm32f10x_spi.c" path="stm_lib/src/stm32f10x_spi.c" type="1"/>
     <File name="stm_my/src/SPI.C" path="stm_my/src/SPI.C" type="1"/>
     <File name="pb/pb_common.c" path="pb/pb_common.c" type="1"/>
     <File name="405_clock.c" path="405_clock.c" type="1"/>
@@ -202,8 +202,8 @@
     <File name="405_EngRus.c" path="405_EngRus.c" type="1"/>
     <File name="pb/pb_common.h" path="pb/pb_common.h" type="1"/>
     <File name="stm_lib/src/stm32f10x_pwr.c" path="stm_lib/src/stm32f10x_pwr.c" type="1"/>
-    <File name="stm_my/inc/stm32f10x_Rootines.h" path="stm_my/inc/stm32f10x_Rootines.h" type="1"/>
     <File name="stm_lib/inc/stm32f10x_gpio.h" path="stm_lib/inc/stm32f10x_gpio.h" type="1"/>
+    <File name="stm_my/inc/stm32f10x_Rootines.h" path="stm_my/inc/stm32f10x_Rootines.h" type="1"/>
     <File name="stm_my/inc/SPI.H" path="stm_my/inc/SPI.H" type="1"/>
     <File name="65_siod.c" path="65_siod.c" type="1"/>
     <File name="stm_my/inc/stm32f10x_LCD240x64.h" path="stm_my/inc/stm32f10x_LCD240x64.h" type="1"/>

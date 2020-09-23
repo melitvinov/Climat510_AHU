@@ -860,9 +860,10 @@ void CheckSensLevsNew(char fnTepl,uint8_t fnSens,char full,char met,int16_t Mes)
 		if(!YesBit(pGD_TControl_Tepl->MechBusy[cHSmUCValve].RCS,cMSBusyMech))
 			SetBit(pGD_TControl_Tepl->MechBusy[cHSmUCValve].RCS,cMSFreshSens);
 
+#ifdef RICHEL
 		if(!YesBit(pGD_TControl_Tepl->MechBusy[cHSmUCOutValve].RCS,cMSBusyMech))
 			SetBit(pGD_TControl_Tepl->MechBusy[cHSmUCOutValve].RCS,cMSFreshSens);
-
+#endif
 
 	}
 	if (nameS->TypeSens==cTypeScreen)

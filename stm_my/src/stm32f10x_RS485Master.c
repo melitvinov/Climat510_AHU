@@ -530,10 +530,10 @@ int16_t RS485_Master_ReadType(uint8_t fNCtr, uint8_t*  fIdent)
 	return RS485_Master_ReadData(fNCtr,0,IDENT_SIZE,fIdent,1);
 }
 
-
 uint16_t GetIPCComMod(uint16_t nAddress) {
 	return nAddress/100;						// номер модуля 0-15
 	}
+
 uint16_t GetIPCNum(uint16_t nAddress) {
 	return nAddress%100;						// номер входа модуля
 	}

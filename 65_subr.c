@@ -546,8 +546,8 @@ void MidlWindAndSr(void)
 		return;
 	}
 
-	//GD.TControl.SumSun+=((long int)GD.TControl.MeteoSensing[cSmFARSens]);
-	GD.TControl.SumSun+=((long int)GD.Hot.MeteoSensing[cSmFARSens].Value);
+	// было
+//	GD.TControl.SumSun+=((long int)GD.Hot.MeteoSensing[cSmFARSens].Value);
 
 	if (GD.Control.MidlSunCalc)
 	{
@@ -558,18 +558,23 @@ void MidlWindAndSr(void)
 			if ( ( (int)((((long int)MidlSunCalc)*(1000-o_MidlSRFactor)+((long int)Sun)*o_MidlSRFactor)/1000) < 2000) &&
 			   ( (int)((((long int)MidlSunCalc)*(1000-o_MidlSRFactor)+((long int)Sun)*o_MidlSRFactor)/1000) > 0) )
 			MidlSunCalc = (int)((((long int)MidlSunCalc)*(1000-o_MidlSRFactor)+((long int)Sun)*o_MidlSRFactor)/1000);
+
+			GD.TControl.SumSun+=((long int)GD.Hot.MeteoSensing[cSmFARSens].Value);
+			if (GetMetSensConfig(cSmFARSens))
+				GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
 		}
 	}
 	else
 	{
 		//GD.Hot.MidlSR = (int)((((long int)MidlSunCalc)*(1000-o_MidlSRFactor)+((long int)GD.Hot.MeteoSensing[cSmFARSens].Value)*o_MidlSRFactor)/1000);
 		MidlSunCalc = GD.Hot.MidlSR;
+		GD.Hot.SumSun = GD.Hot.SumSun;
 	}
 
-	if (GetMetSensConfig(cSmFARSens))
-	{
-		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
-	}
+//	if (GetMetSensConfig(cSmFARSens))
+//	{
+//		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
+//	}
 
 	if (GD.Control.MidlWindCalc)
 	{
@@ -583,13 +588,13 @@ void MidlWindAndSr(void)
 	}
 }
 
-void CheckMidlSr(void)
-{
-	if (GetMetSensConfig(cSmFARSens))
-	{
-		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
-	}
-}
+//void CheckMidlSr(void)
+//{
+//	if (GetMetSensConfig(cSmFARSens))
+//	{
+//		GD.Hot.SumSun=(int)((GD.TControl.SumSun*6)/1000);
+//	}
+//}
 
 int abs(int f_in)
 {
@@ -1206,19 +1211,28 @@ uint16_t GetMaxH(uint16_t vmT)
 	//vmT = vmT div 100;
 
 	if (vmT > 2910)  // последний элемент массива, далее оставляем влажность постоянной
-		vmT = 2910;
+		vmT = 2810;
 
 	sot = vmT % 100;
 	vmT = vmT / 100;
 
-	if (vmT<1)  // последний элемент массива
-		return 0;
+	//if (vmT<1)  // последний элемент массива
+	//	return 0;
 
 	//else return MaxH[vmT]+(MaxH[vmT+1]-MaxH[vmT])*sot / 100;
 	//res = MaxH[vmT]+(MaxH[vmT+1]-MaxH[vmT])*sot / 100;
 	resM = MaxH[vmT];
-	resM1 = MaxH[vmT+1];
-	res = resM+(resM1-resM)*sot / 100;
+	if (resM != 2910)
+	{
+		resM1 = MaxH[vmT+1];
+		res = resM+(resM1-resM)*sot / 100;
+	}
+	else
+	{
+		resM = MaxH[27];
+		resM1 = MaxH[28];
+		res = resM+(resM1-resM)*sot / 100;
+	}
 	//else return MaxH[vmT]+(MaxH[vmT+1]-MaxH[vmT])*sot / 100;
 	return res;
 }

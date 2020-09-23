@@ -264,12 +264,12 @@ char CheckSumMain(void)
     return res;
 }
 
-char CheckSumMainMeteo(void)
+char CheckSumMainMeteo(int size)
 {
     int i;
     volatile int8_t res;
     volatile int8_t data[100];
-    volatile int k = 60;
+    volatile int k = size;
 
     for (i=0; i<k; i++)
         data[i] = (*((&(GD.Hot.News))+i));
@@ -302,13 +302,15 @@ static void update_time_for_monitor(void)
     datetime_to_control_time(&GD.Hot.time, dt);
 }
 
-int RestoreMeteoSensing[cConfSMetSens];
+int RestoreMeteoSensing[cConfSMetSens+2];  // +2 это средний ветер и среднее солнце
 
 void saveMeteoSens()
 {
 	int i = 0;
 	for (i=0;i<cConfSMetSens;i++)
 		RestoreMeteoSensing[i] = GD.Hot.MeteoSensing[i].Value;
+	RestoreMeteoSensing[11] = GD.Hot.MidlSR;
+	RestoreMeteoSensing[12] = GD.Hot.MidlWind;
 }
 
 void loadMeteoSens()
@@ -316,6 +318,8 @@ void loadMeteoSens()
 	int i = 0;
 	for (i=0;i<cConfSMetSens;i++)
 		GD.Hot.MeteoSensing[i].Value = RestoreMeteoSensing[i];
+	GD.Hot.MidlSR = RestoreMeteoSensing[11];
+	GD.Hot.MidlWind = RestoreMeteoSensing[12];
 }
 
 uint32_t prev_ts;
@@ -438,32 +442,20 @@ main()
             if (delta < -3600 || delta > 3600)
                 rtc_set(new_ts);
         }
-        //if(!NumBlock && (GD.Hot.News&0x80)) SetRTC();
         ClrDog;
         /*-- Была запись с ПК в блок NumBlock, переписать в EEPROM ------*/
-
-        //checkConfig();
-
         if ( (NumBlock == 0) && (size == 92) ) {
-            //crc1 = 55-CheckSumMain();
         	crc1 = gencrc();
             if (crc != crc1)
                 ReadFromFRAM();
         }
-
-        if ( (NumBlock == 0) && (size == 60) ) {
-            crc1 = CheckSumMainMeteo();
+        if ( (NumBlock == 0) && (size == 64) ) {
+            crc1 = CheckSumMainMeteo(64);
             if (crc != crc1) {
-                //fnScreenOut[1] = GD.Hot.MeteoSensing[cSmOutTSens].Value;
-            	//fnScreenOut[0] = fnScreenOut[0]++;
-                //if (fnScreenOut[0] == 100)
-                //	fnScreenOut[0] = 0;
-                MeteoRecv = 1;	// не работает
                 loadMeteoSens();
             }
             else
             {
-            	MeteoRecv = 1;
             	saveMeteoSens();
             }
         }

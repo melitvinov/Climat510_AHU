@@ -167,7 +167,14 @@ void enc28j60Init(unsigned char* macaddr)
         // 06 08 -- ff ff ff ff ff ff -> ip checksum for theses bytes=f7f9
         // in binary these poitions are:11 0000 0011 1111
         // This is hex 303F->EPMM0=0x3f,EPMM1=0x30
+#ifdef MONITOR_METEO
+	enc28j60Write(ERXFCON, ERXFCON_UCEN|ERXFCON_CRCEN|ERXFCON_PMEN);
+#endif
+
+#ifdef MULTICAST_METEO
 	enc28j60Write(ERXFCON, ERXFCON_UCEN|ERXFCON_CRCEN|ERXFCON_PMEN  | ERXFCON_HTEN|ERXFCON_MCEN);
+#endif
+
 	enc28j60Write(EPMM0, 0x3f);
 	enc28j60Write(EPMM1, 0x30);
 	enc28j60Write(EPMCSL, 0xf9);

@@ -154,6 +154,9 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 
 	// изменение 132
 	(*pGD_Hot_Tepl).AllTask.DiodLight = pGD_CurrTimer->DiodLightTask;
+	// изменение 141
+	(*pGD_Hot_Tepl).AllTask.centralFram = pGD_CurrTimer->centralFramTask;
+
 }
 
 
@@ -309,18 +312,23 @@ void AllTaskAndCorrection(char fnTepl)
 		(*pGD_Hot_Tepl).Kontur[cSmWindowUnW].MinCalc+=IntZ;
 	}
 	/*----------------------------------------------------------------*/
+
+	// перенес в Strategy
+	/*
 		IntY=DefRH(fnTepl);
 		CorrectionRule(GD.TuneClimate.f_min_RHStart,GD.TuneClimate.f_min_RHEnd,
 			GD.TuneClimate.f_CorrTVent,0);
 		(*pGD_Hot_Tepl).AllTask.NextTVent-=IntZ;
 		(*pGD_Hot_Tepl).AllTask.DoTVent-=IntZ;
-		IntY=-IntY;
 
+		// IntY=-IntY;   // было, а зачем ??
+
+		IntY=DefRH(fnTepl);
 		CorrectionRule(GD.TuneClimate.f_max_RHStart,GD.TuneClimate.f_max_RHEnd,
 			GD.TuneClimate.f_CorrTVentUp,0);
 		(*pGD_Hot_Tepl).AllTask.NextTVent+=IntZ;
 		(*pGD_Hot_Tepl).AllTask.DoTVent+=IntZ;
-
+*/
 
 //	Установка темпеатуры вентилирования
 //	(*pGD_Hot_Tepl).AllTask.DoTVent=(*pGD_Hot_Tepl).AllTask.NextTAir;//GD.TControl.Tepl[0].SensHalfHourAgo;//(*pGD_Hot_Tepl).AllTask.DoTHeat;//+GD.TuneClimate.d_TempVent;
@@ -703,11 +711,11 @@ void 	SetSensOnMech(void)
 	// стало
 	pGD_TControl_Tepl->MechBusy[cHSmUCValve].Sens=&pGD_Hot_Tepl->InTeplSens[cSmAHUSens];
 
-
+#ifdef RICHEL
 	// изменение 135
 	pGD_TControl_Tepl->MechBusy[cHSmUCOutValve].Sens=&pGD_Hot_Tepl->InTeplSens[cSmCirculValve];
-
 	// *************** конец изменение NEW
+#endif
 
 	pGD_TControl_Tepl->MechBusy[cHSmScrTH].Sens=&pGD_Hot_Tepl->InTeplSens[cSmScreenSens];
 /*	if ((YesBit((*(pGD_Hot_Hand+cHSmWinS)).RCS,(cbManMech))))
@@ -1090,7 +1098,12 @@ void DoMechanics(char fnTepl)
 		// Клапан AHU допустимое отклонение от датчика
 
 
+#ifdef RICHEL
 		if ((ByteX==cHSmScrTH)||(ByteX==cHSmUCValve)||(ByteX==cHSmUCOutValve)||(ByteX==cHSmWinN))
+#endif
+#ifdef KUBO
+		if ((ByteX==cHSmScrTH)||(ByteX==cHSmUCValve)||(ByteX==cHSmWinN))
+#endif
 		{
 			if ((!YesBit(MBusy->RCS,cMSAlarm))&&(MBusy->Sens)&&(!YesBit(MBusy->Sens->RCS,cbNoWorkSens))&&(GD.TuneClimate.f_MaxAngle))   // TuneClimate.f_MaxAngle - о
 			{
@@ -1285,8 +1298,8 @@ void SetMeteo(void)		// выполняется каждые 20 сек
 
 	fnScreenOut[0] = GD.Hot.MeteoSensing[cSmOutTSens].Value;
 	fnScreenOut[1] = GD.Hot.MeteoSensing[cSmFARSens].Value;
-	fnScreenOut[3] = GD.Hot.MidlSR;
 	fnScreenOut[2] = GD.Hot.MidlWind;
+	fnScreenOut[3] = GD.Hot.MidlSR;
 }
 #endif
 
@@ -1778,7 +1791,7 @@ void Control(void)
 
 			    PORTNUM=0;
 				vNFCtr=0;
-				CheckMidlSr();
+				//CheckMidlSr();
 				GD.TControl.Delay=0;
 				for (tCTepl=0;tCTepl<cSTepl;tCTepl++)
 				{

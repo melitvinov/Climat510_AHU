@@ -183,16 +183,19 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 /* онстанты смещени€ ручного управлени€ и биты его*/
 #define cHSmMixVal		0
 #define cHSmWinN		6
-#define cHSmWinS		7
+
+// изменение 141
+#define cHSmWinS		7		// это фрамуга над центральной дорожкой дл€ Richel, настройка дл€ ришель не используетс€
+
 #define cHSmWinN2		8
 #define cHSmWinN3		9
 
 #ifdef KUBO
 	#define cHSmWinN4		10
 #endif
-//#ifdef RICHEL
+#ifdef RICHEL
 	#define cHSmUCOutValve	10
-//#endif
+#endif
 
 
 #define cHSmUCValve		11

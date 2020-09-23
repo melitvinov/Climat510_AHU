@@ -1,13 +1,8 @@
 #pragma pack(1)
 
 int volatile startFlag;
-
 int16_t fnScreenOut[4];
-
 int16_t fnInRHOut[2];
-
-char MeteoRecv;
-
 volatile int16_t MidlSunCalc;
 volatile int16_t MidlWindCalc;
 
@@ -82,7 +77,9 @@ typedef struct  eeTimer
 		uint16_t	MistRHstop;
 
         uchar   	MinTPipeAHU;
-		uchar		XXX;				// richel
+
+        // изменение 141
+		uchar		centralFramTask;
 
 		uint16_t 	PresMaxTaskLine;	// richel
 		uint16_t 	AHUTempTaskLine;	// richel
@@ -170,8 +167,10 @@ typedef struct eeClimTask {
 
 				// изменение 132
 				int16_t 	DiodLight;
+				// изменение 141
+				int16_t 	centralFram;
 
-				int16_t		Rez[6];   // 7
+				int16_t		Rez[5];   // 6
 				} eClimTask; 
 
 typedef struct eeNextTCalc {
@@ -421,8 +420,9 @@ typedef struct eeTuneClimate
 		int8_t		sc_ToutMax;			// Разворачиваем экран по внешней температуре. На сколько
 		int8_t		AHUvalveSpeed;		// тестовый параметр для ускарения Расчета Т рукава ДЕРЖАТЬ
 
-		uchar     	CabelHeatPaus;		// пауза работы кабеля								!!!!!!!!!!!
-		uchar     	XXXX;				// не используется								!!!!!!!!!!!
+		uchar     	CabelHeatPaus;		// пауза работы кабеля
+		// изменение 141
+		uchar     	RHlimitPress;		// Высокая влажность понижает избыточное давление на
 
         int16_t     f_StormWind; 		// Клапан AHU ветер закрывает
         int16_t     f_WindStart;  		// Фрамуги минимальный ветер при расчете
@@ -437,7 +437,7 @@ typedef struct eeTuneClimate
         int8_t		co_Impuls;       	/*Фрамуги - (Тизм-Твентиляции)открыть на максимум при*/
 		int8_t		co_Dif;
 
-		int16_t		f_StartCorrPow;  	// Клапан AHU Твнещ начинает влиять при
+		int16_t		f_StartCorrPow;  	// Клапан AHU Твнеш начинает влиять при
 		int16_t		f_EndCorrPow;		// Клапан AHU Твнеш влияет до
         int16_t     f_PowFactor;        // Клапан AHU Твнеш увеличивает открытие в
 
@@ -457,8 +457,9 @@ typedef struct eeTuneClimate
 		int8_t		ahu_PressCellEnd;	//Давление камеры влияет до
 		int8_t		ahu_PressCellValue;	//Давление камеры снижает скорость AHU до
 
-		int8_t		nouse1;		// не используется
-		int8_t		nouse2;		// не используется
+		// изменение 141
+		int8_t		RHlimitPressStart;	// Высокая влажность понижает избыточное давление с
+		int8_t		RHlimitPressEnd;	// Высокая влажность понижает избыточное давление по
 
 		int8_t      sc_LineSunVol;
         int16_t     s_PowFactor;        /*Фрамуги - Солнце увеличивает на*/

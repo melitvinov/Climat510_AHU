@@ -251,6 +251,9 @@ void CheckUCValveSystem(int Tmes, int Tset)			// отрабатывает
 	if (Tset - Tmes > GD.TuneClimate.c_MaxDifTDown)
 		pGD_TControl_Tepl->Systems[cSysUCValve].Max = 0;
 
+	// изменение 139
+	pGD_TControl_Tepl->Systems[cSysUCValve].Max = pGD_Hot_Tepl->Kontur[cSmWindowUnW].MaxCalc;
+
 	pGD_TControl_Tepl->Systems[cSysUCValve].RCS=0;
 	if ((YesBit(pGD_Hot_Hand[cHSmUCValve].RCS,cbManMech))||(!pGD_MechConfig->RNum[cHSmUCValve]))
 	{
@@ -1399,13 +1402,6 @@ void __sMinMaxWindows(char fnTepl)
 	//pGD_Hot_Tepl->Kontur[cSmWindowOnW].Status=cSOn;
 	pGD_Hot_Tepl->Kontur[cSmWindowUnW].Status=cSOn;
 
-
-
-	IntY=DefRH(fnTepl);
-	CorrectionRule(GD.TuneClimate.f_min_RHStart,GD.TuneClimate.f_min_RHEnd,
-		((int)GD.TuneClimate.f_min_Cor),0);
-	ogrMin(&(pGD_Hot_Tepl->Kontur[cSmWindowUnW].MinCalc),IntZ);
-
 	//IntY=GD.TControl.MidlSR;
 	IntY=MidlSunCalc;
 	CorrectionRule(GD.TuneClimate.f_SunStart,GD.TuneClimate.f_SunEnd,
@@ -1472,7 +1468,67 @@ void __sMinMaxWindows(char fnTepl)
 	ogrMin(&IntY,0);
 	ogrMax(&IntY,t_max);
 
-    (*pGD_Hot_Tepl).Kontur[cSmWindowUnW].MaxCalc=IntY;//(*pGD_TControl_Tepl).PrevMaxWinUnW;  
+    (*pGD_Hot_Tepl).Kontur[cSmWindowUnW].MaxCalc=IntY;//(*pGD_TControl_Tepl).PrevMaxWinUnW;
+
+
+
+
+    //	IntY=DefRH(fnTepl);
+    	int RHmes = getRH(fnTepl);
+    	int RHset = (*pGD_Hot_Tepl).AllTask.DoRHAir;
+    	int ResRHmin = 0;
+    	int ResRHmax = 0;
+
+    	if (RHmes > RHset)
+    		ResRHmin = RHmes - RHset;
+    	else
+    		ResRHmax = RHset - RHmes;
+
+
+
+
+		// IntY=-IntY;   // было, а зачем ??
+
+
+
+
+    	if (ResRHmin > 0)
+    	{
+    		IntY = ResRHmin;
+    		CorrectionRule(GD.TuneClimate.f_min_RHStart,GD.TuneClimate.f_min_RHEnd,
+    				((int)GD.TuneClimate.f_min_Cor),0);
+    		pGD_Hot_Tepl->Kontur[cSmWindowUnW].MinCalc = pGD_Hot_Tepl->Kontur[cSmWindowUnW].MinCalc + IntZ;
+
+
+    		IntY = ResRHmin;
+    		CorrectionRule(GD.TuneClimate.f_min_RHStart,GD.TuneClimate.f_min_RHEnd,
+    			GD.TuneClimate.f_CorrTVent,0);
+    		(*pGD_Hot_Tepl).AllTask.NextTVent-=IntZ;
+    		(*pGD_Hot_Tepl).AllTask.DoTVent-=IntZ;
+    	}
+
+    	// изменение 139
+    	if (ResRHmax > 0)
+    	{
+    		IntY = ResRHmax;
+    		CorrectionRule(GD.TuneClimate.f_max_RHStart,GD.TuneClimate.f_max_RHEnd,
+    				((int)GD.TuneClimate.f_max_Cor),0);
+    		if (pGD_Hot_Tepl->Kontur[cSmWindowUnW].MaxCalc > IntZ)
+    			pGD_Hot_Tepl->Kontur[cSmWindowUnW].MaxCalc = pGD_Hot_Tepl->Kontur[cSmWindowUnW].MaxCalc - IntZ;
+    		else
+    			pGD_Hot_Tepl->Kontur[cSmWindowUnW].MaxCalc = 0;
+
+
+    		IntY = ResRHmax;
+    		CorrectionRule(GD.TuneClimate.f_max_RHStart,GD.TuneClimate.f_max_RHEnd,
+    			GD.TuneClimate.f_CorrTVentUp,0);
+    		(*pGD_Hot_Tepl).AllTask.NextTVent += IntZ;
+    		(*pGD_Hot_Tepl).AllTask.DoTVent += IntZ;
+    	}
+
+
+
+
 /*--------------------------------------------------------------------------------
 //Проверяем было ли отличие от предыдущего максимума хотя бы на один шаг
 //--------------------------------------------------------------------------------
@@ -2797,36 +2853,49 @@ void __sMechWindows(void)
 		if (!(YesBit((*(pGD_Hot_Hand+cHSmAHUSpeed2)).RCS,(/*cbNoMech+*/cbManMech))))
 			(*(pGD_Hot_Hand+cHSmAHUSpeed2)).Position=KeepFanSystem(fnTepl);//(*pGD_Hot_Tepl).AllTask.AHUVent;//pGD_Hot_Tepl->Kontur[cSmAHUSpd].Do;
 
+		// изменение 141
+		int16_t PressSet = pGD_Hot_Tepl->AllTask.PresMaxTask * 100;
+		int16_t RHmes = getRH(fnTepl);
+		int16_t RHlimitPress = GD.TuneClimate.RHlimitPress * 100;
+		int16_t RHlimitPressStart = GD.TuneClimate.RHlimitPressStart * 100;
+		int16_t RHlimitPressEnd = GD.TuneClimate.RHlimitPressEnd * 100;
+		IntY = RHmes;
+		CorrectionRule(RHlimitPressStart,RHlimitPressEnd,RHlimitPress,0);
+		if (IntZ > 0)
+			PressSet = PressSet - IntZ;
+		pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(PressSet,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
 
-		// было изменение 92
-		//if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN].RCS,cbManMech)))
-		//{
-		//	volatile int16_t vPresMax = pGD_Control_Tepl->PresMax * 100;
-		//	pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(vPresMax,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
-		//}
-
-
-
-
-//#ifdef RICHEL
-		volatile int16_t vPresMaxTask = pGD_Hot_Tepl->AllTask.PresMaxTask * 100;
-		pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(vPresMaxTask,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
-//#endif
-//#ifdef KUBO
-//		//  стало
-//		volatile int16_t vPresMax = pGD_Control_Tepl->PresMax * 100;
-//		pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(vPresMax,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
-//#endif
-		// -----------
+		// было
+		//volatile int16_t vPresMaxTask = pGD_Hot_Tepl->AllTask.PresMaxTask * 100;
+		//pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(vPresMaxTask,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
 
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN2].RCS,cbManMech)))
 			pGD_Hot_Tepl->HandCtrl[cHSmWinN2].Position=__SetIntWin(GD.TuneClimate.fAHU_Sens2,cHSmWinN2,GD.TuneClimate.fAHU_Offset2,pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position, fnTepl);
+
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN3].RCS,cbManMech)))
 			pGD_Hot_Tepl->HandCtrl[cHSmWinN3].Position=__SetIntWin(GD.TuneClimate.fAHU_Sens3,cHSmWinN3,GD.TuneClimate.fAHU_Offset3,pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position, fnTepl);
 
+#ifdef RICHEL
+		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinS].RCS,cbManMech)))
+			pGD_Hot_Tepl->HandCtrl[cHSmWinS].Position = (*pGD_Hot_Tepl).AllTask.centralFram;
+#endif
+
+
 #ifdef KUBO
+		// изменение 141
+		// было
+		//if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN4].RCS,cbManMech)))
+		//	pGD_Hot_Tepl->HandCtrl[cHSmWinN4].Position=__SetIntWin(GD.TuneClimate.fAHU_Sens4,cHSmWinN4,GD.TuneClimate.fAHU_Offset4,pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position, fnTepl);
+
+		// изменение 142
+		int Tout = GD.TControl.MeteoSensing[cSmOutTSens];
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN4].RCS,cbManMech)))
-			pGD_Hot_Tepl->HandCtrl[cHSmWinN4].Position=__SetIntWin(GD.TuneClimate.fAHU_Sens4,cHSmWinN4,GD.TuneClimate.fAHU_Offset4,pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position, fnTepl);
+		{
+			if (Tout < GD.TuneClimate.f_MinTFreeze)
+				pGD_Hot_Tepl->HandCtrl[cHSmWinN4].Position = (*pGD_Hot_Tepl).AllTask.centralFram;
+			else
+				pGD_Hot_Tepl->HandCtrl[cHSmWinN4].Position = 0;
+		}
 #endif
 #ifdef RICHEL
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmUCOutValve].RCS,cbManMech)))
