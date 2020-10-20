@@ -6,9 +6,15 @@ int DefRH(char fnTepl)
 	// изменеие 100. RH выводим как Theat
 	//if ((!(*pGD_Hot_Tepl).AllTask.DoRHAir)||(!(*pGD_Hot_Tepl).InTeplSens[cSmRHSens].Value)) return 0;
 	//return ((*pGD_Hot_Tepl).InTeplSens[cSmRHSens].Value-(*pGD_Hot_Tepl).AllTask.DoRHAir);
-	if ((!(*pGD_Hot_Tepl).AllTask.DoRHAir)||(!(*pGD_Hot_Tepl).InTeplSens[cSmRHSens].Value)) return 0;
-	return ((*pGD_Hot_Tepl).InTeplSens[cSmRHSens].Value-(*pGD_Hot_Tepl).AllTask.DoRHAir);
+	//if ((!(*pGD_Hot_Tepl).AllTask.DoRHAir)||(!(*pGD_Hot_Tepl).InTeplSens[cSmRHSens].Value)) return 0;
 
+	// изменение 143
+	// было
+	//if ((!(*pGD_Hot_Tepl).AllTask.DoRHAir)||(!(*pGD_Hot_Tepl).InTeplSens[cSmRHSens].Value)) return 0;
+	//return ((*pGD_Hot_Tepl).InTeplSens[cSmRHSens].Value-(*pGD_Hot_Tepl).AllTask.DoRHAir);
+	// стало
+	if ((!(*pGD_Hot_Tepl).AllTask.DoRHAir)||(!getRH(fnTepl))) return 0;
+	return ( getRH(fnTepl) - (*pGD_Hot_Tepl).AllTask.DoRHAir);
 }
 
 int DefOutAbsHum(void)
@@ -2855,14 +2861,18 @@ void __sMechWindows(void)
 
 		// изменение 141
 		int16_t PressSet = pGD_Hot_Tepl->AllTask.PresMaxTask * 100;
-		int16_t RHmes = getRH(fnTepl);
-		int16_t RHlimitPress = GD.TuneClimate.RHlimitPress * 100;
-		int16_t RHlimitPressStart = GD.TuneClimate.RHlimitPressStart * 100;
-		int16_t RHlimitPressEnd = GD.TuneClimate.RHlimitPressEnd * 100;
-		IntY = RHmes;
-		CorrectionRule(RHlimitPressStart,RHlimitPressEnd,RHlimitPress,0);
-		if (IntZ > 0)
-			PressSet = PressSet - IntZ;
+		// изменение 143
+		if ( ! GD.TControl.bSnow)
+		{
+			volatile int16_t RHmes = getRH(fnTepl);
+			int16_t RHlimitPress = GD.TuneClimate.RHlimitPress * 100;
+			int16_t RHlimitPressStart = GD.TuneClimate.RHlimitPressStart * 100;
+			int16_t RHlimitPressEnd = GD.TuneClimate.RHlimitPressEnd * 100;
+			IntY = RHmes;
+			CorrectionRule(RHlimitPressStart,RHlimitPressEnd,RHlimitPress,0);
+			if (IntZ > 0)
+				PressSet = PressSet - IntZ;
+		}
 		pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(PressSet,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
 
 		// было
@@ -2891,7 +2901,7 @@ void __sMechWindows(void)
 		int Tout = GD.TControl.MeteoSensing[cSmOutTSens];
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinN4].RCS,cbManMech)))
 		{
-			if (Tout < GD.TuneClimate.f_MinTFreeze)
+			if (Tout > GD.TuneClimate.f_MinTFreeze)
 				pGD_Hot_Tepl->HandCtrl[cHSmWinN4].Position = (*pGD_Hot_Tepl).AllTask.centralFram;
 			else
 				pGD_Hot_Tepl->HandCtrl[cHSmWinN4].Position = 0;
