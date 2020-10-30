@@ -978,19 +978,22 @@ int KeepFanSystem(char fnTepl)
 		zone = 1;
 	if (GD.TControl.Tepl[zone].Systems[cSysUCValve].Keep)
 	{
-		if (tempKeep > maxSpeed) tempKeep = maxSpeed;
 		if (tempKeep <= 0) tempKeep = minSpeed;
 		if (MaxSpeedAHUwind == 0)   // если усл коррекции скорости по ветру выкл то мин скорость как в задании
 			if (tempKeep < minSpeed) tempKeep = minSpeed;
+		if (tempKeep > maxSpeed) tempKeep = maxSpeed;
 	}
 	else
 	{
 		if ((minSpeedT==0)&&(maxSpeedT==0)&&(maxSpeedTcorr==0)) // коментарии для проверки
+		{
 			tempKeep = minSpeed;
+			if (tempKeep > maxSpeed) tempKeep = maxSpeed;
+		}
 		else
 			{
-				if (tempKeep > maxSpeed) tempKeep = maxSpeed;
 				if (tempKeep <= 0) tempKeep = minSpeed;
+				if (tempKeep > maxSpeed) tempKeep = maxSpeed;
 			}
 	}
 
@@ -1072,10 +1075,13 @@ void CheckFanSystem(void)
 		SetBit(pGD_TControl_Tepl->Systems[cSysAHUSpeed].RCS,cSysRHand);
 //		pGD_TControl_Tepl->Systems[cSysAHUSpeed].Max=0;
 	}
-	pGD_TControl_Tepl->Systems[cSysAHUSpeed].Value=pGD_Hot_Hand[cHSmAHUSpeed1].Position;
+
+	pGD_TControl_Tepl->Systems[cSysAHUSpeed].Value = pGD_Hot_Hand[cHSmAHUSpeed1].Position;
 
 	if (pGD_TControl_Tepl->Systems[cSysAHUSpeed].Keep>pGD_TControl_Tepl->Systems[cSysAHUSpeed].Max)
 		pGD_TControl_Tepl->Systems[cSysAHUSpeed].Keep=pGD_TControl_Tepl->Systems[cSysAHUSpeed].Max;
+
+	pGD_TControl_Tepl->Systems[cSysAHUSpeed].Value = pGD_TControl_Tepl->Systems[cSysAHUSpeed].Keep;
 
 	if	(!pGD_TControl_Tepl->Systems[cSysAHUSpeed].RCS)
 	{
@@ -1084,6 +1090,7 @@ void CheckFanSystem(void)
 		if (pGD_TControl_Tepl->Systems[cSysAHUSpeed].Keep>pGD_TControl_Tepl->Systems[cSysAHUSpeed].Min)
 			 SetBit(pGD_TControl_Tepl->Systems[cSysAHUSpeed].RCS,cSysRDown);
 	}
+
 	pGD_TControl_Tepl->Systems[cSysAHUSpeed].Power=1000;//pGD_ConstMechanic->ConstMixVal[cHSfmAHUSpeed1].v_PFactor;  // last
     //pGD_TControl_Tepl->Systems[cSysAHUSpeed].Power=pGD_ConstMechanic->ConstMixVal[cHSmAHUSpeed1].v_PFactor;
 }
