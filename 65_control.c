@@ -123,9 +123,16 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	(*pGD_Hot_Tepl).AllTask.CO2=JumpNext(pGD_CurrTimer->CO2,pGD_NextTimer->CO2,1,1);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur1].MinTask=JumpNext(pGD_CurrTimer->MinTPipe1,pGD_NextTimer->MinTPipe1,1,10);
 	(*pGD_Hot_Tepl).Kontur[cSmKontur2].MinTask=JumpNext(pGD_CurrTimer->MinTPipe2,pGD_NextTimer->MinTPipe2,1,10);
-	(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinTask=JumpNext(pGD_CurrTimer->MinTPipe3,pGD_NextTimer->MinTPipe3,1,10);
 
-	(*pGD_Hot_Tepl).Kontur[cSmKontur3].MaxCalc=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
+	if (pGD_CurrTimer->TPipe3 == 0)
+	{
+		(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinTask=JumpNext(pGD_CurrTimer->MinTPipe3,pGD_NextTimer->MinTPipe3,1,10);
+		(*pGD_Hot_Tepl).Kontur[cSmKontur3].MaxCalc=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
+	}
+	else {
+		(*pGD_Hot_Tepl).Kontur[cSmKontur3].MinTask=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
+		(*pGD_Hot_Tepl).Kontur[cSmKontur3].MaxCalc=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
+	}
 
 	(*pGD_Hot_Tepl).Kontur[cSmKontur5].MinTask=JumpNext(pGD_CurrTimer->MinTPipe5,pGD_NextTimer->MinTPipe5,1,10);
 //#ifdef RICHEL
@@ -146,11 +153,11 @@ int	MaxTimeStart,MinTimeStart,NextTimeStart,PrevTimeStart,tVal;
 	(*pGD_Hot_Tepl).AllTask.AHUVent=pGD_CurrTimer->AHUVent;
 	(*pGD_Hot_Tepl).Kontur[cSmAHUSpd].MinCalc=(*pGD_Hot_Tepl).AllTask.AHUVent;
 
-	(*pGD_Hot_Tepl).Kontur[cSmKontur3].Do=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
+//	(*pGD_Hot_Tepl).Kontur[cSmKontur3].Do=JumpNext(pGD_CurrTimer->TPipe3,pGD_NextTimer->TPipe3,1,10);
 
 	(*pGD_Hot_Tepl).Kontur[cSmKontur4].Do=JumpNext(pGD_CurrTimer->TPipe4,pGD_NextTimer->TPipe4,1,10);
 
-	(*pGD_Hot_Tepl).Kontur[cSmKonturAHU].Do = JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
+	(*pGD_Hot_Tepl).Kontur[cSmKontur6].Do=JumpNext(pGD_CurrTimer->MinTPipeAHU,pGD_NextTimer->MinTPipeAHU,1,10);
 
 	// изменение 132
 	(*pGD_Hot_Tepl).AllTask.DiodLight = pGD_CurrTimer->DiodLightTask;
@@ -1066,9 +1073,12 @@ void DoMechanics(char fnTepl)
 
 		if ((ByteX==cHSmAHUSpeed1))
 		{
-//			Sound;
-			SetOutIPCReg(pGD_Hot_Hand_Kontur->Position,mtRS485,GD.MechConfig[fnTepl].RNum[ByteX],&fErr,&GD.FanBlock[fnTepl][0].FanData[0]);
-			continue;
+			// изменение 147	// поставил проверку скорости
+			if (pGD_Hot_Hand_Kontur->Position <= 80)
+			{
+			  SetOutIPCReg(pGD_Hot_Hand_Kontur->Position,mtRS485,GD.MechConfig[fnTepl].RNum[ByteX],&fErr,&GD.FanBlock[fnTepl][0].FanData[0]);
+			  continue;
+			}
 		}
 /*		GD.FanBlock[fnTepl][0].FanData[0].ActualSpeed=fnTepl*5;
 		GD.FanBlock[fnTepl][0].FanData[1].ActualSpeed=fnTepl*5+1;
@@ -1077,9 +1087,12 @@ void DoMechanics(char fnTepl)
 */
 		if ((ByteX==cHSmAHUSpeed2))
 		{
-//			Sound;
-			SetOutIPCReg(pGD_Hot_Hand_Kontur->Position,mtRS485,GD.MechConfig[fnTepl].RNum[ByteX],&fErr,&GD.FanBlock[fnTepl][1].FanData[0]);
-			continue;
+			// изменение 147
+			if (pGD_Hot_Hand_Kontur->Position <= 80)
+			{
+			  SetOutIPCReg(pGD_Hot_Hand_Kontur->Position,mtRS485,GD.MechConfig[fnTepl].RNum[ByteX],&fErr,&GD.FanBlock[fnTepl][1].FanData[0]);
+			  continue;
+			}
 		}
 
 		if ((ByteX==cHSmCO2)&&(pGD_Control_Tepl->co_model==1)) continue;

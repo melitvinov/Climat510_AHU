@@ -99,7 +99,10 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 			int sc_RHMax = GD.TuneClimate.sc_RHMax;
 			int sc_TSROpen = GD.TuneClimate.sc_TSROpen;
 			int sc_ZSRClose = GD.TuneClimate.sc_ZSRClose;
-			int resultMaxOpen = 0;
+			int resultMaxOpen = pGD_Control_Tepl->sc_TMaxOpen;
+			int resultMaxOpenRH = pGD_Control_Tepl->sc_TMaxOpen;
+			int resultMaxOpenTout = pGD_Control_Tepl->sc_TMaxOpen;
+			int LowTempSunFlag = 0;
 			// считаем дельту между заданной и измеренной температурой
 			if (Tz >= Ti)
 				deltaTz = (pGD_Hot_Tepl->AllTask.DoTHeat - getTempHeat(fnTepl));
@@ -116,11 +119,13 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 				{
 					pScr->Mode=1;
 					pScr->Value = 0;
+					LowTempSunFlag = 0;
 				}
 				else
 				{
 					pScr->Mode=0;
 					pScr->Value = pGD_Control_Tepl->sc_TMaxOpen;  // не 100 а макс из парам
+					LowTempSunFlag = 1;
 				}
 			}
 			if ( (MidlSun > sc_TSROpen)&&(MidlSun < sc_ZSRClose) )
@@ -156,6 +161,7 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 
 				}
 			}
+
 			// расчет макимального открытия экрана
 			if ( (sc_deltaTend)&&(sc_MaxOpenCorrect)&&(pScr->Value >= pGD_Control_Tepl->sc_TMaxOpen) )
 			{
@@ -189,7 +195,9 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 					}
 				}
 			}
-			if ( (sc_TMinOpenCorrect>0) && (sc_TCorrMax>0) )
+
+
+			if ( (sc_TMinOpenCorrect>0) && (sc_TCorrMax>0) && (LowTempSunFlag==0) )
 			{
 				// расчет минимального открытия экрана
 				if (deltaTz > 0)
@@ -214,29 +222,42 @@ void CheckModeScreen(char typScr,char chType, char fnTepl)
 					}
 				}
 			}
+
 			resultMaxOpen = pScr->Value;	// положение экрана после расчетов
 			// Влияние разницы влажности на открытие экрана
 			if ( (sc_RHinTepl) && (sc_RHStart) && (sc_RHEnd) && (sc_RHMax) )
 			{
 				// изменеие 100. RH выводим как Theat
+				resultMaxOpenRH = resultMaxOpen;
 				IntY=sc_RHinTepl - pGD_Hot_Tepl->AllTask.DoRHAir;
 				CorrectionRule(sc_RHStart,sc_RHEnd,sc_RHMax,0);
-				if (!pGD_Hot_Tepl->AllTask.DoRHAir) IntZ=0;
-					pScr->Value-=IntZ;
+				if (!pGD_Hot_Tepl->AllTask.DoRHAir)
+					IntZ=0;
+				if (resultMaxOpenRH > IntZ)
+					resultMaxOpenRH-= IntZ;
 			}
-			if (pScr->Value > resultMaxOpen)		// проверяем стало ли положение экрана больше чем было
-				resultMaxOpen = pScr->Value;
+
 			// изменение 137 Коррекция экрана по внешней температуре
 			if ( sc_ToutMax )
 			{
+				resultMaxOpenTout = resultMaxOpen;
 				IntY = sc_Tout;
 				CorrectionRule(sc_ToutEnd, sc_ToutStart,sc_ToutMax,0);
-					pScr->Value = sc_ToutMax - IntZ;
+				if (resultMaxOpenTout > IntZ)
+					resultMaxOpenTout -= IntZ;
 			}
-			if (pScr->Value > resultMaxOpen)		// проверяем стало ли положение экрана больше чем было
-				resultMaxOpen = pScr->Value;
+
+			if (resultMaxOpen <= resultMaxOpenRH && resultMaxOpen <= resultMaxOpenTout) {
+				resultMaxOpen = resultMaxOpen;
+			} else if (resultMaxOpenRH <= resultMaxOpenTout && resultMaxOpenRH <= resultMaxOpen) {
+				resultMaxOpen = resultMaxOpenRH;
+			} else {
+				resultMaxOpen = resultMaxOpenTout;
+			}
+
 			pScr->Value = resultMaxOpen;			// в положение экрана устанавливаем максимальное значение после всех коррекций
 		}
+
 
 		// проверка на максимум
 		if (pScr->Value > pGD_Control_Tepl->sc_TMaxOpen)

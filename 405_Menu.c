@@ -265,7 +265,7 @@ void    pmStrategy(void)
     w_int(&fnMSysOut[ByteZ],SS);
 
     buf[Ad_Buf++]=',';                                              //
-    w_int(&fnMPriorOut[ByteZ],SS);
+    w_int(&fnMPriorOut[ByteZ],SSSS);
 
     buf[Ad_Buf++]=',';                                              //
     w_int(&CriterT1Out[ByteZ],SSSS);
@@ -639,7 +639,7 @@ void pmHand(void) {
             buf[Ad_Buf++]=' ';
             w_int(&fnMKeepParamOut[ByteZ][0],SSSS);                         //
             buf[Ad_Buf++]=',';                                              //
-            w_int(&fnMKeepParamOut[ByteZ][1],SS);
+            w_int(&fnMKeepParamOut[ByteZ][1],SSSS);
             buf[Ad_Buf++]=',';                                              //
             w_int(&fnMKeepParamOut[ByteZ][2],SS);
             buf[Ad_Buf++]=',';                                              //

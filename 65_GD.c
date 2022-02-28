@@ -584,7 +584,8 @@ typedef struct eeTeplControl
         int16_t     f_MaxOpenUn;   /*Фрамуги_Максимально допустимое открытие*/
         int16_t     f_MaxAHUSpd;   /*Фрамуги_Максимум при подкормке СО2*/
 		int16_t 	c_MinTPipe[2];
-		int16_t		c_DoPres;			// не используется
+		// изменение 144
+		int16_t		f_maxOpenFram; //c_DoPres;			// не используется
 		int16_t 	c_OptimalTPipe[2];
 		int16_t		f_IFactor;
 		int16_t		c_PFactor;  /*Контур 1 - Динамика(Тзад-Тизм)влияет до*/

@@ -1191,9 +1191,8 @@ int8_t GetOffSet(int8_t fnSys)
 		case cSysHeadPipe: 	//2
 			return cHSmMixVal+cSmKontur2;
 		case cSysAHUPipe: 	//0
-			return cHSmMixVal+cSmKonturAHU;
-//		case cSysTHose: //3
-//			return cSmScreen;
+			//return cHSmMixVal+cSmKonturAHU;
+			return cHSmMixVal+cSmKontur6;
 		case cSysAHUSpeed:  //7
 			return cHSmAHUSpeed1;
 		case cSysUCValve: 	//8
@@ -1254,46 +1253,42 @@ int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 	{
 		pGD_TControl_Tepl->StopVentI++;
 		if (pGD_TControl_Tepl->StopVentI>cMaxStopI) pGD_TControl_Tepl->StopVentI=cMaxStopI;
-		//fnMKeepErrorOut[fnTepl] = 1;  // вывод стратегии
-		//fnMSysOut[fnTepl] = 0;     // вывод стратегии
-		//fnMPriorOut[fnTepl] = 0;	 // вывод стратегии
 		pGD_Hot_Tepl->CurrentStratSys = 0;
 		GD.Hot.Tepl[fnTepl].CurrentStratSys = 0;
+		// вывод стратегии
+	    fnMSysOut[fnTepl] = fnMSys;
+	    fnMPriorOut[fnTepl] = fnCritery;
 		return -1;
 	}
 	pGD_TControl_Tepl->StopVentI=0;
 	if (pGD_TControl_Tepl->Systems[fnMSys].Power/1000 == 0)
 		pGD_TControl_Tepl->Systems[fnMSys].Power = 1000;
 
-
-	// изменение 136
+    // изменение 136
 	CriterMain = fnCritery;
-	volatile int speed = GD.TuneClimate.AHUvalveSpeed;
-		if (speed <= 0) speed = 0;
+	volatile float speed = GD.TuneClimate.AHUvalveSpeed;
+		if (speed <= 0) speed = 10;
 	if (fnMSys == cSysAHUPipe)
 	{
-		if (fnCritery < 0)
-			CriterNew = SetPID( (((int32_t)CriterMain) - (speed*100)) * pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
+		speed = speed * 0.1;
+		if (CriterMain < 0)
+			CriterNew = SetPID( (((int32_t)CriterMain) * speed) * pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
 		else
-			CriterNew = SetPID( (((int32_t)CriterMain) + (speed*100)) * pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
+			CriterNew = SetPID( (((int32_t)CriterMain) * speed) * pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
 	}
 	else
-		CriterNew = SetPID( ((int32_t)CriterMain) * pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
+		CriterNew = SetPID( ((int32_t)fnCritery) * pGD_TControl_Tepl->Systems[fnMSys].Power/1000, GetOffSet(fnMSys),pGD_TControl_Tepl->Systems[fnMSys].Max, pGD_TControl_Tepl->Systems[fnMSys].Min); // last
 
 	pGD_TControl_Tepl->Systems[fnMSys].Keep = CriterNew;
 
-
-
-
 	if (fnMSys == cSysAHUPipe)     // вывод стратегии
 	{
-		fnMKeepParamOut[fnTepl][0] = (int32_t)fnCritery;// * speed;
-		fnMKeepParamOut[fnTepl][1] = 1;//speed;
-		fnMKeepParamOut[fnTepl][2] = GetOffSet(fnMSys);
+		fnMKeepParamOut[fnTepl][0] = (int32_t)CriterMain;// * speed;
+		fnMKeepParamOut[fnTepl][1] = CriterNew;//speed;
+		fnMKeepParamOut[fnTepl][2] = fnMSys;
 		fnMKeepParamOut[fnTepl][3] = pGD_TControl_Tepl->Systems[fnMSys].Min;
-		fnMKeepParamOut[fnTepl][4] = pGD_TControl_Tepl->Systems[fnMSys].Max;
+		fnMKeepParamOut[fnTepl][4] = (int32_t)(CriterMain * speed);
 	}
-
 
 	GD.Hot.Tepl[fnTepl].CurrentStratSys = fnMSys * 10;   // вывод в hot блок текущей системы
 	//fnMKeepOut[fnTepl][fnMSys] = pGD_TControl_Tepl->Systems[fnMSys].Keep;    // вывод стратегии
@@ -1306,8 +1301,10 @@ int8_t TakeForSys(int16_t fnCritery, char fnTepl)
 			KeepPID(pGD_TControl_Tepl->Systems[fnSys].Keep,((int32_t)fnCritery)*pGD_TControl_Tepl->Systems[fnSys].Power/1000, GetOffSet(fnSys));
 	}
 	pGD_Hot_Tepl->Kontur[cSmWindowUnW].SError=pGD_TControl_Tepl->Systems[cSysUCValve].Power/1000;  // NEW
-	//fnMSysOut[fnTepl] = fnMSys;        // вывод стратегии
-	//fnMPriorOut[fnTepl] = fnMPrior;    // вывод стратегии
+
+	// вывод стратегии
+    fnMSysOut[fnTepl] = fnMSys;
+    fnMPriorOut[fnTepl] = fnCritery;
 }
 
 //Для расчета критерия на базе текущих положений увлажнения, скорости вентиляторов, фрамуг
@@ -2458,7 +2455,7 @@ void __sCalcKonturs(void)
 			pGD_TControl_Tepl_Kontur->Manual=0;
 			ClrDog;
 
-//			if ((ByteX==cSmKontur3)||(ByteX==cSmKonturAHU)) continue;
+//			if ((ByteX==cSmKontur3)||(ByteX==cSmKontur6)) continue;
 
 			if (ByteX==cSmKontur3) continue;
 
@@ -2521,7 +2518,7 @@ void __sCalcKonturs(void)
 			//GD.Hot.Tepl[fnTepl].InTeplSens[cSmTAHUOutSens].Value
 			//GD.uInTeplSens[fnTepl][cSmTAHUOutSens]
 			//TakeCriterForOut(GD.Hot.Tepl[fnTepl].InTeplSens[cSmTAHUOutSens].Value,GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery, GD.Hot.Tepl[fnTepl].AllTask.DoTVent, fnTepl);
-			TakeCriterForOut(pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value,GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery, GD.Hot.Tepl[fnTepl].AllTask.DoTVent, fnTepl);
+			TakeCriterForOut(pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value, GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery, GD.Hot.Tepl[fnTepl].AllTask.DoTVent, fnTepl);
 
 			CriterT = pGD_Hot_Tepl->InTeplSens[cSmTAHUOutSens].Value-GD.Hot.Tepl[fnTepl].NextTCalc.TVentCritery;  // было на 20 апреля
 
@@ -2539,6 +2536,10 @@ void __sCalcKonturs(void)
 		//if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0))
 		// изменеие 100. Вместо getTempVent делаем getTempHeat
 		//if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0) && (getTempOutAHU(fnTepl)!=0) )
+
+		int St = getTempHeat(fnTepl);
+		int Ot = getTempOutAHU(fnTepl);
+
 		if ((getTempHeat(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0) && (getTempOutAHU(fnTepl)!=0) )
 		{
 				PutCritery(CriterT,CriterRH); // first
@@ -2550,9 +2551,13 @@ void __sCalcKonturs(void)
 		// изменеие 100. Вместо getTempVent делаем getTempHeat
 		//if ((getTempVent(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0) && (getTempOutAHU(fnTepl)!=0) )
 
-		if ((getTempHeat(fnTepl)!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0) && (getTempOutAHU(fnTepl)!=0) )
+		if ((St!=0) && (GD.Hot.Tepl[fnTepl].AllTask.DoTVent !=0) && (Ot!=0) )
 			TakeForSys(CriterT,fnTepl);  // first
-
+		else
+		{
+		    fnMSysOut[fnTepl] = 77;
+		    fnMPriorOut[fnTepl] = CriterT;
+		}
 
 		//TakeForSys(GD.Hot.Tepl[fnTepl].AllTask.DoTVent - getTempVent(fnTepl));  // last
 		//TakeForSys((*pGD_TControl_Tepl).Kontur[cSmWindowUnW].CalcT);  // было так
@@ -2774,8 +2779,6 @@ int16_t __SetIntWin(uint8_t fSens,uint8_t fNFram,uint16_t fOffset,uint16_t fStar
 //Изменения от 13.05.2014
 int16_t __SetWinPress(uint16_t DoPres,uint8_t fNFram,uint16_t fOffset)
 {
-//#warning то сейчас из-за этого фрамуга постоянно прыгает вниз-вверх. И похоже разбегается. Может Серега был и прав – дело реально в прошивке может быть
-
 	// надо протестить
 	if (!(pGD_Hot_Tepl->Kontur[cSmWindowUnW].Do))
 		return 0;
@@ -2872,6 +2875,11 @@ void __sMechWindows(void)
 		if ( ! GD.TControl.bSnow)
 		{
 			volatile int16_t RHmes = getRH(fnTepl);
+	    	int RHset = (*pGD_Hot_Tepl).AllTask.DoRHAir;
+	    	if (RHmes > RHset)
+	    		RHmes = RHmes - RHset;
+	    	else
+	    		RHmes = 0;
 			int16_t RHlimitPress = GD.TuneClimate.RHlimitPress * 100;
 			int16_t RHlimitPressStart = GD.TuneClimate.RHlimitPressStart * 100;
 			int16_t RHlimitPressEnd = GD.TuneClimate.RHlimitPressEnd * 100;
@@ -2880,8 +2888,8 @@ void __sMechWindows(void)
 			if (IntZ > 0)
 				PressSet = PressSet - IntZ;
 		}
-		pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(PressSet,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
 
+		pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(PressSet,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
 		// было
 		//volatile int16_t vPresMaxTask = pGD_Hot_Tepl->AllTask.PresMaxTask * 100;
 		//pGD_Hot_Tepl->HandCtrl[cHSmWinN].Position=__SetWinPress(vPresMaxTask,cHSmWinN,pGD_Hot_Tepl->HandCtrl[cHSmUCValve].Position/3);
@@ -2896,7 +2904,6 @@ void __sMechWindows(void)
 		if (!(YesBit(pGD_Hot_Tepl->HandCtrl[cHSmWinS].RCS,cbManMech)))
 			pGD_Hot_Tepl->HandCtrl[cHSmWinS].Position = (*pGD_Hot_Tepl).AllTask.centralFram;
 #endif
-
 
 #ifdef KUBO
 		// изменение 141

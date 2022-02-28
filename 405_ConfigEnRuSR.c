@@ -171,7 +171,7 @@ eNameASens code  NameSensConfig[cConfSSens+cConfSMetSens]={
 #define cSmKontur3		2
 #define cSmKontur4		3
 #define cSmKontur5		4
-#define cSmKonturAHU	5
+#define cSmKontur6		5
 #define cSmWindowUnW	6
 #define cSmAHUSpd		7
 #define cSmUCValve		8

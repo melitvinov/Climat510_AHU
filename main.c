@@ -1,4 +1,4 @@
-//#define DEBUG
+#define DEBUG
 //#define DS18B20ERRORFLAG
 
 //#define RICHEL
